@@ -11,6 +11,10 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 
+#IDEs
+.idea
+.vscode
+
 # Compiled class file
 *.class
 
