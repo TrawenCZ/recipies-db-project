@@ -21,7 +21,7 @@ public class UnitsCard extends JPanel {
     private final JTable unitsTable;
 
     // --- BOTTOM PANEL -----
-    private final JLabel entries = new JLabel("Shown recipes XXX/XXX");
+    private final JLabel entries = new JLabel("Shown units XXX/XXX");
 
     public UnitsCard() {
         unitsTable = createUnitsTable();

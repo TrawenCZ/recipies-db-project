@@ -19,7 +19,7 @@ public class IngredientsCard extends JPanel {
     private final JTable ingredientsTable;
 
     // --- BOTTOM PANEL -----
-    private final JLabel entries = new JLabel("Shown recipes XXX/XXX");
+    private final JLabel entries = new JLabel("Shown ingredients XXX/XXX");
 
     public IngredientsCard() {
         ingredientsTable = createRecipeTable();
