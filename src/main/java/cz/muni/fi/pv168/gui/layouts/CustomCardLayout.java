@@ -1,8 +1,10 @@
 package cz.muni.fi.pv168.gui.layouts;
 
 import cz.muni.fi.pv168.gui.frames.cards.CardNamesEnum;
-import cz.muni.fi.pv168.gui.frames.cards.CustomCard;
+import cz.muni.fi.pv168.gui.frames.cards.CategoriesCard;
+import cz.muni.fi.pv168.gui.frames.cards.IngredientsCard;
 import cz.muni.fi.pv168.gui.frames.cards.RecipeCard;
+import cz.muni.fi.pv168.gui.frames.cards.UnitsCard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +23,9 @@ public class CustomCardLayout {
     public void createCards(Container pane) {
         JTabbedPane tabbedPane = new JTabbedPane();
         recipesCard = new RecipeCard();
-        ingredientsCard = new CustomCard();
-        categoriesCard = new CustomCard();
-        unitsCard = new CustomCard();
+        ingredientsCard = new IngredientsCard();
+        categoriesCard = new CategoriesCard();
+        unitsCard = new UnitsCard();
 
 
         tabbedPane.addTab(RECIPES, recipesCard);
