@@ -46,4 +46,17 @@ public abstract class AbstractForm implements AddForm {
     public void setConstraints(GridBagConstraints constraints) {
         this.constraints = constraints;
     }
+
+    /**
+     * Creates a pop up dialog window, in case to
+     * @param message content of the dialog window.
+     * @param header title of the dialog window.
+     * @param type static constants defined in the JOptionPane class:
+     *             WARNING_MESSAGE,
+     *             ERROR_MESSAGE,
+     *             INFORMATION_MESSAGE
+     */
+    public void popUpDialog(String message, String header, int type) {
+        JOptionPane.showMessageDialog(getFrame() ,message, header, type);
+    }
 }

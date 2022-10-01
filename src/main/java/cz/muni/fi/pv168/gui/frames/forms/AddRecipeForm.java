@@ -51,10 +51,11 @@ public class AddRecipeForm extends AbstractForm {
         addComponent(newPanel, saveButton, 0, 6, GridBagConstraints.WEST);
         addComponent(newPanel, cancelButton, 1, 6, GridBagConstraints.EAST);
 
-        saveButton.addActionListener(e -> frame.dispose());
+        saveButton.addActionListener(e -> popUpDialog("Generic error!", "Error", JOptionPane.WARNING_MESSAGE));
         cancelButton.addActionListener(e -> frame.dispose());
         newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Recipe"));
         frame.add(newPanel);
         frame.pack();
     }
+
 }
