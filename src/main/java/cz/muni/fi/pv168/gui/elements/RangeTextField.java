@@ -9,114 +9,77 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.NumberFormatter;
 
-// TODO this is broken rn, fix will come later
 public final class RangeTextField {
 
     /**
      * Needed to allow empty windows
      */
-    private class NullNumberFormatter extends NumberFormatter {
+    private class ZeroNumberFormatter extends NumberFormatter {
 
-        public NullNumberFormatter(NumberFormat format) {
+        public ZeroNumberFormatter(NumberFormat format) {
             super(format);
             this.setValueClass(Integer.class);
+            this.setOverwriteMode(true);
             this.setAllowsInvalid(false);
-            this.setCommitsOnValidEdit(true);
+            this.setCommitsOnValidEdit(false);
             this.setMinimum(0);
+            this.setMaximum(999);
         }
 
         @Override
         public Object stringToValue(String text) throws ParseException {
-            return ("".equals(text)) ? null : super.stringToValue(text);
+            return ("".equals(text)) ? 0 : super.stringToValue(text);
         }
     }
 
-    // FUCK JAVA and replaceAll
-    private final static String whitespace_chars =  "["
-        + "\\u0009" // CHARACTER TABULATION
-        + "\\u000A" // LINE FEED (LF)
-        + "\\u000B" // LINE TABULATION
-        + "\\u000C" // FORM FEED (FF)
-        + "\\u000D" // CARRIAGE RETURN (CR)
-        + "\\u0020" // SPACE
-        + "\\u0085" // NEXT LINE (NEL) 
-        + "\\u00A0" // NO-BREAK SPACE
-        + "\\u1680" // OGHAM SPACE MARK
-        + "\\u180E" // MONGOLIAN VOWEL SEPARATOR
-        + "\\u2000" // EN QUAD 
-        + "\\u2001" // EM QUAD 
-        + "\\u2002" // EN SPACE
-        + "\\u2003" // EM SPACE
-        + "\\u2004" // THREE-PER-EM SPACE
-        + "\\u2005" // FOUR-PER-EM SPACE
-        + "\\u2006" // SIX-PER-EM SPACE
-        + "\\u2007" // FIGURE SPACE
-        + "\\u2008" // PUNCTUATION SPACE
-        + "\\u2009" // THIN SPACE
-        + "\\u200A" // HAIR SPACE
-        + "\\u2028" // LINE SEPARATOR
-        + "\\u2029" // PARAGRAPH SEPARATOR
-        + "\\u202F" // NARROW NO-BREAK SPACE
-        + "\\u205F" // MEDIUM MATHEMATICAL SPACE
-        + "\\u3000" // IDEOGRAPHIC SPACE
-        + "]";
-
-    private final NullNumberFormatter formatterLower = new NullNumberFormatter(NumberFormat.getInstance());
-    private final NullNumberFormatter formatterUpper = new NullNumberFormatter(NumberFormat.getInstance());
+    private final ZeroNumberFormatter formatter = new ZeroNumberFormatter(NumberFormat.getInstance());
     
-    private JFormattedTextField lower = new JFormattedTextField(formatterLower);
-    private JFormattedTextField upper = new JFormattedTextField(formatterUpper);
+    private JFormattedTextField lower = new JFormattedTextField(formatter);
+    private JFormattedTextField upper = new JFormattedTextField(formatter);
 
     private DocumentListener lowerListener = new DocumentListener() {
         @Override
         public void removeUpdate(DocumentEvent e) {
-            moveUpper();
+            // NOT NEEDED
         }
         @Override
         public void insertUpdate(DocumentEvent e) {
-            moveUpper();
+            moveUpper(ParseToInt(lower.getText()));
         }
         @Override
         public void changedUpdate(DocumentEvent e) {
-            //moveUpper();
+            // NOT NEEDED
         }
-
-        private void moveUpper() {
-            Integer value = toInt(lower.getText());
-            if (value != null) {
-                formatterUpper.setMinimum(value);
-                Integer upperValue = toInt(upper.getText());
-                if (upperValue == null || upperValue <= value) {
-                    String newText = value + 1 + "";
-                    upper.setText(newText);
-                }
+        private void moveUpper(int value) {
+            int upperValue = ParseToInt(upper.getText());
+    
+            if (upperValue <= value) {
+                upper.getDocument().removeDocumentListener(upperListener);
+                upper.setText(Math.min(value + 1, 999) + "");
+                upper.getDocument().addDocumentListener(upperListener);
             }
-        }
+        }    
     };
 
     private DocumentListener upperListener = new DocumentListener() {
         @Override
         public void removeUpdate(DocumentEvent e) {
-            moveLower();
+            // NOT NEEDED
         }
         @Override
         public void insertUpdate(DocumentEvent e) {
-            moveLower();
+            moveLower(ParseToInt(upper.getText()));
         }
         @Override
         public void changedUpdate(DocumentEvent e) {
-            //moveLower();
+            // NOT NEEDED
         }
-
-        private void moveLower() {
-            Integer value = toInt(upper.getText());
-            if (value != null) {
-                formatterUpper.setMinimum(value);
-                Integer lowerValue = toInt(upper.getText());
-                if (lowerValue == null || lowerValue >= value) {
-                    String newText = value - 1 + "";
-                    lower.setText(newText);
-                }
+        private void moveLower(int value) {
+            int lowerValue = ParseToInt(lower.getText());
+            if (lowerValue > value) {
+                lower.getDocument().removeDocumentListener(lowerListener);
+                lower.setText(Math.max(value - 1, 0) + "");
+                lower.getDocument().addDocumentListener(lowerListener);
             }
         }
     };
@@ -146,12 +109,11 @@ public final class RangeTextField {
         parent.add(upper);
     }
 
-    private Integer toInt(String text) {
-        text = text.replaceAll(whitespace_chars, "");
-        if (!"".equals(text)) {
-            System.out.println(text);
-            return Integer.parseInt(text);
+    private int ParseToInt(String text) {
+        try {
+            return (int) formatter.stringToValue(text);
+        } catch (Exception e) {
+            return 0;
         }
-        return null;
     }
 }
