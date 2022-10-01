@@ -26,14 +26,13 @@ public class AddRecipeForm {
     private JFrame frame;
     private JPanel newPanel;
     private GridBagConstraints constraints;
-
-
     public AddRecipeForm() {
         initialize();
     }
 
     private void initialize() {
         frame = new JFrame();
+
         frame.setTitle(TITLE);
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -42,6 +41,7 @@ public class AddRecipeForm {
         addFormComponents();
         frame.pack();
         frame.setVisible(true);
+        JDialog x = new JDialog(frame, true);
     }
 
     private void addComponent(JComponent label, int gridx, int gridy) {

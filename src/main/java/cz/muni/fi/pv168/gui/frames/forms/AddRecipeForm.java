@@ -28,9 +28,8 @@ public class AddRecipeForm extends AbstractForm {
         addFormComponents();
     }
     private void addFormComponents() {
-        //frame.setLayout(new BoxLayout(frame, BoxLayout.Y_AXIS));
         JPanel newPanel = new JPanel(new GridBagLayout());
-        JFrame frame = getFrame();
+        var frame = getDialog();
         GridBagConstraints constraints = getConstraints();
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(10, 10, 10, 10);
@@ -56,6 +55,7 @@ public class AddRecipeForm extends AbstractForm {
         newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Recipe"));
         frame.add(newPanel);
         frame.pack();
+        frame.setVisible(true);
     }
 
 }

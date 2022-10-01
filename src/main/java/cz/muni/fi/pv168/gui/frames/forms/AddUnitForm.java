@@ -19,7 +19,7 @@ public class AddUnitForm extends AbstractForm {
 
     private void addFormComponents() {
         JPanel newPanel = new JPanel(new GridBagLayout());
-        JFrame frame = getFrame();
+        var frame = getDialog();
         GridBagConstraints constraints = getConstraints();
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(10, 10, 10, 10);
@@ -36,5 +36,6 @@ public class AddUnitForm extends AbstractForm {
         newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Unit"));
         frame.add(newPanel);
         frame.pack();
+        frame.setVisible(true);
     }
 }
