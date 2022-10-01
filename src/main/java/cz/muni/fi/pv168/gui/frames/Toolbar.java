@@ -20,11 +20,23 @@ public class Toolbar extends JToolBar{
         editButton.addActionListener(editRow);
         editButton.setToolTipText("Edits selected row");
         add(editButton);
+        editButton.setEnabled(false);
         addSeparator();
 
         deleteButton.addActionListener(deleteRows);
-        deleteButton.setToolTipText("Deletes selected row");
+        deleteButton.setToolTipText("Deletes selected row(s)");
         add(deleteButton);
+        deleteButton.setEnabled(false);
         addSeparator();
     }
+
+
+    public JButton getEditButton() {
+        return editButton;
+    }
+
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
+
 }

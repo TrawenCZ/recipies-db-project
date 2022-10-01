@@ -8,6 +8,7 @@ import cz.muni.fi.pv168.gui.resources.Icons;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -15,6 +16,7 @@ public class CategoriesCard extends JPanel {
 
     // ------ TOP PANEL ------
     private final JTextField searchBar = new JTextField(30);
+    private Toolbar tools;
 
     private final JButton search = new JButton(Icons.getScaledIcon((ImageIcon)Icons.SEARCH_S, 30));
 
@@ -36,7 +38,7 @@ public class CategoriesCard extends JPanel {
         JPanel bottom = new JPanel(new BorderLayout());
         this.setLayout(new BorderLayout());
 
-        Toolbar tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
+        tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
         tools.setFloatable(false);
         tools.setBorderPainted(false);
 
@@ -73,18 +75,36 @@ public class CategoriesCard extends JPanel {
         table.setAutoCreateRowSorter(true);
 
         //TODO: possibly some listeners here / popups
-        //table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
         //table.setComponentPopupMenu(createEmployeeTablePopupMenu());
         return table;
     }
 
+    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+        int activeRows = categoryTable.getSelectedRowCount();
+        if (activeRows == 1) {
+            tools.getEditButton().setEnabled(true);
+            tools.getDeleteButton().setEnabled(true);
+        } else if (activeRows > 1) {
+            tools.getDeleteButton().setEnabled(true);
+            tools.getEditButton().setEnabled(false);
+        } else if (activeRows == 0) {
+            tools.getDeleteButton().setEnabled(false);
+            tools.getEditButton().setEnabled(false);
+        }
+    }
     private void deleteSelectedRows(ActionEvent actionEvent) {
+        int rowCount = categoryTable.getSelectedRowCount();
+        int input = JOptionPane.showConfirmDialog(null,
+                "Delete " + rowCount + " record" + (rowCount > 1 ? "s" : "") + "?",
+                "Delete", JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
     private void editSelectedRow(ActionEvent actionEvent) {
     }
 
     private void addRow(ActionEvent actionEvent) {
+        new AddCategoryForm();
     }
 
     private void addSampleData() {

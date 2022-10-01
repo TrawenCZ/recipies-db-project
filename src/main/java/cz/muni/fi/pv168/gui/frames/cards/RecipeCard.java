@@ -3,11 +3,13 @@ package cz.muni.fi.pv168.gui.frames.cards;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
 import cz.muni.fi.pv168.gui.frames.Toolbar;
+import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
 
@@ -15,6 +17,7 @@ public class RecipeCard extends JPanel {
 
     // ------ TOP PANEL ------
     private final JTextField searchBar = new JTextField(30);
+    private Toolbar tools;
     
     private final MultiChoiceButton categoryFilter;
     private final MultiChoiceButton ingredientsFilter;
@@ -61,7 +64,7 @@ public class RecipeCard extends JPanel {
         JPanel bottom = new JPanel(new BorderLayout());
         this.setLayout(new BorderLayout());
 
-        Toolbar tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
+        tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
         tools.setFloatable(false);
         tools.setBorderPainted(false);
 
@@ -164,18 +167,37 @@ public class RecipeCard extends JPanel {
         // table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         //TODO: possibly some listeners here / popups
-        //table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
         //table.setComponentPopupMenu(createEmployeeTablePopupMenu());
         return table;
+    }
+
+    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+        int activeRows = recipesTable.getSelectedRowCount();
+        if (activeRows == 1) {
+            tools.getEditButton().setEnabled(true);
+            tools.getDeleteButton().setEnabled(true);
+        } else if (activeRows > 1) {
+            tools.getDeleteButton().setEnabled(true);
+            tools.getEditButton().setEnabled(false);
+        } else if (activeRows == 0) {
+            tools.getDeleteButton().setEnabled(false);
+            tools.getEditButton().setEnabled(false);
+        }
     }
 
     private void editSelectedRow(ActionEvent actionEvent) {
     }
 
     private void deleteSelectedRows(ActionEvent actionEvent) {
+        int rowCount = recipesTable.getSelectedRowCount();
+        int input = JOptionPane.showConfirmDialog(null,
+                "Delete " + rowCount + " record" + (rowCount > 1 ? "s" : "") + "?",
+                "Delete", JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
     private void addRow(ActionEvent actionEvent) {
+        new AddRecipeForm();
     }
 
     private void addSampleData(int count) {
