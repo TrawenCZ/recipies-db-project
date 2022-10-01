@@ -13,12 +13,12 @@ public class Category {
         setName(name);
     }
 
-    public String getCategory() {
+    public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        Objects.requireNonNull(name);
+        this.name = Objects.requireNonNull(name);
     }
 
     @Override

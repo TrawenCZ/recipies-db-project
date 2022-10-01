@@ -1,16 +1,10 @@
 package cz.muni.fi.pv168.gui.frames;
 
-import cz.muni.fi.pv168.gui.frames.cards.CardNamesEnum;
-import cz.muni.fi.pv168.gui.frames.forms.AddCategoryForm;
-import cz.muni.fi.pv168.gui.frames.forms.AddIngredientForm;
-import cz.muni.fi.pv168.gui.frames.forms.AddUnitForm;
 import cz.muni.fi.pv168.gui.layouts.CustomCardLayout;
 import cz.muni.fi.pv168.gui.menu.CustomMenu;
+import cz.muni.fi.pv168.gui.resources.Icons;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.EXPORT;
@@ -29,8 +23,6 @@ public class MainWindow {
     private JMenuBar menuBar;
     private CustomCardLayout cardLayout;
 
-
-
     public MainWindow() {
         initialize();
     }
@@ -47,8 +39,8 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
 
         cardLayout.createCards(frame.getContentPane());
-        setCardsContent();
         addMenus();
+
 
         frame.setVisible(true);
     }
@@ -64,6 +56,11 @@ public class MainWindow {
         JMenuItem imports = new JMenuItem(IMPORT.getLabel(), KeyEvent.VK_I);
         JMenuItem export = new JMenuItem(EXPORT.getLabel(), KeyEvent.VK_E);
 
+        int iSize = 20;
+        settings.setIcon(Icons.resizeIcon(Icons.SETTINGS_S, iSize));
+        imports.setIcon(Icons.resizeIcon(Icons.IMPORT_S, iSize));
+        export.setIcon(Icons.resizeIcon(Icons.EXPORT_S, iSize));
+
         JMenu fileMenu = new CustomMenu("File", settings, imports, export);
         fileMenu.setMnemonic(KeyEvent.VK_F);
 
@@ -78,54 +75,5 @@ public class MainWindow {
         helpMenu.setMnemonic(KeyEvent.VK_H);
 
         menuBar.add(helpMenu);
-    }
-
-    private void setCardsContent() {
-        JPanel recipes = cardLayout.getCardByName(CardNamesEnum.RECIPES);
-        JPanel categories = cardLayout.getCardByName(CardNamesEnum.CATEGORIES);
-        JPanel ingredients = cardLayout.getCardByName(CardNamesEnum.INGREDIENTS);
-        JPanel units = cardLayout.getCardByName(CardNamesEnum.UNITS);
-        setCategoriesCardContent(categories);
-        setIngredientsCardContent(ingredients);
-        setUnitsCardContent(units);
-    }
-
-    private void setCategoriesCardContent(JPanel categories) {
-        JButton addCategory = new JButton("Add category");
-
-        categories.setLayout(new BorderLayout());
-        // recipes.setBackground(Color.RED);
-        JPanel categoriesFilterPanel = new JPanel();
-        // recipesFilterPanel.setBackground(Color.CYAN);
-        categories.add(categoriesFilterPanel, BorderLayout.NORTH);
-        categoriesFilterPanel.setLayout(new FlowLayout());
-        addCategory.addActionListener(e -> new AddCategoryForm());
-        categoriesFilterPanel.add(addCategory);
-    }
-
-    private void setIngredientsCardContent(JPanel ingredients) {
-        JButton addIngredient = new JButton("Add ingredient");
-
-        ingredients.setLayout(new BorderLayout());
-        // recipes.setBackground(Color.RED);
-        JPanel ingredientsFilterPanel = new JPanel();
-        // recipesFilterPanel.setBackground(Color.CYAN);
-        ingredients.add(ingredientsFilterPanel, BorderLayout.NORTH);
-        ingredientsFilterPanel.setLayout(new FlowLayout());
-        addIngredient.addActionListener(e -> new AddIngredientForm());
-        ingredientsFilterPanel.add(addIngredient);
-    }
-
-    private void setUnitsCardContent(JPanel units){
-        JButton addIngredient = new JButton("Add Unit");
-
-        units.setLayout(new BorderLayout());
-        // recipes.setBackground(Color.RED);
-        JPanel unitsFilterPanel = new JPanel();
-        // recipesFilterPanel.setBackground(Color.CYAN);
-        units.add(unitsFilterPanel, BorderLayout.NORTH);
-        unitsFilterPanel.setLayout(new FlowLayout());
-        addIngredient.addActionListener(e -> new AddUnitForm());
-        unitsFilterPanel.add(addIngredient);
     }
 }

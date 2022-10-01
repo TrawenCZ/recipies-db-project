@@ -11,7 +11,7 @@ import javax.swing.event.MouseInputListener;
 
 public class AutoHideWindow implements MouseInputListener {
 
-    private final static int DEFAULT_WIDTH = 120;
+    private final static int DEFAULT_WIDTH = 140;
     private final static int DEFAULT_HEIGHT = 160;
     private final static int MINIMUM_SIZE = 50;
 
@@ -33,10 +33,10 @@ public class AutoHideWindow implements MouseInputListener {
 
     public void show(Component caller) {
         if (!window.isVisible()) {
-            // Point p = caller.getLocationOnScreen();
-            // p.x += Math.round(caller.getSize().getWidth());
-            // window.setLocation(p);
-            window.setLocationRelativeTo(caller);
+            Point p = caller.getLocationOnScreen();
+            //p.x += Math.round(caller.getSize().getWidth());
+            window.setLocation(p);
+            //window.setLocationRelativeTo(caller);
             window.setVisible(true);
         }
     }

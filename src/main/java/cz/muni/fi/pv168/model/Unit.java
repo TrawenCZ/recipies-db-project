@@ -8,31 +8,32 @@ import java.util.Objects;
 public class Unit {
     
     private String name;
-    private double value;
+    private double valueInGrams;
 
-    public Unit(String name, double value) {
+    public Unit(String name, double valueInGrams) {
         setName(name);
-        setValue(value);
+        setValueInGrams(valueInGrams);
     }
 
-    public String getCategory() {
+    public double getValueInGrams() {
+        return valueInGrams;
+    }
+
+    public void setValueInGrams(double valueInGrams) {
+        this.valueInGrams = valueInGrams;
+    }
+
+    public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        Objects.requireNonNull(name);
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
+        this.name = Objects.requireNonNull(name);
     }
 
     @Override
     public String toString() {
         return name;
     }
+
 }

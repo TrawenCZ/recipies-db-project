@@ -16,3 +16,4 @@ public enum CardNamesEnum {
         return name;
     }
 }
+

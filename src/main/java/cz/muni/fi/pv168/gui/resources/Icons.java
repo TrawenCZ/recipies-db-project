@@ -7,30 +7,41 @@ import java.awt.Image;
 
 public final class Icons {
 
-    public static final Icon ADD_ICON_S = createIcon("add_48.png");
-    public static final Icon ADD_ICON_L = createIcon("add_96.png");
+    public static final Icon ADD_S = createIcon("add_48.png");
+    public static final Icon ADD_L = createIcon("add_96.png");
 
-    public static final Icon DELETE_ICON_S = createIcon("delete_48.png");
-    public static final Icon DELETE_ICON_L = createIcon("delete_96.png");
+    public static final Icon EDIT_S = createIcon("edit_48.png");
+    public static final Icon EDIT_L = createIcon("edit_96.png");
 
-    public static final Icon EXPORT_ICON_S = createIcon("export_48.png");
-    public static final Icon EXPORT_ICON_L = createIcon("export_48.png");
+    public static final Icon DELETE_S = createIcon("delete_48.png");
+    public static final Icon DELETE_L = createIcon("delete_96.png");
 
-    public static final Icon IMPORT_ICON_S = createIcon("import_48.png");
-    public static final Icon IMPORT_ICON_L = createIcon("import_48.png");
+    public static final Icon EXPORT_S = createIcon("export_48.png");
+    public static final Icon EXPORT_L = createIcon("export_96.png");
 
-    public static final Icon RESET_ICON_S = createIcon("reset_48.png");
-    public static final Icon RESET_ICON_L = createIcon("reset_48.png");
+    public static final Icon IMPORT_S = createIcon("import_48.png");
+    public static final Icon IMPORT_L = createIcon("import_96.png");
 
-    public static final Icon SEARCH_ICON_S = createIcon("search_48.png");
-    public static final Icon SEARCH_ICON_L = createIcon("search_48.png");
+    public static final Icon RESET_S = createIcon("reset_48.png");
+    public static final Icon RESET_L = createIcon("reset_96.png");
+
+    public static final Icon SEARCH_S = createIcon("search_48.png");
+    public static final Icon SEARCH_L = createIcon("search_96.png");
     
+    public static final Icon SETTINGS_S = createIcon("settings_48.png");
+    public static final Icon SETTINGS_L = createIcon("settings_96.png");
+
     private Icons() {
-        throw new AssertionError("This class is not instantiable");
+        // INTENTIONALY PRIVATE
     }
 
     public static ImageIcon getScaledIcon(ImageIcon icon, int size) {
         return new ImageIcon(icon.getImage().getScaledInstance(size, size, Image.SCALE_DEFAULT));
+    }
+
+    public static ImageIcon resizeIcon(Icon icon, int size) {
+        if (!(icon instanceof ImageIcon)) throw new IllegalArgumentException("icon must be ImageIcon");
+        return Icons.getScaledIcon((ImageIcon) icon, size);
     }
 
     private static ImageIcon createIcon(String name) {
