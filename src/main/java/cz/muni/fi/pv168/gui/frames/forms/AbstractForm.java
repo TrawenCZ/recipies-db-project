@@ -4,18 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class AbstractForm implements AddForm {
-    private final JFrame frame;
+    private final JDialog dialog;
     private final String title;
     private GridBagConstraints constraints;
 
     protected AbstractForm(String title) {
-        this.frame = new JFrame();
-        this.title = title;
         constraints = new GridBagConstraints();
-        frame.setTitle(getTitle());
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        this.title = title;
+        dialog = new JDialog(new JFrame(), title, true);
+        dialog.setTitle(getTitle());
+        dialog.setLocationRelativeTo(null);
+        dialog.setResizable(false);
     }
 
     @Override
@@ -31,8 +30,8 @@ public abstract class AbstractForm implements AddForm {
         panel.add(label, constraints);
     }
 
-    public JFrame getFrame() {
-        return frame;
+    public JDialog getDialog() {
+        return dialog;
     }
 
     public String getTitle() {
@@ -45,5 +44,18 @@ public abstract class AbstractForm implements AddForm {
 
     public void setConstraints(GridBagConstraints constraints) {
         this.constraints = constraints;
+    }
+
+    /**
+     * Creates a pop-up dialog window, in case to
+     * @param message content of the dialog window.
+     * @param header title of the dialog window.
+     * @param type static constants defined in the JOptionPane class:
+     *             WARNING_MESSAGE,
+     *             ERROR_MESSAGE,
+     *             INFORMATION_MESSAGE
+     */
+    public void popUpDialog(String message, String header, int type) {
+        JOptionPane.showMessageDialog(getDialog(), message, header, type);
     }
 }

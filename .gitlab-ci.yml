@@ -1,0 +1,10 @@
+# Based on https://gitlab.fi.muni.cz/unix/examples/ci-examples/-/blob/java-maven/.gitlab-ci.yml
+image: maven:3-openjdk-17
+
+build:
+  tags:
+    - shared-fi
+  script:
+    - mvn -ntp clean package
+
+
