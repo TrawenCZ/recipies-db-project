@@ -72,7 +72,7 @@ public class CategoryTableLayout extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return true;
+                return false;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
         }

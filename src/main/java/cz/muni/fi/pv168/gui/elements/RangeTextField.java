@@ -86,6 +86,8 @@ public final class RangeTextField {
 
     public RangeTextField() {
         this(6);
+        lower.setText(0 + "");
+        upper.setText(999 + "");
     }
 
     public RangeTextField(int columns) {
