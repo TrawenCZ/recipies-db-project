@@ -12,6 +12,7 @@ import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
+import cz.muni.fi.pv168.gui.frames.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
@@ -31,6 +32,20 @@ public final class RecipeCard extends AbstractCard {
 
     public RecipeCard() {
         super(new RecipeTableLayout(), ICON_SIZE);
+        table.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                ArrayList<Object> rowValues = new ArrayList<>();
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    for (int i=0; i < table.getColumnCount(); i++) {
+                        rowValues.add(table.getValueAt(row, i));
+                    }
+                    new RecipeDetails(rowValues);
+                }
+            }
+        });
     }
 
     @Override
