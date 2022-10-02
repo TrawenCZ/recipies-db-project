@@ -85,6 +85,8 @@ public abstract class AbstractCard extends JPanel {
         popup.addItem(new JMenuItem("Add", Icons.ADD_S), this::addRow, "Create a new row", "ctrl A", 'a');
         popup.addItem(new JMenuItem("Edit", Icons.EDIT_S), this::editSelectedRow, "Edit the currently selected row", "ctrl E", 'e');
         popup.addItem(new JMenuItem("Remove", Icons.DELETE_S), this::deleteSelectedRows, "Delete selected rows", "ctrl R", 'r');
+        popup.disableItem("Edit");
+        popup.disableItem("Remove");
         return popup;
     }
 
@@ -113,17 +115,17 @@ public abstract class AbstractCard extends JPanel {
         if (activeRows == 1) {
             tools.getEditButton().setEnabled(true);
             tools.getDeleteButton().setEnabled(true);
-            popupMenu.enableItem("delete");
+            popupMenu.enableItem("remove");
             popupMenu.enableItem("edit");
         } else if (activeRows > 1) {
             tools.getDeleteButton().setEnabled(true);
             tools.getEditButton().setEnabled(false);
-            popupMenu.enableItem("delete");
+            popupMenu.enableItem("remove");
             popupMenu.disableItem("edit");
         } else if (activeRows == 0) {
             tools.getDeleteButton().setEnabled(false);
             tools.getEditButton().setEnabled(false);
-            popupMenu.disableItem("delete");
+            popupMenu.disableItem("remove");
             popupMenu.disableItem("edit");
         }
     }

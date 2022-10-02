@@ -155,6 +155,7 @@ public final class RecipeCard extends AbstractCard {
     protected PopupMenu createPopupMenu() {
         var popup = new PopupMenu();
         popup.addItem(new JMenuItem("Details", Icons.SEARCH_S), this::viewDetails, "Shows instructions and ingredients of selected recipe", "ctrl D", 'a');
+        popup.disableItem("details");
         return createPopupMenu(popup);
     }
 
@@ -175,6 +176,11 @@ public final class RecipeCard extends AbstractCard {
     }
 
     private void viewDetails(ActionEvent actionEvent) {
-        // TODO: add window
+        int row = table.getSelectedRow();
+        ArrayList<Object> rowValues = new ArrayList<>();
+        for (int i=0; i < table.getColumnCount(); i++) {
+            rowValues.add(table.getValueAt(row, i));
+        }
+        new RecipeDetails(rowValues);
     }
 }
