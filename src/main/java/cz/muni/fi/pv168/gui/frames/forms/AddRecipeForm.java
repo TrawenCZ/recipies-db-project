@@ -23,9 +23,9 @@ public class AddRecipeForm extends AbstractForm {
     private final JLabel categoryLabel = new JLabel("Category");
     private final JComboBox<String> categoriesInput = new JComboBox<String>();
     private final JLabel ingredientsLabel = new JLabel("Ingredients");
-    private JPanel ingredientPanel = new JPanel();
+    private final JPanel ingredientPanel = new JPanel();
 
-    private List<IngredientComponentData> ingredientsComponents = new ArrayList<>();
+    private final List<IngredientComponentData> ingredientList = new ArrayList<>();
 
     //private final JComboBox<String> ingredientInput = new JComboBox<>();
     //private final JTextField ingredientValue = new JTextField(3);
@@ -84,22 +84,27 @@ public class AddRecipeForm extends AbstractForm {
         frame.setVisible(true);
     }
 
-    private void addNewIngredient()
-    {
+    private void addNewIngredient() {
         var panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        var components = new IngredientComponentData(panel, ingredientsComponents.size());
-        components.getRemoveIngredient().addActionListener(e -> removeIngredient(components.getIndex()));
-        ingredientsComponents.add(components);
-        ingredientPanel.add(panel,ingredientsComponents.size() - 1); // last
+        var ingredient = new IngredientComponentData(panel, ingredientList.size());
+        ingredient.getRemoveIngredient().addActionListener(e -> removeIngredient(ingredient));
+
+        ingredientList.add(ingredient);
+        ingredientPanel.add(panel, ingredientList.size() - 1); // last
+        
         refreshContent();
     }
-    private void removeIngredient(int index){
+    private void removeIngredient(IngredientComponentData ingredient) {
+        var index = ingredient.index;
         ingredientPanel.remove(index);
-        ingredientsComponents.remove(index);
+        ingredientList.remove(index);
+        for (int i = 0; i < ingredientList.size(); i++) {
+            ingredientList.get(i).index = i;
+        }
         refreshContent();
     }
 
-    private void refreshContent(){
+    private void refreshContent() {
         var content = getDialog().getContentPane();
         content.validate();
         content.repaint();
