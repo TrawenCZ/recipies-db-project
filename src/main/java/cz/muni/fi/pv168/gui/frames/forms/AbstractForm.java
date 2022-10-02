@@ -18,12 +18,12 @@ public abstract class AbstractForm implements AddForm {
     }
 
     @Override
-    public void addComponent(JPanel panel, JComponent label, int gridx, int gridy) {
+    public void addComponent(Container panel, JComponent label, int gridx, int gridy) {
         addComponent(panel, label, gridx, gridy, GridBagConstraints.WEST);
     }
 
     @Override
-    public void addComponent(JPanel panel, JComponent label, int gridx, int gridy, int position) {
+    public void addComponent(Container panel, JComponent label, int gridx, int gridy, int position) {
         constraints.gridx = gridx;
         constraints.gridy = gridy;
         constraints.anchor = position;
