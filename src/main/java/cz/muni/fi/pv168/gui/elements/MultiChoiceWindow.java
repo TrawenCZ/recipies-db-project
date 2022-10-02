@@ -1,27 +1,59 @@
 package cz.muni.fi.pv168.gui.elements;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
-import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
 
 /**
  * A simple scrollable window (i.e. no title bar) with a custom multi-choice checkbox.
  * Window is not destroyed while the program is running, only hidden at times.
  * 
- * @author Jan Martinek
+ * TODO: Fix scrollbar not releasing when outside of it
  */
 public final class MultiChoiceWindow extends AutoHideWindow {
 
-    JScrollPane scrollpane;
-    JPanel panel;
+    private final JScrollPane scrollpane;
+    private final List<ChoiceItem> choices;
+
+    private class ChoiceItem extends JCheckBoxMenuItem implements MouseListener {
+        public ChoiceItem(String name) {
+            if (name == null) throw new NullPointerException("choice name cannot be null");
+            this.setText(name);
+            this.setMargin(new Insets(4, 0, 4, 0));
+            for (var l : this.getMouseListeners()) {
+                this.removeMouseListener(l);
+            }
+            this.addMouseListener(this);
+            choices.add(this);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            this.setState(!this.getState());
+        }
+    
+        @Override
+        public void mouseEntered(MouseEvent e) {}
+    
+        @Override
+        public void mouseExited(MouseEvent e) {}
+    
+        @Override
+        public void mousePressed(MouseEvent e) {}
+    
+        @Override
+        public void mouseReleased(MouseEvent e) {}
+    }
 
     /**
      * Takes >=1 strings and creates a scrollable auto-hide multi-choice checkbock
@@ -35,33 +67,23 @@ public final class MultiChoiceWindow extends AutoHideWindow {
         if (choices.length < 1) throw new NullPointerException("missing choices");
 
         scrollpane = new JScrollPane();
-        panel = new JPanel();
+        var panel = new JPanel();
+        this.choices = new ArrayList<>();
 
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-        Arrays.stream(choices).forEach(c -> panel.add(new JCheckBoxMenuItem(c)));
-
+        Arrays.stream(choices).forEach(c -> {
+            panel.add(new ChoiceItem(c));
+            panel.add(new JSeparator());
+        });
         scrollpane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         scrollpane.setViewportView(panel);
+        scrollpane.setWheelScrollingEnabled(true);
 
-        addToWindow(scrollpane);
+        addTo(scrollpane);
+        setHeight(200);
     }
 
-    /**
-     * Gets the names of checked values in an string array.
-     * Will propably take a second look at this later when needed.
-     * 
-     * @return array of names of values that were crossed
-     */
     public String[] getChecked() {
-       List<String> checked = new ArrayList<>();
-        for (Component c : panel.getComponents()) {
-            if (!(c instanceof JCheckBoxMenuItem)) continue;
-            
-            JCheckBoxMenuItem i = (JCheckBoxMenuItem) c;
-            JLabel label = (JLabel) i.getSelectedObjects()[0];
-
-            if (label != null) checked.add(label.getText());
-        }
-        return checked.toArray(new String[0]);
+        return choices.stream().filter(c -> c.getState() == true).map(ChoiceItem::getText).toArray(String[]::new);
     }
 }
