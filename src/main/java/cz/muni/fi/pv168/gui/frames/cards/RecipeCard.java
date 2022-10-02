@@ -1,13 +1,5 @@
 package cz.muni.fi.pv168.gui.frames.cards;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-
 import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
@@ -16,7 +8,14 @@ import cz.muni.fi.pv168.gui.frames.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
-import cz.muni.fi.pv168.model.Recipe;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 
 public final class RecipeCard extends AbstractCard {
 
@@ -33,16 +32,11 @@ public final class RecipeCard extends AbstractCard {
     public RecipeCard() {
         super(new RecipeTableLayout(), ICON_SIZE);
         table.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                ArrayList<Object> rowValues = new ArrayList<>();
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    for (int i=0; i < table.getColumnCount(); i++) {
-                        rowValues.add(table.getValueAt(row, i));
-                    }
-                    new RecipeDetails(rowValues);
+                    new RecipeDetails(getRowValues(table.rowAtPoint(mouseEvent.getPoint())));
                 }
             }
         });
@@ -177,10 +171,14 @@ public final class RecipeCard extends AbstractCard {
 
     private void viewDetails(ActionEvent actionEvent) {
         int row = table.getSelectedRow();
+        new RecipeDetails(getRowValues(row));
+    }
+
+    private ArrayList<Object> getRowValues(int rowIndex) {
         ArrayList<Object> rowValues = new ArrayList<>();
         for (int i=0; i < table.getColumnCount(); i++) {
-            rowValues.add(table.getValueAt(row, i));
+            rowValues.add(table.getValueAt(rowIndex, i));
         }
-        new RecipeDetails(rowValues);
+        return rowValues;
     }
 }

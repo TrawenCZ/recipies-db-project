@@ -5,7 +5,6 @@ import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.elements.Toolbar;
 import net.miginfocom.swing.MigLayout;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -85,8 +84,8 @@ public abstract class AbstractCard extends JPanel {
         popup.addItem(new JMenuItem("Add", Icons.ADD_S), this::addRow, "Create a new row", "ctrl A", 'a');
         popup.addItem(new JMenuItem("Edit", Icons.EDIT_S), this::editSelectedRow, "Edit the currently selected row", "ctrl E", 'e');
         popup.addItem(new JMenuItem("Remove", Icons.DELETE_S), this::deleteSelectedRows, "Delete selected rows", "ctrl R", 'r');
-        popup.disableItem("Edit");
-        popup.disableItem("Remove");
+        popup.disableItem("edit");
+        popup.disableItem("remove");
         return popup;
     }
 
