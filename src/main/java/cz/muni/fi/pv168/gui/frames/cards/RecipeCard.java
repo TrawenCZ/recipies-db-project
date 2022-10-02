@@ -2,6 +2,9 @@ package cz.muni.fi.pv168.gui.frames.cards;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 
@@ -12,6 +15,7 @@ import cz.muni.fi.pv168.gui.elements.RangeTextField;
 import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
+import cz.muni.fi.pv168.model.Recipe;
 
 public final class RecipeCard extends AbstractCard {
 
