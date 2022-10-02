@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class AddIngredientForm extends AbstractForm {
+    
     private final JLabel nameLabel = new JLabel("Name");
     private final JTextField nameInput = new JTextField(12);
     private final JLabel energyValue = new JLabel("Energy value (kcal)");
@@ -19,7 +20,7 @@ public class AddIngredientForm extends AbstractForm {
 
 
     public AddIngredientForm() {
-        super("Add ingredient");
+        super("Add");
         addFormComponents();
     }
 
