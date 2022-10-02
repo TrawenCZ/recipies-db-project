@@ -77,7 +77,7 @@ public class UnitsTableLayout extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
             case 1:
-                return true;
+                return false;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
         }
