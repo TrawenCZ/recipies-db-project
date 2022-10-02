@@ -2,16 +2,21 @@ package cz.muni.fi.pv168.gui.frames.cards;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
+import cz.muni.fi.pv168.gui.frames.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.Toolbar;
 import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
+import cz.muni.fi.pv168.model.Recipe;
 
 public class RecipeCard extends JPanel {
 
@@ -168,6 +173,20 @@ public class RecipeCard extends JPanel {
 
         //TODO: possibly some listeners here / popups
         table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                ArrayList<Object> rowValues = new ArrayList<>();
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    for (int i=0; i < table.getColumnCount(); i++) {
+                        rowValues.add(table.getValueAt(row, i));
+                    }
+                    new RecipeDetails(rowValues);
+                }
+            }
+        });
         //table.setComponentPopupMenu(createEmployeeTablePopupMenu());
         return table;
     }
