@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class AbstractForm implements AddForm {
+    
     private final JDialog dialog;
     private final String title;
     private GridBagConstraints constraints;

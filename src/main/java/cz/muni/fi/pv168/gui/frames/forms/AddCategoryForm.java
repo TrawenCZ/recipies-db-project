@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AddCategoryForm extends AbstractForm {
+    
     private final JLabel nameLabel = new JLabel("Name");
     private final JTextField nameInput = new JTextField(12);
     private final JButton saveButton = new JButton("Save");

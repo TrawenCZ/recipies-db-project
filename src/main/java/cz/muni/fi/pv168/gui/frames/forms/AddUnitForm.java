@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AddUnitForm extends AbstractForm {
+    
     private JLabel nameLabel = new JLabel("Name");
     private JTextField nameInput = new JTextField(12);
     private JLabel gramsLabel = new JLabel("Equivalent in grams");
@@ -12,7 +13,7 @@ public class AddUnitForm extends AbstractForm {
     private JButton cancelButton = new JButton("Cancel");
 
     public AddUnitForm() {
-        super("Add unit");
+        super("Add");
         addFormComponents();
     }
 

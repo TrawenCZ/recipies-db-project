@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.resources.Icons;
 
 import javax.swing.*;
@@ -9,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddRecipeForm extends AbstractForm {
+    
     private final JLabel portionLabel = new JLabel("Portions");
     private final JTextField portionInput = new JTextField(12);
     private final JLabel nameLabel = new JLabel("Name");
@@ -39,7 +39,7 @@ public class AddRecipeForm extends AbstractForm {
 
 
     public AddRecipeForm() {
-        super("Add recipe");
+        super("Add");
         addFormComponents();
     }
     private void addFormComponents() {
@@ -64,15 +64,15 @@ public class AddRecipeForm extends AbstractForm {
         addComponent(newPanel, categoriesInput, 1, 5);
         addComponent(newPanel, ingredientsLabel, 0, 6, GridBagConstraints.NORTHWEST);
         // DYNAMIC (NO LOGIC YET IMPLEMENTED)
-        ingredientPanel.setLayout(new BoxLayout(ingredientPanel, BoxLayout.Y_AXIS));
+        ingredientPanel.setLayout(new BoxLayout(ingredientPanel, BoxLayout.PAGE_AXIS));
         var scrollPane = new JScrollPane(ingredientPanel);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setMaximumSize(new Dimension(210, 120));
         scrollPane.setPreferredSize(new Dimension(210, 120));
         scrollPane.setBorder(null);
         addComponent(newPanel, scrollPane, 1, 6, GridBagConstraints.WEST);
-        addComponent(newPanel, addIngredient, 0, 6, GridBagConstraints.WEST);
         // BUTTONS
+        addComponent(newPanel, addIngredient, 0, 6, GridBagConstraints.WEST);
         addComponent(newPanel, saveButton, 0, 8, GridBagConstraints.WEST);
         addComponent(newPanel, cancelButton, 1, 8, GridBagConstraints.EAST);
         saveButton.addActionListener(e -> popUpDialog("Generic error!", "Error", JOptionPane.WARNING_MESSAGE));
