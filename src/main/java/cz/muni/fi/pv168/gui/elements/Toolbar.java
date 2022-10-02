@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.frames;
+package cz.muni.fi.pv168.gui.elements;
 
 import cz.muni.fi.pv168.gui.resources.Icons;
 

@@ -10,92 +10,67 @@ import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
+import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
-import cz.muni.fi.pv168.gui.frames.RecipeDetails;
-import cz.muni.fi.pv168.gui.frames.Toolbar;
 import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
 import cz.muni.fi.pv168.model.Recipe;
 
-public class RecipeCard extends JPanel {
+public final class RecipeCard extends AbstractCard {
 
-    // ------ TOP PANEL ------
-    private final JTextField searchBar = new JTextField(30);
-    private Toolbar tools;
-    
-    private final MultiChoiceButton categoryFilter;
-    private final MultiChoiceButton ingredientsFilter;
+    protected final static int ICON_SIZE = 16;
 
-    private final JLabel timeLabel = new JLabel("Preparation time");
-    private final JLabel portionsLabel = new JLabel("Portions");
-
-    private final RangeTextField timeField = new RangeTextField();
-    private final RangeTextField portionsField = new RangeTextField();
-
-    private final JButton search = new JButton(Icons.getScaledIcon((ImageIcon)Icons.SEARCH_S, 18));
-    private final JButton resetFilters = new JButton(Icons.getScaledIcon((ImageIcon)Icons.RESET_S, 18));
-
-    // ---- CENTER PANEL -----
-    private final JTable recipesTable;
-
-    // --- BOTTOM PANEL -----
-    private final JLabel entries = new JLabel("Shown recipes XXX/XXX");
+    private MultiChoiceButton categoryFilter;
+    private MultiChoiceButton ingredientsFilter;
+    private JButton resetButton;
+    private JLabel timeLabel;
+    private JLabel portionsLabel;
+    private RangeTextField timeField;
+    private RangeTextField portionsField;
 
     public RecipeCard() {
-        // TODO get all possible ingredients (maybe kept globally in some class)
-        ingredientsFilter = new MultiChoiceButton(
+        super(new RecipeTableLayout(), ICON_SIZE);
+    }
+
+    @Override
+    public void addSampleData(int sampleSize) {
+        var recipeGenerator = new RecipeDataGenerator();
+        var model = (RecipeTableLayout) table.getModel();
+        recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected void initialize() {
+        timeLabel = new JLabel("Preparation time");
+        portionsLabel = new JLabel("Portions");
+        timeField = new RangeTextField();
+        portionsField = new RangeTextField();
+        resetButton = new JButton(Icons.getScaledIcon((ImageIcon)Icons.RESET_S, ICON_SIZE));
+
+        ingredientsFilter = new MultiChoiceButton( // TODO: dynamic updates
             "Filter ingredients",
             "Show recipes that contain all of the selected ingredients",
             MultiChoiceButton.NO_MNEMONIC,
             "TODO:", "ingredient", "choicebox", "this", "is", "a sample", "not", "implemented", "yet"
         );
-        // TODO get all possible categories
-        categoryFilter = new MultiChoiceButton(
+        categoryFilter = new MultiChoiceButton( // TODO: dynamic updates
             "Filter categories",
             "Show recipes of any selected category",
             MultiChoiceButton.NO_MNEMONIC,
             "TODO:", "category", "choicebox","this", "is", "a sample", "not", "implemented", "yet"
         );
-
-        recipesTable = createRecipeTable();
-        layoutPanels(createTopPanel(), new JScrollPane(recipesTable));
-
-        addSampleData(100);
     }
 
-    private void layoutPanels(JPanel top, JScrollPane table) {
-        JPanel nestedTopPanel = new JPanel(new BorderLayout());
-        JPanel bottom = new JPanel(new BorderLayout());
-        this.setLayout(new BorderLayout());
+    @Override
+    protected JPanel createFilterPanel() {
+        initialize();
 
-        tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
-        tools.setFloatable(false);
-        tools.setBorderPainted(false);
-
-        Color background = new Color(0xBDD2E5);
-        nestedTopPanel.setBackground(background);
-        nestedTopPanel.setOpaque(true);
-        top.setBackground(background);
-        tools.setBackground(background);
-        table.setBackground(background);
-        table.setOpaque(true);
-        bottom.setBackground(background);
-
-        bottom.add(entries, BorderLayout.EAST);
-        nestedTopPanel.add(tools, BorderLayout.EAST);
-        nestedTopPanel.add(top, BorderLayout.CENTER);
-        this.add(nestedTopPanel, BorderLayout.NORTH);
-        this.add(table, BorderLayout.CENTER);
-        this.add(bottom, BorderLayout.SOUTH);
-    }
-
-    private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel();
+        var panel = new JPanel();
         int default_anchor = GridBagConstraints.WEST;
         int right_anchor = GridBagConstraints.EAST;
 
-        topPanel.setLayout(new GridBagLayout());
+        panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = default_anchor;
@@ -106,123 +81,85 @@ public class RecipeCard extends JPanel {
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 0;
-        topPanel.add(searchBar, c);
+        panel.add(searchBar, c);
         
         // buttons
         c.gridwidth = 1;
         c.gridx = 0;
         c.gridy = 1;
-        topPanel.add(search, c);
+        panel.add(searchButton, c);
 
         c.gridx = 1;
         c.gridy = 1;
-        topPanel.add(resetFilters, c);
+        panel.add(resetButton, c);
 
         // filters
         c.weightx = 0;
         c.gridx = 3;
         c.gridy = 0;
-        topPanel.add(categoryFilter,c);
+        panel.add(categoryFilter,c);
 
         c.gridx = 3;
         c.gridy = 1;
-        topPanel.add(ingredientsFilter, c);
+        panel.add(ingredientsFilter, c);
 
         // time
         c.weightx = 0;
         c.anchor = right_anchor;
         c.gridx = 4;
         c.gridy = 0;
-        topPanel.add(timeLabel, c);
+        panel.add(timeLabel, c);
         c.anchor = default_anchor;
         c.weightx = 0.4;
         c.gridx = 5;
         c.gridy = 0;
-        timeField.addLeft(topPanel, c);
+        timeField.addLeft(panel, c);
         c.gridx = 6;
         c.gridy = 0;
-        timeField.addRight(topPanel, c);
+        timeField.addRight(panel, c);
 
         // portions
         c.weightx = 0;
         c.anchor = right_anchor;
         c.gridx = 4;
         c.gridy = 1;
-        topPanel.add(portionsLabel, c);
+        panel.add(portionsLabel, c);
         c.weightx = 0.4;
         c.anchor = default_anchor;
         c.gridx = 5;
         c.gridy = 1;
-        portionsField.addLeft(topPanel, c);
+        portionsField.addLeft(panel, c);
         c.gridx = 6;
         c.gridy = 1;
-        portionsField.addRight(topPanel, c);
+        portionsField.addRight(panel, c);
         
-        return topPanel;
+        return panel;
     }
 
-    private JTable createRecipeTable() {
-        var layout = new RecipeTableLayout();
-        var table = new JTable(layout);
-        table.setAutoCreateRowSorter(true);
-        
-        for (int i = 0; i < layout.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setPreferredWidth(layout.getSize(i));
-        }
-        // table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-
-        //TODO: possibly some listeners here / popups
-        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
-        table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table =(JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                ArrayList<Object> rowValues = new ArrayList<>();
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    for (int i=0; i < table.getColumnCount(); i++) {
-                        rowValues.add(table.getValueAt(row, i));
-                    }
-                    new RecipeDetails(rowValues);
-                }
-            }
-        });
-        //table.setComponentPopupMenu(createEmployeeTablePopupMenu());
-        return table;
+    @Override
+    protected PopupMenu createPopupMenu() {
+        var popup = new PopupMenu();
+        popup.addItem(new JMenuItem("Details", Icons.SEARCH_S), this::viewDetails, "Shows instructions and ingredients of selected recipe", "ctrl D", 'a');
+        return createPopupMenu(popup);
     }
 
-    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
-        int activeRows = recipesTable.getSelectedRowCount();
+    @Override
+    protected void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+        int activeRows = table.getSelectedRowCount();
         if (activeRows == 1) {
-            tools.getEditButton().setEnabled(true);
-            tools.getDeleteButton().setEnabled(true);
-        } else if (activeRows > 1) {
-            tools.getDeleteButton().setEnabled(true);
-            tools.getEditButton().setEnabled(false);
-        } else if (activeRows == 0) {
-            tools.getDeleteButton().setEnabled(false);
-            tools.getEditButton().setEnabled(false);
+            popupMenu.enableItem("details");
+        } else {
+            popupMenu.disableItem("details");
         }
+        super.rowSelectionChanged(listSelectionEvent);
     }
-
-    private void editSelectedRow(ActionEvent actionEvent) {
-    }
-
-    private void deleteSelectedRows(ActionEvent actionEvent) {
-        int rowCount = recipesTable.getSelectedRowCount();
-        int input = JOptionPane.showConfirmDialog(null,
-                "Delete " + rowCount + " record" + (rowCount > 1 ? "s" : "") + "?",
-                "Delete", JOptionPane.YES_NO_CANCEL_OPTION);
-    }
-
-    private void addRow(ActionEvent actionEvent) {
+    
+    @Override
+    protected void addRow(ActionEvent actionEvent) {
         new AddRecipeForm();
     }
 
-    private void addSampleData(int count) {
-        var recipeGenerator = new RecipeDataGenerator();
-        var model = (RecipeTableLayout) recipesTable.getModel();
-        recipeGenerator.createTestData(count).stream().forEach(model::addRow);
+    private void viewDetails(ActionEvent actionEvent) {
+        // TODO: add window
     }
-
 }

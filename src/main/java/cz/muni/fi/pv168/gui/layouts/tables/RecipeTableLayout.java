@@ -100,7 +100,7 @@ public class RecipeTableLayout extends AbstractTableModel {
             case 2:
             case 3:
             case 4:
-                return true;
+                return false;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
         }
