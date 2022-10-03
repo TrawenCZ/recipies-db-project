@@ -5,7 +5,7 @@ import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
 import cz.muni.fi.pv168.gui.frames.RecipeDetails;
-import cz.muni.fi.pv168.gui.frames.forms.AddRecipeForm;
+import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
 
@@ -166,7 +166,12 @@ public final class RecipeCard extends AbstractCard {
     
     @Override
     protected void addRow(ActionEvent actionEvent) {
-        new AddRecipeForm();
+        new RecipeForm();
+    }
+
+    @Override
+    protected void editSelectedRow(ActionEvent actionEvent) {
+        new RecipeForm("NAME of edited item", "DESCRIPTION of the edited item", "INSTRUCTIONS of the edited item", "SomeCategory", 3, 20, 4);
     }
 
     private void viewDetails(ActionEvent actionEvent) {
