@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.gui.frames.cards;
 
 import cz.muni.fi.pv168.data.CategoryDataGenerator;
-import cz.muni.fi.pv168.gui.frames.forms.AddCategoryForm;
+import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
 import cz.muni.fi.pv168.gui.layouts.tables.CategoryTableLayout;
 
 import java.awt.event.ActionEvent;
@@ -20,6 +20,11 @@ public final class CategoriesCard extends AbstractCard {
     
     @Override
     protected void addRow(ActionEvent actionEvent) {
-        new AddCategoryForm();
+        new CategoryForm();
+    }
+
+    @Override
+    protected void editSelectedRow(ActionEvent actionEvent) {
+        new CategoryForm("EDITED category");
     }
 }

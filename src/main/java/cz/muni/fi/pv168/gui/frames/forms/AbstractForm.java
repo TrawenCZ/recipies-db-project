@@ -10,6 +10,8 @@ public abstract class AbstractForm implements AddForm {
     private GridBagConstraints constraints;
 
     protected AbstractForm(String title) {
+        if (title == null) throw new NullPointerException("form title cannot be null");
+
         constraints = new GridBagConstraints();
         this.title = title;
         dialog = new JDialog(new JFrame(), title, true);

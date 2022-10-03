@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class AddIngredientForm extends AbstractForm {
+public class IngredientForm extends AbstractForm {
     
     private final JLabel nameLabel = new JLabel("Name");
     private final JTextField nameInput = new JTextField(12);
@@ -18,13 +18,19 @@ public class AddIngredientForm extends AbstractForm {
     private final JLabel energyPerIngredient = new JLabel("Energy value (kcal) per ingredient");
     private final JLabel gramsPerIngredient = new JLabel("Grams per ingredient");
 
-
-    public AddIngredientForm() {
-        super("Add");
-        addFormComponents();
+    public IngredientForm(String name, int energy, int grams) {
+        super("Edit");
+        var frame = addFormComponents();
+        addSampleData(name, energy, grams);
+        frame.setVisible(true);
     }
 
-    private void addFormComponents() {
+    public IngredientForm() {
+        super("Add");
+        addFormComponents().setVisible(true);
+    }
+
+    private JDialog addFormComponents() {
         JPanel newPanel = new JPanel(new GridBagLayout());
         var frame = getDialog();
         GridBagConstraints constraints = getConstraints();
@@ -65,6 +71,14 @@ public class AddIngredientForm extends AbstractForm {
         frame.add(newPanel);
         frame.pack();
         frame.setModal(true);
-        frame.setVisible(true);
+        return frame;
+    }
+
+    private void addSampleData(String name, int energy, int grams) {
+        if (name == null) throw new NullPointerException("name of ingredient cannot be null");
+
+        nameInput.setText(name);
+        energyValueInput.setText(energy + "");
+        gramsInput.setText(grams + "");
     }
 }

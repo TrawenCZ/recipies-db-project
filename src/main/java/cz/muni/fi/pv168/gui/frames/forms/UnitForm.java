@@ -3,7 +3,7 @@ package cz.muni.fi.pv168.gui.frames.forms;
 import javax.swing.*;
 import java.awt.*;
 
-public class AddUnitForm extends AbstractForm {
+public class UnitForm extends AbstractForm {
     
     private JLabel nameLabel = new JLabel("Name");
     private JTextField nameInput = new JTextField(12);
@@ -12,13 +12,20 @@ public class AddUnitForm extends AbstractForm {
     private JButton saveButton = new JButton("Save");
     private JButton cancelButton = new JButton("Cancel");
 
-    public AddUnitForm() {
+    public UnitForm(String name, int grams) {
+        super("Edit");
+        var frame = addFormComponents();
+        addData(name, grams);
+        frame.setVisible(true);
+    }
+
+    public UnitForm() {
         super("Add");
-        addFormComponents();
+        addFormComponents().setVisible(true);
     }
 
 
-    private void addFormComponents() {
+    private JDialog addFormComponents() {
         JPanel newPanel = new JPanel(new GridBagLayout());
         var frame = getDialog();
         GridBagConstraints constraints = getConstraints();
@@ -37,6 +44,12 @@ public class AddUnitForm extends AbstractForm {
         newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Unit"));
         frame.add(newPanel);
         frame.pack();
-        frame.setVisible(true);
+        return frame;
+    }
+
+    private void addData(String name, int grams) {
+        if (name == null) throw new NullPointerException("unit name cannot be null");
+        nameInput.setText(name);
+        gramsInput.setText(grams + "");
     }
 }

@@ -7,42 +7,53 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddRecipeForm extends AbstractForm {
+public class RecipeForm extends AbstractForm {
     
     private final JLabel portionLabel = new JLabel("Portions");
-    private final JTextField portionInput = new JTextField(12);
+    private final JTextField portionInput = new JTextField(20);
+
     private final JLabel nameLabel = new JLabel("Name");
-    private final JTextField nameInput = new JTextField(12);
+    private final JTextField nameInput = new JTextField(20);
+
     private final JLabel descriptionLabel = new JLabel("Description");
     private final JScrollPane descriptionInput = new JScrollPane(new JTextArea(6,20));
+
     private final JLabel instructionsLabel = new JLabel("Instructions");
     private final JScrollPane instructionsInput = new JScrollPane(new JTextArea(6,20));
+
     private final JLabel durationLabel = new JLabel("Duration");
     private final JTextField durationInput = new JTextField(8);
     private final JLabel minutesLabel = new JLabel("min");
+
     private final JLabel categoryLabel = new JLabel("Category");
     private final JComboBox<String> categoriesInput = new JComboBox<String>();
+
     private final JLabel ingredientsLabel = new JLabel("Ingredients");
     private final JPanel ingredientPanel = new JPanel();
-
     private final List<IngredientComponentData> ingredientList = new ArrayList<>();
-
-    //private final JComboBox<String> ingredientInput = new JComboBox<>();
-    //private final JTextField ingredientValue = new JTextField(3);
-    //private final JComboBox<String> unitInput = new JComboBox<>();
-    //private final JButton removeIngredient = new JButton(Icons.getScaledIcon((ImageIcon)Icons.DELETE_S, 16));
     private final JButton addIngredient = new JButton(Icons.getScaledIcon((ImageIcon)Icons.ADD_S, 16));
+    
     private final JButton saveButton = new JButton("Save");
     private final JButton cancelButton = new JButton("Cancel");
-    //private final JScrollPane ingredientsPanel = new JScrollPane(new JPanel(new GridBagLayout()));
 
+    public RecipeForm(String name, String description, String instructions, String category, int ingredientDummyCount, int time, int portions) {
+        super("Edit");
+        var frame = addFormComponents();
 
-
-    public AddRecipeForm() {
-        super("Add");
-        addFormComponents();
+        addStringData(name, description, instructions);
+        addCategoryData(category);
+        addIntData(time, portions);
+        for (int i = 0; i < ingredientDummyCount; i++) addNewIngredient();
+        
+        frame.setVisible(true);
     }
-    private void addFormComponents() {
+
+    public RecipeForm() {
+        super("Add");
+        addFormComponents().setVisible(true);
+    }
+
+    private JDialog addFormComponents() {
         JPanel newPanel = new JPanel(new GridBagLayout());
         var frame = getDialog();
         GridBagConstraints constraints = getConstraints();
@@ -63,6 +74,7 @@ public class AddRecipeForm extends AbstractForm {
         addComponent(newPanel, categoryLabel, 0, 5);
         addComponent(newPanel, categoriesInput, 1, 5);
         addComponent(newPanel, ingredientsLabel, 0, 6, GridBagConstraints.NORTHWEST);
+
         // DYNAMIC (NO LOGIC YET IMPLEMENTED)
         ingredientPanel.setLayout(new BoxLayout(ingredientPanel, BoxLayout.PAGE_AXIS));
         var scrollPane = new JScrollPane(ingredientPanel);
@@ -71,6 +83,7 @@ public class AddRecipeForm extends AbstractForm {
         scrollPane.setPreferredSize(new Dimension(210, 120));
         scrollPane.setBorder(null);
         addComponent(newPanel, scrollPane, 1, 6, GridBagConstraints.WEST);
+
         // BUTTONS
         addComponent(newPanel, addIngredient, 0, 6, GridBagConstraints.WEST);
         addComponent(newPanel, saveButton, 0, 8, GridBagConstraints.WEST);
@@ -78,10 +91,11 @@ public class AddRecipeForm extends AbstractForm {
         saveButton.addActionListener(e -> popUpDialog("Generic error!", "Error", JOptionPane.WARNING_MESSAGE));
         cancelButton.addActionListener(e -> frame.dispose());
         addIngredient.addActionListener(e -> addNewIngredient());
+
         newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Recipe"));
         frame.add(newPanel);
         frame.pack();
-        frame.setVisible(true);
+        return frame;
     }
 
     private void addNewIngredient() {
@@ -110,4 +124,24 @@ public class AddRecipeForm extends AbstractForm {
         content.repaint();
         getDialog().pack();
     }
+
+    private void addStringData(String name, String description, String instructions) {
+        nameInput.setText(name);
+        var d = (JTextArea) descriptionInput.getViewport().getView();
+        d.setText(description);
+        var i = (JTextArea) instructionsInput.getViewport().getView();
+        i.setText(instructions);
+    }
+
+    private void addCategoryData(String category) {
+        var index = categoriesInput.getItemCount();
+        categoriesInput.addItem(category);
+        categoriesInput.setSelectedIndex(index);
+    }
+
+    private void addIntData(int duration, int portions) {
+        durationInput.setText(duration + "");
+        portionInput.setText(portions + "");
+    }
+
 }
