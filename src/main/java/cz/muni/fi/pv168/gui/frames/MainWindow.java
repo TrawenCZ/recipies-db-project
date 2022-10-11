@@ -1,10 +1,11 @@
 package cz.muni.fi.pv168.gui.frames;
 
-import cz.muni.fi.pv168.gui.layouts.CustomCardLayout;
 import cz.muni.fi.pv168.gui.menu.CustomMenu;
 import cz.muni.fi.pv168.gui.resources.Icons;
 
 import javax.swing.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.EXPORT;
@@ -17,32 +18,46 @@ public class MainWindow {
 
     private static final int WIDTH = 800;
     private static final int HEIGHT = 500;
+    private static final Dimension MINIMUM_SIZE = new Dimension(WIDTH - 200, HEIGHT - 200);
     private static final String TITLE = "Recipes app";
 
-    private JFrame frame;
+    private static JFrame frame;
+
     private JMenuBar menuBar;
-    private CustomCardLayout cardLayout;
+    private TabLayout tabLayout;
 
     public MainWindow() {
         initialize();
     }
 
     private void initialize() {
+        if (frame != null) {
+            frame.dispose();
+        }
+
         frame = new JFrame();
         menuBar = new JMenuBar();
-        cardLayout = new CustomCardLayout();
+        tabLayout = new TabLayout();
 
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.setMinimumSize(MINIMUM_SIZE);
 
-        cardLayout.createCards(frame.getContentPane());
+        tabLayout.createTabs(frame.getContentPane());
         addMenus();
 
-
         frame.setVisible(true);
+    }
+
+    public static Component getGlassPane() {
+        return frame.getGlassPane();
+    }
+
+    public static Component getContentPane() {
+        return frame.getContentPane();
     }
 
     private void addMenus() {
@@ -70,7 +85,6 @@ public class MainWindow {
     private void addHelpMenu() {
         JMenuItem info = new JMenuItem(INFO.getLabel(), KeyEvent.VK_I);
 
-        // TODO: possibly add shortcuts overview (if not built into buttons themselves)
         JMenu helpMenu = new CustomMenu("Help", info);
         helpMenu.setMnemonic(KeyEvent.VK_H);
 

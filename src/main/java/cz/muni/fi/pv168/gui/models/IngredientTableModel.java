@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.layouts.tables;
+package cz.muni.fi.pv168.gui.models;
 
 import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Ingredient;
@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IngredientTableLayout extends AbstractTableModel {
+public class IngredientTableModel extends AbstractTableModel {
     private final List<Ingredient> ingredients;
 
     private final String[] columnNames = {
@@ -16,11 +16,11 @@ public class IngredientTableLayout extends AbstractTableModel {
     };
 
 
-    public IngredientTableLayout(List<Ingredient> ingredients) {
+    public IngredientTableModel(List<Ingredient> ingredients) {
         this.ingredients = new ArrayList<>(ingredients);
     }
 
-    public IngredientTableLayout() {
+    public IngredientTableModel() {
         this.ingredients = new ArrayList<>();
     }
 

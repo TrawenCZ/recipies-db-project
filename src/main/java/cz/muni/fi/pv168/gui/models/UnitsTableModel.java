@@ -1,7 +1,6 @@
-package cz.muni.fi.pv168.gui.layouts.tables;
+package cz.muni.fi.pv168.gui.models;
 
-import cz.muni.fi.pv168.model.Category;
-import cz.muni.fi.pv168.model.Recipe;
+import cz.muni.fi.pv168.model.Unit;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -10,37 +9,27 @@ import java.util.List;
 /**
  * TODO: refactor
  */
-public class RecipeTableLayout extends AbstractTableModel {    
-    
-    private final List<Recipe> recipes;
-    
+public class UnitsTableModel extends AbstractTableModel {
+
+    private final List<Unit> units;
+
     private final String[] columnNames = {
         "Name",
-        "Category",
-        "Required time",
-        "Portions",
-        "Description"
+        "In grams",
     };
 
-    private final int[] columnSizes = {
-        100,
-        80,
-        60,
-        60,
-        120
-    };
 
-    public RecipeTableLayout(List<Recipe> recipes) {
-        this.recipes = new ArrayList<>(recipes);
+    public UnitsTableModel(List<Unit> units) {
+        this.units = new ArrayList<>(units);
     }
 
-    public RecipeTableLayout() {
-        this.recipes = new ArrayList<>();
+    public UnitsTableModel() {
+        this.units = new ArrayList<>();
     }
 
     @Override
     public int getRowCount() {
-        return recipes.size();
+        return units.size();
     }
 
     @Override
@@ -50,19 +39,13 @@ public class RecipeTableLayout extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        var recipe = getEntity(rowIndex);
+        var unit = getEntity(rowIndex);
 
         switch (columnIndex) {
             case 0:
-                return recipe.getName();
+                return unit.getName();
             case 1:
-                return recipe.getCategory().getName();
-            case 2:
-                return recipe.getRequiredTime();
-            case 3:
-                return recipe.getPortions();
-            case 4:
-                return recipe.getDescription();
+                return unit.getValueInGrams();
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
         }
@@ -81,12 +64,9 @@ public class RecipeTableLayout extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
             case 0:
-            case 4:
-            case 1:
                 return String.class;
-            case 2:
-            case 3:
-                return int.class;
+            case 1:
+                return Double.class;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
         }
@@ -97,9 +77,6 @@ public class RecipeTableLayout extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
             case 1:
-            case 2:
-            case 3:
-            case 4:
                 return false;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
@@ -108,22 +85,13 @@ public class RecipeTableLayout extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        var recipe = recipes.get(rowIndex);
+        var unit = units.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                recipe.setName((String) value);
+                unit.setName((String) value);
                 break;
             case 1:
-                recipe.setCategory(new Category((String)value));
-                break;
-            case 2:
-                recipe.setRequiredTime((int) value);
-                break;
-            case 3:
-                recipe.setPortions((int) value);
-                break;
-            case 4:
-                recipe.setDescription((String) value);
+                unit.setValueInGrams((Double) value);
                 break;
             default:
                 throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
@@ -131,28 +99,23 @@ public class RecipeTableLayout extends AbstractTableModel {
     }
 
     public void deleteRow(int rowIndex) {
-        recipes.remove(rowIndex);
+        units.remove(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
-    public void addRow(Recipe recipe) {
-        int newRowIndex = recipes.size();
-        recipes.add(recipe);
+    public void addRow(Unit unit) {
+        int newRowIndex = units.size();
+        units.add(unit);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
-    public void updateRow(Recipe recipe) {
-        int rowIndex = recipes.indexOf(recipe);
+    public void updateRow(Unit unit) {
+        int rowIndex = units.indexOf(unit);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
-    public Recipe getEntity(int rowIndex) {
-        return recipes.get(rowIndex);
+    public Unit getEntity(int rowIndex) {
+        return units.get(rowIndex);
     }
-
-    public int getSize(int colIndex) {
-        return columnSizes[colIndex % columnSizes.length];
-    }
-
 }
 

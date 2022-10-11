@@ -1,20 +1,20 @@
-package cz.muni.fi.pv168.gui.frames.cards;
+package cz.muni.fi.pv168.gui.frames.tabs;
 
 import cz.muni.fi.pv168.data.UnitDataGenerator;
 import cz.muni.fi.pv168.gui.frames.forms.UnitForm;
-import cz.muni.fi.pv168.gui.layouts.tables.UnitsTableLayout;
+import cz.muni.fi.pv168.gui.models.UnitsTableModel;
 
 import java.awt.event.ActionEvent;
 
-public final class UnitsCard extends AbstractCard {
+public final class UnitsTab extends AbstractTab {
 
-    public UnitsCard() {
-        super(new UnitsTableLayout());
+    public UnitsTab() {
+        super(new UnitsTableModel());
     }
 
     @Override
     public void addSampleData(int sampleSize) {
-        var model = (UnitsTableLayout) table.getModel();
+        var model = (UnitsTableModel) table.getModel();
         UnitDataGenerator.getAll().stream().forEach(model::addRow);
     }
     

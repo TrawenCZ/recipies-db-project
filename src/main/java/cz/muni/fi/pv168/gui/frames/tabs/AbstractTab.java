@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.frames.cards;
+package cz.muni.fi.pv168.gui.frames.tabs;
 
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.resources.Icons;
@@ -21,7 +21,7 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-public abstract class AbstractCard extends JPanel {
+public abstract class AbstractTab extends JPanel {
     
     protected final static Color BACKGROUND_COLOR = new Color(0xBDD2E5);
     protected final static int ICON_SIZE = 30;
@@ -35,11 +35,11 @@ public abstract class AbstractCard extends JPanel {
     protected final JTextField searchBar = new JTextField(SEARCH_BAR_SIZE);
     protected final JLabel entries = new JLabel("Shown entries XXX/XXX");
 
-    protected AbstractCard(AbstractTableModel model) {
+    protected AbstractTab(AbstractTableModel model) {
         this(model, SEARCH_BAR_SIZE);
     }
 
-    protected AbstractCard(AbstractTableModel model, int searchBarSize) {
+    protected AbstractTab(AbstractTableModel model, int searchBarSize) {
         if (model == null) throw new NullPointerException("Model cannot be null");
         
         initialize();
