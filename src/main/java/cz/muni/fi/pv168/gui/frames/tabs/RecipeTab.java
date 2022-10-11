@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.frames.cards;
+package cz.muni.fi.pv168.gui.frames.tabs;
 
 import cz.muni.fi.pv168.data.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
@@ -6,8 +6,8 @@ import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.RangeTextField;
 import cz.muni.fi.pv168.gui.frames.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
+import cz.muni.fi.pv168.gui.models.RecipeTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
-import cz.muni.fi.pv168.gui.layouts.tables.RecipeTableLayout;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 
-public final class RecipeCard extends AbstractCard {
+public final class RecipeTab extends AbstractTab {
 
     protected final static int ICON_SIZE = 16;
 
@@ -29,8 +29,8 @@ public final class RecipeCard extends AbstractCard {
     private RangeTextField timeField;
     private RangeTextField portionsField;
 
-    public RecipeCard() {
-        super(new RecipeTableLayout(), ICON_SIZE);
+    public RecipeTab() {
+        super(new RecipeTableModel(), ICON_SIZE);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
@@ -45,7 +45,7 @@ public final class RecipeCard extends AbstractCard {
     @Override
     public void addSampleData(int sampleSize) {
         var recipeGenerator = new RecipeDataGenerator();
-        var model = (RecipeTableLayout) table.getModel();
+        var model = (RecipeTableModel) table.getModel();
         recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
     }
 
@@ -61,7 +61,7 @@ public final class RecipeCard extends AbstractCard {
             "Filter ingredients",
             "Show recipes that contain all of the selected ingredients",
             MultiChoiceButton.NO_MNEMONIC,
-            "TODO:", "ingredient", "choicebox", "this", "is", "a sample", "not", "implemented", "yet"
+            "TODO:", "ingredient", "choicebox"
         );
         categoryFilter = new MultiChoiceButton( // TODO: dynamic updates
             "Filter categories",

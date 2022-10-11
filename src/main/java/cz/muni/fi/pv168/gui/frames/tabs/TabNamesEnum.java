@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.gui.frames.cards;
+package cz.muni.fi.pv168.gui.frames.tabs;
 
-public enum CardNamesEnum {
+public enum TabNamesEnum {
     RECIPES("Recipes"),
     CATEGORIES("Categories"),
     INGREDIENTS("Ingredients"),
@@ -8,7 +8,7 @@ public enum CardNamesEnum {
 
     private final String name;
 
-    CardNamesEnum(String name) {
+    TabNamesEnum(String name) {
         this.name = name;
     }
 

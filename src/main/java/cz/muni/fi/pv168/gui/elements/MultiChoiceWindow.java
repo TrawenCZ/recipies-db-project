@@ -15,16 +15,21 @@ import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
 
 /**
- * A simple scrollable window (i.e. no title bar) with a custom multi-choice checkbox.
- * Window is not destroyed while the program is running, only hidden at times.
- * 
- * TODO: Fix scrollbar not releasing when outside of it
+ * A scrollable window (i.e. no title bar) with a custom multi-choice checkbox.
+ * This window is usually never disposed of during the applications run, only
+ * hidden at times.
+ *
+ * @author Jan Martinek
  */
 public final class MultiChoiceWindow extends AutoHideWindow {
 
     private final JScrollPane scrollpane;
     private final List<ChoiceItem> choices;
 
+    /**
+     * Support class for the window, implemented to block all events on checkboxes
+     * aside from CLICKING (otherwise there is an issue with releasing/pressing).
+     */
     private class ChoiceItem extends JCheckBoxMenuItem implements MouseListener {
         public ChoiceItem(String name) {
             if (name == null) throw new NullPointerException("choice name cannot be null");
@@ -44,7 +49,7 @@ public final class MultiChoiceWindow extends AutoHideWindow {
     
         @Override
         public void mouseEntered(MouseEvent e) {}
-    
+
         @Override
         public void mouseExited(MouseEvent e) {}
     
@@ -80,9 +85,14 @@ public final class MultiChoiceWindow extends AutoHideWindow {
         scrollpane.setWheelScrollingEnabled(true);
 
         addTo(scrollpane);
-        setHeight(200);
+        setHeight(DEFAULT_HEIGHT);
     }
 
+    /**
+     * Gets the titles of all currently checked items.
+     *
+     * @return checked item titles
+     */
     public String[] getChecked() {
         return choices.stream().filter(c -> c.getState() == true).map(ChoiceItem::getText).toArray(String[]::new);
     }

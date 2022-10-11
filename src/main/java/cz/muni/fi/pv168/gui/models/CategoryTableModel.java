@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.layouts.tables;
+package cz.muni.fi.pv168.gui.models;
 
 import cz.muni.fi.pv168.model.Category;
 
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * TODO: refactor
  */
-public class CategoryTableLayout extends AbstractTableModel {
+public class CategoryTableModel extends AbstractTableModel {
 
     private final List<Category> categories;
 
@@ -18,11 +18,11 @@ public class CategoryTableLayout extends AbstractTableModel {
     };
 
 
-    public CategoryTableLayout(List<Category> categories) {
+    public CategoryTableModel(List<Category> categories) {
         this.categories = new ArrayList<>(categories);
     }
 
-    public CategoryTableLayout() {
+    public CategoryTableModel() {
         //TODO fetch this from the database
         this.categories = new ArrayList<>();
     }
