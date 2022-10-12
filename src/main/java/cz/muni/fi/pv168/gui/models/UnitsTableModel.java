@@ -2,120 +2,38 @@ package cz.muni.fi.pv168.gui.models;
 
 import cz.muni.fi.pv168.model.Unit;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO: refactor
+ * Model of units data class in a tabular representation
  */
-public class UnitsTableModel extends AbstractTableModel {
+public class UnitsTableModel extends TableModel<Unit> {
 
     private final List<Unit> units;
 
-    private final String[] columnNames = {
-        "Name",
-        "In grams",
-    };
+    private final List<Column<Unit, ?>> columns = List.of(
+        Column.readonly("Name", String.class, Unit::getName),
+        Column.readonly("Value", double.class, Unit::getValue),
+        Column.readonly("Base unit", Unit.class, Unit::getBaseUnit)
+    );
 
+    public UnitsTableModel() {
+        this(new ArrayList<Unit>());
+    }
 
     public UnitsTableModel(List<Unit> units) {
         this.units = new ArrayList<>(units);
     }
 
-    public UnitsTableModel() {
-        this.units = new ArrayList<>();
+    @Override
+    protected List<Unit> getEntities() {
+        return units;
     }
 
     @Override
-    public int getRowCount() {
-        return units.size();
-    }
-
-    @Override
-    public int getColumnCount() {
-        return columnNames.length;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        var unit = getEntity(rowIndex);
-
-        switch (columnIndex) {
-            case 0:
-                return unit.getName();
-            case 1:
-                return unit.getValueInGrams();
-            default:
-                throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
-        }
-    }
-
-    @Override
-    public String getColumnName(int columnIndex) {
-        if (columnIndex >= getColumnCount()) {
-            throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
-        }
-
-        return columnNames[columnIndex];
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-                return String.class;
-            case 1:
-                return Double.class;
-            default:
-                throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
-        }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-            case 1:
-                return false;
-            default:
-                throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
-        }
-    }
-
-    @Override
-    public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        var unit = units.get(rowIndex);
-        switch (columnIndex) {
-            case 0:
-                unit.setName((String) value);
-                break;
-            case 1:
-                unit.setValueInGrams((Double) value);
-                break;
-            default:
-                throw new IndexOutOfBoundsException("Invalid column index: " + columnIndex);
-        }
-    }
-
-    public void deleteRow(int rowIndex) {
-        units.remove(rowIndex);
-        fireTableRowsDeleted(rowIndex, rowIndex);
-    }
-
-    public void addRow(Unit unit) {
-        int newRowIndex = units.size();
-        units.add(unit);
-        fireTableRowsInserted(newRowIndex, newRowIndex);
-    }
-
-    public void updateRow(Unit unit) {
-        int rowIndex = units.indexOf(unit);
-        fireTableRowsUpdated(rowIndex, rowIndex);
-    }
-
-    public Unit getEntity(int rowIndex) {
-        return units.get(rowIndex);
+    protected List<Column<Unit, ?>> getColumns() {
+        return columns;
     }
 }
 
