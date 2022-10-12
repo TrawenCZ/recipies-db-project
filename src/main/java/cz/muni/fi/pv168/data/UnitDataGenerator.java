@@ -6,14 +6,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class UnitDataGenerator extends AbstractDataGenerator<Unit> {
-    
+
+    private static final Unit gram = new Unit("g", 1d);
+    private static final Unit liter = new Unit("g", 1d);
+
     private static final List<Unit> UNITS = List.of(
-        new Unit("g", 1d),
-        new Unit("dg", 10d),
-        new Unit("kg", 1000d),
-        new Unit("lžíčka", 50d),
-        new Unit("hrst", 100d),
-        new Unit("hrnek", 400d)
+        gram,
+        new Unit("dg", 10d, gram),
+        new Unit("kg", 1000d, gram),
+        liter,
+        new Unit("kubík", 1000d, liter),
+        new Unit("lžíčka", 1d),
+        new Unit("hrst", 1d),
+        new Unit("hrnek", 1d)
     );
 
     public Unit createTestEntity() {

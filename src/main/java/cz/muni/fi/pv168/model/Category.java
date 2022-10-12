@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.model;
 
+import java.awt.Color;
 import java.util.Objects;
 
 /**
@@ -8,9 +9,11 @@ import java.util.Objects;
 public class Category {
     
     private String name;
+    private Color color;
 
-    public Category(String name) {
+    public Category(String name, Color color) {
         setName(name);
+        setColor(color);
     }
 
     public String getName() {
@@ -19,6 +22,14 @@ public class Category {
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name);
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = Objects.requireNonNull(color);
     }
 
     @Override
