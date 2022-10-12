@@ -30,8 +30,8 @@ public class TabLayout {
 
 
         tabbedPane.addTab(RECIPES, recipes);
-        tabbedPane.addTab(CATEGORIES, ingredients);
-        tabbedPane.addTab(INGREDIENTS, categories);
+        tabbedPane.addTab(CATEGORIES, categories);
+        tabbedPane.addTab(INGREDIENTS, ingredients);
         tabbedPane.addTab(UNITS, units);
 
         pane.add(tabbedPane, BorderLayout.CENTER);
@@ -43,10 +43,10 @@ public class TabLayout {
                 return recipes;
             }
             case CATEGORIES -> {
-                return ingredients;
+                return categories;
             }
             case INGREDIENTS -> {
-                return categories;
+                return ingredients;
             }
             case UNITS -> {
                 return units;
