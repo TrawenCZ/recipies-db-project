@@ -2,6 +2,8 @@
 
 Jednoduchá funkční desktopová single-user aplikace pro práci s databází receptů a jejich kategorií. Aplikace je naprogramována v jazyce Java (JDK 17). Grafické uživatelské rozhraní běží na frameworku SWING. Automatizace buildů je řízena přes Apache Maven.
 
+***
+
 ## Team Information
 
 | Seminar Group | Team |
@@ -56,6 +58,7 @@ Jednoduchá funkční desktopová single-user aplikace pro práci s databází r
 
 ##### Recepty
 
+```markdown
 - název (unikátní)
 - kategorie (max. 1)
 - popis (krátký, např. "Tohle je můj koláč, který mi doporučila bábinka")
@@ -63,21 +66,25 @@ Jednoduchá funkční desktopová single-user aplikace pro práci s databází r
 - počet porcí
 - ingredience
 - instrukce k přípravě
+```
 
 ##### Ingredience
 
+```markdown
 - název (unikátní)
-- energetická hodnota  (stačí jedna jednotka, ale musí existovat možnost vzít hodnotu z obalu, kde bývá např. na 90g a automaticky převést na 1g)
+- energetická hodnota => stačí jedna jednotka, ale musí existovat:
+    možnost vzít hodnotu z obalu
+    automaticky převést na 1 nějaké základní jednotky
+- jednotka, kterou může být uvedena (stačí 1)
+```
 
-##### Základní jednotky
+##### Jednotky
 
+```markdown
 - název (unikátní)
-- hodnota (je-li převoditelná do základu)
-
-##### Uživatelské jednotky
-
-- název (unikátní i s jednotkami)
-- hodnota v nějaké základní jednotce
+- relace k základní jednotce (null pokud je sama základní)
+- hodnota
+```
 
 ***
 
