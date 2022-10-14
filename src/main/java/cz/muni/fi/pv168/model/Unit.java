@@ -8,19 +8,25 @@ import java.util.Objects;
 public class Unit {
     
     private String name;
-    private double valueInGrams;
+    private double value;
+    private Unit baseUnit;
 
-    public Unit(String name, double valueInGrams) {
+    public Unit(String name, double value) {
+        this(name, value, null);
+    }
+
+    public Unit(String name, double value, Unit baseUnit) {
         setName(name);
-        setValueInGrams(valueInGrams);
+        setValue(value);
+        setBaseUnit(baseUnit);
     }
 
-    public double getValueInGrams() {
-        return valueInGrams;
+    public double getValue() {
+        return value;
     }
 
-    public void setValueInGrams(double valueInGrams) {
-        this.valueInGrams = valueInGrams;
+    public void setValue(double value) {
+        this.value = value;
     }
 
     public String getName() {
@@ -29,6 +35,14 @@ public class Unit {
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name);
+    }
+
+    public Unit getBaseUnit() {
+        return baseUnit;
+    }
+
+    public void setBaseUnit(Unit baseUnit) {
+        this.baseUnit = baseUnit; // no need for null check
     }
 
     @Override

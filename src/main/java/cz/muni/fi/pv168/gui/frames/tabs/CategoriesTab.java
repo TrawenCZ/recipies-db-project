@@ -1,20 +1,20 @@
-package cz.muni.fi.pv168.gui.frames.cards;
+package cz.muni.fi.pv168.gui.frames.tabs;
 
 import cz.muni.fi.pv168.data.CategoryDataGenerator;
 import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
-import cz.muni.fi.pv168.gui.layouts.tables.CategoryTableLayout;
+import cz.muni.fi.pv168.gui.models.CategoryTableModel;
 
 import java.awt.event.ActionEvent;
 
-public final class CategoriesCard extends AbstractCard {
+public final class CategoriesTab extends AbstractTab {
 
-    public CategoriesCard() {
-        super(new CategoryTableLayout());
+    public CategoriesTab() {
+        super(new CategoryTableModel());
     }
 
     @Override
     public void addSampleData(int sampleSize) {
-        var model = (CategoryTableLayout) table.getModel();
+        var model = (CategoryTableModel) table.getModel();
         CategoryDataGenerator.getAll().stream().forEach(model::addRow);
     }
     
