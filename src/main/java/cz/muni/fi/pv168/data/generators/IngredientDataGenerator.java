@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.data;
+package cz.muni.fi.pv168.data.generators;
 
 import cz.muni.fi.pv168.model.Ingredient;
 
@@ -17,13 +17,13 @@ public class IngredientDataGenerator extends AbstractDataGenerator<Ingredient> {
         new Ingredient("Vepřové maso", 7.21d, unitGenerator.createTestEntity()),
         new Ingredient("Máslo", 4.74d, unitGenerator.createTestEntity()),
         new Ingredient("Mléko", 5d, unitGenerator.createTestEntity()),
-        new Ingredient("Mouka", 2d, unitGenerator.createTestEntity()),
+        new Ingredient("Mouka", 20d, unitGenerator.createTestEntity()),
         new Ingredient("Voda", 1d, unitGenerator.createTestEntity()),
         new Ingredient("Cukr", 9.99d, unitGenerator.createTestEntity()),
         new Ingredient("Sůl", 0.11d, unitGenerator.createTestEntity()),
         new Ingredient("Pepř", 0.28d, unitGenerator.createTestEntity()),
         new Ingredient("Brambor", 8.34d, unitGenerator.createTestEntity()),
-        new Ingredient("Sýr", 5.3d, unitGenerator.createTestEntity())
+        new Ingredient("Sýr", 500.3d, unitGenerator.createTestEntity())
     );
 
     public Ingredient createTestEntity() {

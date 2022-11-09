@@ -21,7 +21,7 @@ import javax.swing.border.EtchedBorder;
  *
  * @author Jan Martinek
  */
-public final class MultiChoiceWindow extends AutoHideWindow {
+public final class MultiChoiceWindow extends AutoHideWindow implements Filterable<List<String>> {
 
     private final JScrollPane scrollpane;
     private final List<ChoiceItem> choices;
@@ -46,23 +46,23 @@ public final class MultiChoiceWindow extends AutoHideWindow {
         public void mouseClicked(MouseEvent e) {
             this.setState(!this.getState());
         }
-    
+
         @Override
         public void mouseEntered(MouseEvent e) {}
 
         @Override
         public void mouseExited(MouseEvent e) {}
-    
+
         @Override
         public void mousePressed(MouseEvent e) {}
-    
+
         @Override
         public void mouseReleased(MouseEvent e) {}
     }
 
     /**
      * Takes >=1 strings and creates a scrollable auto-hide multi-choice checkbock
-     * 
+     *
      * @choices string arguments, interpreted as choices (no duplicity check done)
      */
     public MultiChoiceWindow(String... choices) {
@@ -88,12 +88,16 @@ public final class MultiChoiceWindow extends AutoHideWindow {
         setHeight(DEFAULT_HEIGHT);
     }
 
-    /**
-     * Gets the titles of all currently checked items.
-     *
-     * @return checked item titles
-     */
-    public String[] getChecked() {
-        return choices.stream().filter(c -> c.getState() == true).map(ChoiceItem::getText).toArray(String[]::new);
+    @Override
+    public List<String> getFilters() {
+        return choices.stream()
+                      .filter(ChoiceItem::getState)
+                      .map(ChoiceItem::getText)
+                      .toList();
+    }
+
+    @Override
+    public void resetFilters() {
+        choices.stream().forEach(item -> item.setState(false));
     }
 }

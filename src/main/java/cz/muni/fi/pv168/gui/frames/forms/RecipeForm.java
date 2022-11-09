@@ -1,147 +1,295 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.gui.TextValidator;
+import cz.muni.fi.pv168.gui.elements.ScrollPane;
+import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
+import cz.muni.fi.pv168.gui.elements.text.IntegerTextField;
+import cz.muni.fi.pv168.gui.frames.TabLayout;
+import cz.muni.fi.pv168.gui.models.CategoryTableModel;
+import cz.muni.fi.pv168.gui.models.IngredientTableModel;
+import cz.muni.fi.pv168.gui.models.RecipeTableModel;
+import cz.muni.fi.pv168.gui.models.UnitsTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.*;
 
-import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
+import javax.swing.*;
+
+import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
+import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
 
 public class RecipeForm extends AbstractForm {
-    
-    private final JLabel portionLabel = new JLabel("Portions");
-    private final JTextField portionInput = new JTextField(20);
 
-    private final JLabel nameLabel = new JLabel("Name");
-    private final JTextField nameInput = new JTextField(20);
+    protected final JTextField nameInput = new JTextField(24);
+    protected final IntegerTextField portionInput = new IntegerTextField(1, 6);
+    protected final IntegerTextField durationInput = new IntegerTextField(1, 6);
 
-    private final JLabel descriptionLabel = new JLabel("Description");
-    private final JScrollPane descriptionInput = new JScrollPane(new JTextArea(6,20));
+    protected final JTextArea descriptionInput = new JTextArea(3,24);
+    protected final JTextArea instructionsInput = new JTextArea(8,24);
 
-    private final JLabel instructionsLabel = new JLabel("Instructions");
-    private final JScrollPane instructionsInput = new JScrollPane(new JTextArea(6,20));
+    protected final JComboBox<Category> categoriesInput = new JComboBox<>(getAllCategories());
 
-    private final JLabel durationLabel = new JLabel("Duration");
-    private final JTextField durationInput = new JTextField(8);
-    private final JLabel minutesLabel = new JLabel("min");
+    protected final ScrollPane<SingleIngredient> ingredients = new ScrollPane<>();
+    protected final JButton ingredientButton = new JButton("Add ingredient", Icons.getScaledIcon((ImageIcon) Icons.ADD_S, 20));
 
-    private final JLabel categoryLabel = new JLabel("Category");
-    private final JComboBox<String> categoriesInput = new JComboBox<String>();
+    private Recipe recipe;
 
-    private final JLabel ingredientsLabel = new JLabel("Ingredients");
-    private final JPanel ingredientPanel = new JPanel();
-    private final List<IngredientComponentData> ingredientList = new ArrayList<>();
-    private final JButton addIngredient = new JButton(Icons.getScaledIcon((ImageIcon)Icons.ADD_S, 16));
-    
-    private final JButton saveButton = new JButton("Save");
-    private final JButton cancelButton = new JButton("Cancel");
+    private class SingleIngredient extends JPanel {
 
-    public RecipeForm(String name, String description, String instructions, String category, int ingredientDummyCount, int time, int portions) {
-        super("Edit");
-        var frame = addFormComponents();
+        private JComboBox<Ingredient> ingredientComboBox = new JComboBox<>(getAllIngredients());
+        private JComboBox<Unit> unitComboBox;
 
-        addStringData(name, description, instructions);
-        addCategoryData(category);
-        addIntData(time, portions);
-        for (int i = 0; i < ingredientDummyCount; i++) addNewIngredient();
-        
-        frame.setVisible(true);
-    }
+        private DoubleTextField ingredientAmount = new DoubleTextField(0.01d, 4);
+        private JButton removeIngredient         = new JButton(Icons.getScaledIcon((ImageIcon)Icons.DELETE_S, 16));
 
-    public RecipeForm() {
-        super("Add");
-        addFormComponents().setVisible(true);
-    }
+        public SingleIngredient(IngredientAmount ingredient) {
+            super(new GridBagLayout());
 
-    private JDialog addFormComponents() {
-        JPanel newPanel = new JPanel(new GridBagLayout());
-        var frame = getDialog();
-        GridBagConstraints constraints = getConstraints();
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        
-        addComponent(newPanel, nameLabel, 0, 1);
-        addComponent(newPanel, nameInput, 1, 1);
-        addComponent(newPanel, portionLabel, 0, 0);
-        addComponent(newPanel, portionInput, 1, 0);
-        addComponent(newPanel, descriptionLabel, 0, 2);
-        addComponent(newPanel, descriptionInput, 1, 2);
-        addComponent(newPanel, instructionsLabel, 0, 3);
-        addComponent(newPanel, instructionsInput, 1, 3);
-        addComponent(newPanel, durationLabel, 0, 4);
-        addComponent(newPanel, durationInput, 1, 4);
-        addComponent(newPanel, minutesLabel, 1, 4, GridBagConstraints.EAST);
-        addComponent(newPanel, categoryLabel, 0, 5);
-        addComponent(newPanel, categoriesInput, 1, 5);
-        addComponent(newPanel, ingredientsLabel, 0, 6, GridBagConstraints.NORTHWEST);
+            if (ingredient != null) {
+                ingredientComboBox.setSelectedItem(ingredient.getIngredient());
+                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
+                ingredientAmount.setText(String.valueOf(ingredient.getAmount()));
+                unitComboBox.setSelectedItem(ingredient.getUnit());
+            } else {
+                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
+            }
+            ingredientComboBox.setToolTipText("Enter an ingredient");
+            ingredientAmount.setToolTipText("Enter an amount");
+            unitComboBox.setToolTipText("Enter an unit");
+            removeIngredient.setToolTipText("Delete an ingredient");
+            initializeLayout();
 
-        // DYNAMIC (NO LOGIC YET IMPLEMENTED)
-        ingredientPanel.setLayout(new BoxLayout(ingredientPanel, BoxLayout.PAGE_AXIS));
-        var scrollPane = new JScrollPane(ingredientPanel);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setMaximumSize(new Dimension(210, 120));
-        scrollPane.setPreferredSize(new Dimension(210, 120));
-        scrollPane.setBorder(null);
-        addComponent(newPanel, scrollPane, 1, 6, GridBagConstraints.WEST);
+            removeIngredient.addActionListener(e -> removeIngredient());
+            ingredientComboBox.addItemListener(this::ingredientListener);
 
-        // BUTTONS
-        addComponent(newPanel, addIngredient, 0, 6, GridBagConstraints.WEST);
-        addComponent(newPanel, saveButton, 0, 8, GridBagConstraints.WEST);
-        addComponent(newPanel, cancelButton, 1, 8, GridBagConstraints.EAST);
-        saveButton.addActionListener(e -> popUpDialog("Generic error!", "Error", JOptionPane.WARNING_MESSAGE));
-        cancelButton.addActionListener(e -> frame.dispose());
-        addIngredient.addActionListener(e -> addNewIngredient());
-
-        newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Recipe"));
-        frame.add(newPanel);
-        frame.pack();
-        return frame;
-    }
-
-    private void addNewIngredient() {
-        var panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        var ingredient = new IngredientComponentData(panel, ingredientList.size());
-        ingredient.getRemoveIngredient().addActionListener(e -> removeIngredient(ingredient));
-
-        ingredientList.add(ingredient);
-        ingredientPanel.add(panel, ingredientList.size() - 1); // last
-        
-        refreshContent();
-    }
-    private void removeIngredient(IngredientComponentData ingredient) {
-        var index = ingredient.index;
-        ingredientPanel.remove(index);
-        ingredientList.remove(index);
-        for (int i = 0; i < ingredientList.size(); i++) {
-            ingredientList.get(i).index = i;
+            ingredients.addTyped(this);
+            refreshContent();
         }
-        refreshContent();
+
+        public SingleIngredient() {
+            this(null);
+        }
+
+        public IngredientAmount getIngredientAmount() {
+            return new IngredientAmount(
+                (Ingredient) ingredientComboBox.getSelectedItem(),
+                (double) ingredientAmount.parse(),
+                (Unit) unitComboBox.getSelectedItem()
+            );
+        }
+
+        private void initializeLayout() {
+            GridBagConstraints c = new GridBagConstraints();
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.ipady = 10;
+
+            c.weightx = 3;
+            c.gridx = 0;
+            this.add(ingredientComboBox, c);
+
+            c.weightx = 1;
+            c.gridx = 2;
+            this.add(unitComboBox, c);
+
+            c.weightx = 0.5;
+            c.gridx = 1;
+            this.add(ingredientAmount, c);
+            c.gridx = 4;
+            this.add(removeIngredient, c);
+        }
+
+        private void removeIngredient() {
+            ingredients.remove(this);
+            refreshContent();
+        }
+
+        private Ingredient[] getAllIngredients() {
+            List<Ingredient> ingredients = new ArrayList<>();
+            var ingredientsModel = (IngredientTableModel) TabLayout.getIngredientsModel();
+            for (int i = 0; i < ingredientsModel.getRowCount(); i++) {
+                ingredients.add(ingredientsModel.getEntity(i));
+            }
+            return ingredients.toArray(new Ingredient[0]);
+        }
+
+        private void ingredientListener(ItemEvent e) {
+            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+            unitComboBox.removeAllItems();
+            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit());
+            for (Unit unit : allUnitsByBaseUnit) {
+                unitComboBox.addItem(unit);
+            }
+            unitComboBox.setSelectedItem(allUnitsByBaseUnit[0]);
+        }
+
+        private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
+            List<Unit> units = new ArrayList<>();
+            var unitsTableModel = (UnitsTableModel) TabLayout.getUnitsModel();
+            for (int i = 0; i < unitsTableModel.getRowCount(); i++) {
+                Unit selectedUnit = unitsTableModel.getEntity(i);
+                if (selectedUnit.getBaseUnit().equals(baseUnit)) {
+                    units.add(selectedUnit);
+                }
+            }
+            return units.toArray(new Unit[0]);
+        }
     }
 
-    private void refreshContent() {
-        var content = getDialog().getContentPane();
-        content.validate();
-        content.repaint();
-        getDialog().pack();
+    private RecipeForm(String title, String header) {
+        super(title, header);
+        initializeBody();
     }
 
-    private void addStringData(String name, String description, String instructions) {
-        nameInput.setText(name);
-        var d = (JTextArea) descriptionInput.getViewport().getView();
-        d.setText(description);
-        var i = (JTextArea) instructionsInput.getViewport().getView();
-        i.setText(instructions);
+    /**
+     * Edit recipe
+     */
+    public RecipeForm(Recipe recipe) {
+        this(EDIT, "Edit recipe");
+        pack();
+        setData(recipe);
+        this.recipe = recipe;
+        setIngredients(recipe, SingleIngredient::new);
+        show();
     }
 
-    private void addCategoryData(String category) {
-        var index = categoriesInput.getItemCount();
-        categoriesInput.addItem(category);
-        categoriesInput.setSelectedIndex(index);
+    /**
+     * Add recipe
+     */
+    public RecipeForm() {
+        this("Add", "New recipe");
+        show();
     }
 
-    private void addIntData(int duration, int portions) {
-        durationInput.setText(duration + "");
-        portionInput.setText(portions + "");
+    /**
+     * Recipe details
+     */
+    public RecipeForm(String header) {
+        super("Details", header, null, "Go Back");
     }
 
+    @Override
+    protected void initializeBody() {
+        nameInput.setToolTipText(NAME_TOOLTIP + "RECIPES!");
+        descriptionInput.setLineWrap(true);
+        descriptionInput.setWrapStyleWord(true);
+        instructionsInput.setLineWrap(true);
+        instructionsInput.setWrapStyleWord(true);
+
+        ingredients.setPreferredSize(new Dimension(410, 500));
+        ingredientButton.addActionListener(e -> new SingleIngredient());
+
+        gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
+
+        // labels
+        gridInsets(10, 10, 10, 10);
+        gridAdd(new JLabel(" Name"), 0, 0);
+        gridAdd(new JLabel(" Description"), 0, 2);
+        gridAdd(new JLabel(" Category"), 0, 4);
+        gridAdd(new JLabel(" Portions"), 2, 4);
+        gridAdd(new JLabel(" Duration (min)"), 3, 4);
+        gridAdd(new JLabel(" Instructions"), 0, 9);
+        gridAdd(new JLabel(" Ingredients"), 4, 0);
+        gridAdd(ingredientButton, 5, 0);
+
+        // input fields
+        gridInsets(-10, 10, 10, 10);
+        gridAdd(nameInput, 0, 1, 4, 1);
+        gridAdd(new JScrollPane(descriptionInput), 0, 3, 4, 1);
+        gridAdd(categoriesInput, 0, 5, 2, 1);
+        gridAdd(portionInput, 2, 5);
+        gridAdd(durationInput, 3, 5);
+        gridAdd(new JScrollPane(instructionsInput), 0, 10, 4, 1);
+
+        // ingredients
+        gridInsets(-21, 10, 0, 10);
+        gridAdd(ingredients, 4, 1, 2, 10);
+    }
+
+    @Override
+    protected boolean onAction() {
+        var tableModel = (RecipeTableModel) TabLayout.getRecipesModel();
+        if (!verifyName(tableModel, recipe, nameInput.getText())) {
+            return false;
+        }
+
+        if (TextValidator.empty(descriptionInput.getText())) {
+            // TODO: description empty
+            return false;
+        }
+        if (TextValidator.empty(instructionsInput.getText())) {
+            // TODO: instructions empty
+            return false;
+        }
+
+        List<IngredientAmount> ingredientsList = ingredients.getAll().stream()
+            .map(SingleIngredient::getIngredientAmount)
+            .toList();
+
+        if (ingredientsList == null || ingredientsList.size() == 0) {
+            // TODO: at least one ingredient
+            return false;
+        }
+
+        if (isEdit()) {
+            editRecipe(tableModel, ingredientsList);
+        } else {
+            addRecipe(tableModel, ingredientsList);
+        }
+        return true;
+    }
+
+    protected void setData(Recipe recipe) {
+        nameInput.setText(recipe.getName());
+        descriptionInput.setText(recipe.getDescription());
+        instructionsInput.setText(recipe.getInstructions());
+        categoriesInput.setSelectedItem(recipe.getCategory());
+        durationInput.setText(String.valueOf(recipe.getRequiredTime()));
+        portionInput.setText(String.valueOf(recipe.getPortions()));
+    }
+
+    private Category[] getAllCategories() {
+        List<Category> categories = new ArrayList<>();
+        categories.add(Category.UNCATEGORIZED);
+        var categoryModel = (CategoryTableModel) TabLayout.getCategoriesModel();
+        for (int i = 0; i < categoryModel.getRowCount(); i++) {
+            categories.add(TabLayout.getCategoriesModel().getEntity(i));
+        }
+        return categories.toArray(new Category[0]);
+    }
+
+    protected void setIngredients(Recipe recipe, Function<IngredientAmount, ?> constructor) {
+        for (var i : recipe.getIngredients()) {
+            constructor.apply(i);
+        }
+    }
+
+    private void editRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
+        recipe.setName(nameInput.getText());
+        recipe.setDescription(descriptionInput.getText());
+        recipe.setCategory((Category) categoriesInput.getSelectedItem());
+        recipe.setRequiredTime(durationInput.parse());
+        recipe.setPortions(portionInput.parse());
+        recipe.setInstructions(instructionsInput.getText());
+        recipe.setIngredients(ingredients);
+        model.updateRow(recipe);
+    }
+
+    private void addRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
+        model.addRow(new Recipe(
+            nameInput.getText(),
+            descriptionInput.getText(),
+            instructionsInput.getText(),
+            (Category) categoriesInput.getSelectedItem(),
+            durationInput.parse(),
+            portionInput.parse(),
+            ingredients
+        ));
+    }
 }

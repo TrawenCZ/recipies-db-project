@@ -1,0 +1,12 @@
+[
+    {
+        "name": "tons",
+        "valueInBaseUnit": 100000000.0,
+        "baseUnit": "GRAM"
+    },
+    {
+        "name": "elephants",
+        "valueInBaseUnit": 2450.0,
+        "baseUnit": "PIECE"
+    }
+]

@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.data;
+package cz.muni.fi.pv168.data.generators;
 
 import java.util.List;
 import java.util.Random;
@@ -13,7 +13,7 @@ public abstract class AbstractDataGenerator<F> {
         int index = random.nextInt(data.size());
         return data.get(index);
     }
-    
+
     public List<F> createTestData(int count) {
         return Stream
                 .generate(this::createTestEntity)

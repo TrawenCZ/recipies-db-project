@@ -1,76 +1,125 @@
 package cz.muni.fi.pv168.gui.frames.tabs;
 
-import cz.muni.fi.pv168.gui.elements.PopupMenu;
-import cz.muni.fi.pv168.gui.resources.Icons;
-import cz.muni.fi.pv168.gui.elements.Toolbar;
-import net.miginfocom.swing.MigLayout;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.AbstractTableModel;
+
+import cz.muni.fi.pv168.data.Validator;
+import cz.muni.fi.pv168.data.service.AbstractService;
+import cz.muni.fi.pv168.gui.action.*;
+import cz.muni.fi.pv168.gui.coloring.ColoredTable;
+import cz.muni.fi.pv168.gui.elements.PopupMenu;
+import cz.muni.fi.pv168.gui.elements.SearchBar;
+import cz.muni.fi.pv168.gui.elements.Toolbar;
+import cz.muni.fi.pv168.gui.filters.Sorter;
+import cz.muni.fi.pv168.gui.models.AbstractModel;
+import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Nameable;
+import net.miginfocom.swing.MigLayout;
+
+import static cz.muni.fi.pv168.gui.resources.Messages.DELETING_ERR_TITLE;
 
 public abstract class AbstractTab extends JPanel {
-    
+
     protected final static Color BACKGROUND_COLOR = new Color(0xBDD2E5);
     protected final static int ICON_SIZE = 30;
     protected final static int SEARCH_BAR_SIZE = 30;
 
-    protected final JTable table;
+    protected final ColoredTable table;
     protected final Toolbar tools;
     protected final PopupMenu popupMenu;
     protected final JPanel filterPanel;
     protected final JButton searchButton;
-    protected final JTextField searchBar = new JTextField(SEARCH_BAR_SIZE);
-    protected final JLabel entries = new JLabel("Shown entries XXX/XXX");
+    protected final JButton resetButton;
+    protected final SearchBar searchBar;
+    protected final JLabel entries;
 
-    protected AbstractTab(AbstractTableModel model) {
+    protected AbstractService<?> service;
+    protected ImportAction<?> importAction;
+    protected ExportAction<?> exportAction;
+
+    protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
     }
 
-    protected AbstractTab(AbstractTableModel model, int searchBarSize) {
+    protected AbstractTab(AbstractModel<?> model, int searchBarSize) {
         if (model == null) throw new NullPointerException("Model cannot be null");
-        
+
         initialize();
 
-        this.table = new JTable(model);
-        searchButton = createSearchButton(searchBarSize);
+        this.table = new ColoredTable(model);
+        searchBar = new SearchBar(searchBarSize);
+
+        var sorter = createSorter();
+        searchButton = createSearchButton(searchBarSize, sorter);
+        resetButton = createResetButton(searchBarSize, sorter);
         filterPanel = createFilterPanel();
         popupMenu = createPopupMenu();
         tools = createToolbar();
 
+        searchBar.addActionListener(new FilterAction(sorter));
+        searchBar.addActionListener(e -> SwingUtilities.invokeLater(this::updateEntries));
+
         this.table.setComponentPopupMenu(popupMenu);
-        this.table.setAutoCreateRowSorter(true);
+        this.table.setRowSorter(sorter);
         this.table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
 
-        setLayout();
-        setColors(filterPanel, tools);
-
         addSampleData(100);
+
+        entries = new JLabel();
+        updateEntries();
+        setButtonsStyle();
+        setLayout();
     }
 
     public abstract void addSampleData(int sampleSize);
 
+    public void deleteRows() {
+        var model = (AbstractModel<?>) table.getModel();
+        Arrays.stream(table.getSelectedRows())
+                // view row index must be converted to model row index
+                .map(table::convertRowIndexToModel)
+                .boxed()
+                // We need to delete rows in descending order to not change index of rows
+                // which are not deleted yet
+                .sorted(Comparator.reverseOrder())
+                .forEach(model::deleteRow);
+        updateEntries();
+    }
+
+
+    public AbstractModel<?> getModel() {
+        return table.getAbstractModel();
+    }
+
+    public ColoredTable getTable() {
+        return table;
+    }
+
     protected void initialize() {
-        // DO NOTHING HERE (for children that need some values)
+        // DO NOTHING HERE (for children that needs to create some values)
     }
 
     protected JPanel createFilterPanel() {
         JPanel panel = new JPanel();
 
-        panel.setLayout(new MigLayout());
+        panel.setLayout(new MigLayout("align 0% 50%"));
         panel.add(searchButton);
+        panel.add(resetButton);
         panel.add(searchBar, "span, grow");
 
         return panel;
@@ -84,49 +133,89 @@ public abstract class AbstractTab extends JPanel {
         popup.addItem(new JMenuItem("Add", Icons.ADD_S), this::addRow, "Create a new row", "ctrl A", 'a');
         popup.addItem(new JMenuItem("Edit", Icons.EDIT_S), this::editSelectedRow, "Edit the currently selected row", "ctrl E", 'e');
         popup.addItem(new JMenuItem("Remove", Icons.DELETE_S), this::deleteSelectedRows, "Delete selected rows", "ctrl R", 'r');
-        popup.disableItem("edit");
-        popup.disableItem("remove");
+        popup.addItem(new JMenuItem("Import", Icons.IMPORT_S), this::importEntities, "Import records", "ctrl I", 'i');
+        popup.addItem(new JMenuItem("Export", Icons.EXPORT_S), this::exportEntities, "Export selected records", "ctrl X", 'x');
+        popup.setEnabledItem("edit", false);
+        popup.setEnabledItem("remove", false);
+        popup.setEnabledItem("export", false);
         return popup;
     }
 
     protected Toolbar createToolbar() {
-        var tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows);
-
+        var tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows, this::importEntities, this::exportEntities);
         tools.setFloatable(false);
         tools.setBorderPainted(false);
 
         return tools;
     }
 
-    protected void addRow(ActionEvent event) {}
+    protected abstract void addRow(ActionEvent event);
 
-    protected void editSelectedRow(ActionEvent actionEvent) {}
+    protected abstract void editSelectedRow(ActionEvent actionEvent);
 
     protected void deleteSelectedRows(ActionEvent actionEvent) {
-        int rowCount = table.getSelectedRowCount();
-        int input = JOptionPane.showConfirmDialog(null,
-                "Delete " + rowCount + " record" + (rowCount > 1 ? "s" : "") + "?",
-                "Delete", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (showConfirmDialog() != JOptionPane.YES_OPTION) return;
+        deleteRows();
+    }
+
+    protected void importEntities(ActionEvent event) {
+        importAction.actionPerformed(event);
+        updateEntries();
+    }
+
+    protected void exportEntities(ActionEvent event) {
+        var selectedRows = IntStream.of(table.getSelectedRows()).map(table::convertRowIndexToModel).boxed().toList();
+        if (selectedRows.size() == 0) {
+            exportAction.actionPerformed(event);
+        } else {
+            exportAction.actionPerformed(event, selectedRows);
+        }
     }
 
     protected void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
         int activeRows = table.getSelectedRowCount();
-        if (activeRows == 1) {
-            tools.getEditButton().setEnabled(true);
-            tools.getDeleteButton().setEnabled(true);
-            popupMenu.enableItem("remove");
-            popupMenu.enableItem("edit");
-        } else if (activeRows > 1) {
-            tools.getDeleteButton().setEnabled(true);
-            tools.getEditButton().setEnabled(false);
-            popupMenu.enableItem("remove");
-            popupMenu.disableItem("edit");
-        } else if (activeRows == 0) {
-            tools.getDeleteButton().setEnabled(false);
-            tools.getEditButton().setEnabled(false);
-            popupMenu.disableItem("remove");
-            popupMenu.disableItem("edit");
+
+        tools.getEditButton().setEnabled(activeRows == 1);
+        tools.getDeleteButton().setEnabled(activeRows >= 1);
+        tools.getExportButton().setEnabled(activeRows >= 1);
+        tools.getExportButton().setEnabled(activeRows >= 1);
+
+        popupMenu.setEnabledItem("export", activeRows >= 1);
+        popupMenu.setEnabledItem("remove", activeRows >= 1);
+        popupMenu.setEnabledItem("edit", activeRows >= 1);
+    }
+
+    protected int showConfirmDialog() {
+        int rowCount = table.getSelectedRowCount();
+        return JOptionPane.showConfirmDialog(this,
+                "Delete " + rowCount + " record" + (rowCount > 1 ? "s" : "") + "?",
+                "Delete", JOptionPane.YES_NO_CANCEL_OPTION);
+    }
+
+    protected void showErrorDialog(String message, String title) {
+        JOptionPane.showMessageDialog(
+                this, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    protected <K extends Nameable, V> boolean deleteSafeSearch(AbstractModel<K> model, Function<K, String> nameGetter) {
+        for (int selectedRow : table.getSelectedRows()) {
+            String selectedName = table.getAbstractModel().getEntity(selectedRow).getName();
+            if (!Validator.isUnique(model, nameGetter, selectedName)) {
+                // TODO: change text
+                showErrorDialog("Item of name '" + selectedName + "' is in use '" + model + " table'!  You have to delete it first!", DELETING_ERR_TITLE);
+                return false;
+            }
         }
+        return true;
+    }
+
+    protected void updateEntries() {
+        entries.setText("Shown entries " + table.getRowSorter().getViewRowCount() +
+                        "/" + table.getRowSorter().getModelRowCount() + "  ");
+    }
+
+    protected Sorter createSorter() {
+        return new Sorter(table, getModel(), searchBar);
     }
 
     private void setLayout() {
@@ -134,8 +223,6 @@ public abstract class AbstractTab extends JPanel {
         var topPanel = new JPanel(new BorderLayout());
         var bottomPanel = new JPanel(new BorderLayout());
         var centerPanel = new JScrollPane(table);
-
-        setColors(topPanel, bottomPanel, centerPanel);
 
         topPanel.add(filterPanel, BorderLayout.CENTER);
         topPanel.add(tools, BorderLayout.EAST);
@@ -146,16 +233,27 @@ public abstract class AbstractTab extends JPanel {
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private void setColors(JComponent... components) {
-        for (var c : components) {
-            if (c != null) {
-                c.setBackground(BACKGROUND_COLOR);
-                c.setOpaque(true);
-            }
-        }
+    private JButton createSearchButton(int iconSize, Sorter sorter) {
+        var button = new JButton(Icons.getScaledIcon((ImageIcon)Icons.SEARCH_S, iconSize));
+        button.addActionListener(new FilterAction(sorter));
+        button.addActionListener(e -> SwingUtilities.invokeLater(this::updateEntries));
+        button.setToolTipText("Filters the viewed content");
+        return button;
     }
 
-    private JButton createSearchButton(int iconSize) {
-        return new JButton(Icons.getScaledIcon((ImageIcon)Icons.SEARCH_S, iconSize));
+    private JButton createResetButton(int iconSize, Sorter sorter) {
+        var button = new JButton(Icons.getScaledIcon((ImageIcon)Icons.RESET_S, iconSize));
+        button.addActionListener(new FilterResetAction(sorter));
+        button.addActionListener(e -> SwingUtilities.invokeLater(this::updateEntries));
+        button.setToolTipText("Resets all filters");
+        return button;
+    }
+
+    private void setButtonsStyle() {
+        searchButton.setBackground(new Color(0x55EEEEEE, true));
+        resetButton.setBackground(new Color(0x55EEEEEE, true));
+
+        searchButton.setBorderPainted(false);
+        resetButton.setBorderPainted(false);
     }
 }
