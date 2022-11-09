@@ -11,8 +11,9 @@ import javax.swing.UIManager;
 
 public class Main {
 
+    public static final String THEME = "intellij";
     public static void main(String[] args) {
-        initFlatlafLookAndFeel("intellij"); // can be reworked to load preconfigured
+        initFlatlafLookAndFeel(THEME); // can be reworked to load preconfigured
         SwingUtilities.invokeLater(MainWindow::new);
     }
 

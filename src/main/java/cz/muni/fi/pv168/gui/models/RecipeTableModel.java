@@ -11,16 +11,17 @@ import java.util.List;
  *
  * @author Jan Martinek
  */
-public class RecipeTableModel extends TableModel<Recipe> {
+public class RecipeTableModel extends AbstractModel<Recipe> {
 
     private final List<Recipe> recipes;
 
     private final List<Column<Recipe, ?>> columns = List.of(
         Column.readonly("Name", String.class, Recipe::getName),
         Column.readonly("Category", Category.class, Recipe::getCategory),
-        Column.readonly("Required time", int.class, Recipe::getRequiredTime),
+        Column.readonly("Time required (minutes)", int.class, Recipe::getRequiredTime),
         Column.readonly("Portions", int.class, Recipe::getPortions),
-        Column.readonly("Description", String.class, Recipe::getDescription)
+        Column.readonly("Description", String.class, Recipe::getDescription),
+        Column.readonly("Ingredients", List.class, Recipe::getIngredients)
     );
 
     public RecipeTableModel() {
@@ -32,7 +33,7 @@ public class RecipeTableModel extends TableModel<Recipe> {
     }
 
     @Override
-    protected List<Recipe> getEntities() {
+    public List<Recipe> getEntities() {
         return recipes;
     }
 
@@ -40,5 +41,9 @@ public class RecipeTableModel extends TableModel<Recipe> {
     protected List<Column<Recipe, ?>> getColumns() {
         return columns;
     }
-}
 
+    @Override
+    public String toString() {
+        return "Recipes";
+    }
+}

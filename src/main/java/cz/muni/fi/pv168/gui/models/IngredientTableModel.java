@@ -8,8 +8,10 @@ import java.util.List;
 
 /**
  * Model of ingredient data class in a tabular representation
+ *
+ * @author Jan Martinek, Radim Stejskal
  */
-public class IngredientTableModel extends TableModel<Ingredient> {
+public class IngredientTableModel extends AbstractModel<Ingredient> {
 
     private final List<Ingredient> ingredients;
 
@@ -28,12 +30,27 @@ public class IngredientTableModel extends TableModel<Ingredient> {
     }
 
     @Override
-    protected List<Ingredient> getEntities() {
+    public List<Ingredient> getEntities() {
         return ingredients;
     }
 
     @Override
     protected List<Column<Ingredient, ?>> getColumns() {
         return columns;
+    }
+
+    /**
+     * Overwritten to disable coloring by base units.
+     *
+     * @return value < {@link AbstractModel#UNDEFINED}
+     */
+    @Override
+    protected int getColorIndex() {
+        return UNDEFINED - 1;
+    }
+
+    @Override
+    public String toString() {
+        return "Ingredients";
     }
 }

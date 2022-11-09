@@ -1,53 +1,92 @@
 package cz.muni.fi.pv168.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.muni.fi.pv168.gui.coloring.Colorable;
+import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 /**
- * Currently in a PLACEHOLDER STATE for rendering the tables
+ * @author Jan Martinek, Radim Stejskal
  */
-public class Unit {
-    
+public class Unit implements Colorable, Nameable {
+
     private String name;
-    private double value;
-    private Unit baseUnit;
+    private double valueInBaseUnit;
+    private BaseUnitsEnum baseUnit;
 
-    public Unit(String name, double value) {
-        this(name, value, null);
+    @JsonCreator
+    public Unit(@JsonProperty("name") String name,
+                @JsonProperty("valueInBaseUnit") double value,
+                @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
+        this.name = name;
+        this.valueInBaseUnit = value;
+        this.baseUnit = baseUnit;
     }
 
-    public Unit(String name, double value, Unit baseUnit) {
-        setName(name);
-        setValue(value);
-        setBaseUnit(baseUnit);
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = Objects.requireNonNull(name);
+    @JsonProperty("valueInBaseUnit")
+    public double getValueInBaseUnit() {
+            return valueInBaseUnit;
     }
 
-    public Unit getBaseUnit() {
+    @JsonProperty("baseUnit")
+    public BaseUnitsEnum getBaseUnit() {
         return baseUnit;
     }
 
-    public void setBaseUnit(Unit baseUnit) {
+    @JsonIgnore
+    public String getBaseUnitValue() {
+        return baseUnit.getValue();
+    }
+
+    @JsonIgnore
+    public String getPrettyValue() {
+        DecimalFormat format = new DecimalFormat("0.#");
+        return format.format(valueInBaseUnit);
+    }
+
+    @Override @JsonIgnore
+    public Color getColor() {
+        // TODO: REVIEW after base units are finished, may need some changes
+        return (name.equals(baseUnit.getValue())) ? Color.GRAY : null;
+    }
+
+    public void setName(String name){
+        this.name = Objects.requireNonNull(name);
+    }
+
+    public void setValueInBaseUnit(double valueInBaseUnit) {
+        this.valueInBaseUnit = valueInBaseUnit;
+    }
+
+    public void setBaseUnit(BaseUnitsEnum baseUnit) {
         this.baseUnit = baseUnit; // no need for null check
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Unit other = (Unit) o;
+        return Math.abs(other.valueInBaseUnit - valueInBaseUnit) <= 0.0001f
+            && name.equals(other.name)
+            && baseUnit == other.baseUnit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, valueInBaseUnit, baseUnit);
     }
 
     @Override
     public String toString() {
         return name;
     }
-
 }

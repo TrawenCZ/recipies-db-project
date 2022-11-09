@@ -1,16 +1,18 @@
-package cz.muni.fi.pv168.data;
+package cz.muni.fi.pv168.data.generators;
 
 import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Ingredient;
+import cz.muni.fi.pv168.model.IngredientAmount;
 import cz.muni.fi.pv168.model.Recipe;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
-    
-    private static final List<String> NAMES = List.of(
+
+    private static int lastId = 0;
+
+    private static final List<String> NAMES = new ArrayList<>(List.of(
         "Svíčková",
         "Hovězí guláš",
         "Kuřecí řízek",
@@ -20,7 +22,8 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
         "Srbské rizoto",
         "Jahodový dort",
         "Pestrá selská pánev",
-        "Uzenářské ragů");
+        "Uzenářské ragů"
+    ));
 
     private static final List<String> DESCRIPTIONS = List.of(
         "Velmi chutný lehký pokrm.",
@@ -33,23 +36,37 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
 
     private static final CategoryDataGenerator categories = new CategoryDataGenerator();
     private static final IngredientDataGenerator ingredients = new IngredientDataGenerator();
+    private static final UnitDataGenerator units = new UnitDataGenerator();
 
     public Recipe createTestEntity() {
-        String name = selectRandom(NAMES);
+        String name;
+        if (NAMES.isEmpty()) {
+            name = "recipe_" + ++lastId;
+        } else {
+            name = selectRandom(NAMES);
+            NAMES.remove(name);
+        }
+
         String description = selectRandom(DESCRIPTIONS);
-        Category category = categories.createTestEntity();
-        int time = random.nextInt(120);
-        int portions = random.nextInt(12);
-        Map<Ingredient, Double> ingredients = getIngredients(2000d, random.nextInt(20));
-        
-        return new Recipe(name, description, category, time, portions, ingredients);
+        String instructions = "instructions";
+        Category category = (random.nextInt(0, 10) == 0) ? Category.UNCATEGORIZED : categories.createTestEntity();
+        int time = random.nextInt(1, 120);
+        int portions = random.nextInt(1, 12);
+        List<IngredientAmount> ingredients = getIngredients(2000d, random.nextInt(20));
+
+        return new Recipe(name, description, instructions, category, time, portions, ingredients);
     }
 
-    private Map<Ingredient, Double> getIngredients(Double maxValue, int count) {
-        Map<Ingredient, Double> m = new HashMap<>();
+
+    private List<IngredientAmount> getIngredients(Double maxValue, int count) {
+        List<IngredientAmount> m = new ArrayList<>();
         for (Ingredient i : ingredients.createTestData(count)) {
-            m.put(i, random.nextDouble(2000));
+            m.add(new IngredientAmount(
+                i,
+                (double) Math.round(random.nextDouble(2000) * 100) / 100,
+                units.createTestEntity()));
         }
         return m;
     }
+
 }

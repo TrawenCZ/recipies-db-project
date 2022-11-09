@@ -7,15 +7,17 @@ import java.util.List;
 
 /**
  * Model of units data class in a tabular representation
+ *
+ * @author Jan Martinek, Radim Stejskal
  */
-public class UnitsTableModel extends TableModel<Unit> {
+public class UnitsTableModel extends AbstractModel<Unit> {
 
     private final List<Unit> units;
 
     private final List<Column<Unit, ?>> columns = List.of(
-        Column.readonly("Name", String.class, Unit::getName),
-        Column.readonly("Value", double.class, Unit::getValue),
-        Column.readonly("Base unit", Unit.class, Unit::getBaseUnit)
+        Column.readonly("Name", Unit.class, self -> self),
+        Column.readonly("Value", String.class, Unit::getPrettyValue),
+        Column.readonly("Base unit", String.class, Unit::getBaseUnitValue)
     );
 
     public UnitsTableModel() {
@@ -27,13 +29,17 @@ public class UnitsTableModel extends TableModel<Unit> {
     }
 
     @Override
-    protected List<Unit> getEntities() {
+    public List<Unit> getEntities() {
         return units;
     }
 
     @Override
-    protected List<Column<Unit, ?>> getColumns() {
+    public List<Column<Unit, ?>> getColumns() {
         return columns;
     }
-}
 
+    @Override
+    public String toString() {
+        return "Units";
+    }
+}

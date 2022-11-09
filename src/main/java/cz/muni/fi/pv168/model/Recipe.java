@@ -1,85 +1,129 @@
 package cz.muni.fi.pv168.model;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * Currently in a PLACEHOLDER STATE for rendering the tables
+ * @author Jan Martinek, Radim Stejskal
  */
-public class Recipe {
-    
+public class Recipe implements Nameable {
+
     // shown in table
     private String name;
     private String description;
+    private String instructions;
     private Category category;
     private int requiredTime;
     private int portions;
 
     // shown only in details window
-    private Map<Ingredient, Double> ingredients;
+    private List<IngredientAmount> ingredients;
 
-    public Recipe(String name, String description, Category category, int requiredTime, int portions, Map<Ingredient, Double> ingredients) {
+    @JsonCreator
+    public Recipe(@JsonProperty("name") String name,
+                  @JsonProperty("description") String description,
+                  @JsonProperty("instruction") String instructions,
+                  @JsonProperty("category") Category category,
+                  @JsonProperty("preparationTime") int requiredTime,
+                  @JsonProperty("portions") int portions,
+                  @JsonProperty("ingredients") List<IngredientAmount> ingredients) {
         setName(name);
         setDescription(description);
+        setInstructions(instructions);
         setCategory(category);
         setRequiredTime(requiredTime);
         setPortions(portions);
+        setIngredients(ingredients);
     }
 
+    @JsonProperty("name")
     public String getName() {
         return name;
+    }
+
+    @JsonProperty("description")
+    public String getDescription() {
+        return description;
+    }
+
+    @JsonProperty("category")
+    public Category getCategory() {
+        return category;
+    }
+
+    @JsonProperty("preparationTime")
+    public int getRequiredTime() {
+        return requiredTime;
+    }
+
+    @JsonProperty("portions")
+    public int getPortions() {
+        return portions;
+    }
+
+    @JsonProperty("ingredients")
+    public List<IngredientAmount> getIngredients() {
+        return ingredients;
+    }
+
+    @JsonProperty("instructions")
+    public String getInstructions() {
+        return instructions;
     }
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name);
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(String description) {
         this.description = Objects.requireNonNull(description);
-    }
-
-    public Category getCategory() {
-        return category;
     }
 
     public void setCategory(Category category) {
         this.category = Objects.requireNonNull(category);
     }
 
-    public int getRequiredTime() {
-        return requiredTime;
-    }
-
     public void setRequiredTime(int requiredTime) {
+        if (requiredTime <= 0) throw new IllegalArgumentException("time must be >0");
         this.requiredTime = requiredTime;
     }
 
-    public int getPortions() {
-        return portions;
-    }
-
     public void setPortions(int portions) {
+        if (portions <= 0) throw new IllegalArgumentException("portions must be >0");
         this.portions = portions;
     }
 
-    public Map<Ingredient, Double> getIngredients() {
-        return ingredients;
+    public void setIngredients(List<IngredientAmount> ingredients) {
+        this.ingredients = new ArrayList<>(Objects.requireNonNull(ingredients));
     }
 
-    public void setIngredients(Map<Ingredient, Double> ingredients) {
-        Objects.requireNonNull(ingredients);
-        for (Ingredient k : ingredients.keySet()) {
-            Objects.requireNonNull(k);
-        }
-        for (Double k : ingredients.values()) {
-            if (Double.compare(k, 0) <= 0) throw new IllegalArgumentException("Ingredient weight/count must be more than 0");
-        }
-        this.ingredients = new HashMap<>(ingredients);
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Recipe other = (Recipe) o;
+        return requiredTime == other.requiredTime
+            && portions == other.portions
+            && name.equals(other.name)
+            && description.equals(other.description)
+            && instructions.equals(other.instructions)
+            && category.equals(other.category)
+            && ingredients.equals(other.ingredients);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            name, description, instructions, category, requiredTime, portions, ingredients
+        );
     }
 
     @Override

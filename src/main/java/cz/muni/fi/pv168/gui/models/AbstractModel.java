@@ -1,6 +1,11 @@
 package cz.muni.fi.pv168.gui.models;
 
+import cz.muni.fi.pv168.gui.coloring.Colorable;
+import cz.muni.fi.pv168.model.Nameable;
+
+import java.awt.Color;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -15,7 +20,11 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Jan Martinek
  */
-public abstract class TableModel<T> extends AbstractTableModel {
+public abstract class AbstractModel<T extends Nameable> extends AbstractTableModel {
+
+    protected static final int UNDEFINED = -1;
+
+    private Integer colorIndex = UNDEFINED;
 
     @Override
     public int getRowCount() {
@@ -89,10 +98,36 @@ public abstract class TableModel<T> extends AbstractTableModel {
      * Returns a single row that corresponds to the given index.
      *
      * @param rowIndex  of row we want
-     * @return          single row entity
+     * @return          single row entity OR null (if out of bounds)
      */
     public T getEntity(int rowIndex) {
+        if (rowIndex < 0 || rowIndex >= getRowCount()) return null;
         return getEntities().get(rowIndex);
+    }
+
+    /**
+     * Returns a single entity of a given name
+     *
+     * @param name  name of the entity we want to get
+     * @return      single row entity OR null (if not found)
+     */
+    public Optional<T> getEntity(String name) {
+        return getEntities().stream()
+                            .dropWhile(entity -> !entity.getName().equals(name))
+                            .findFirst();
+    }
+
+    /**
+     * Returns the color of the given row.
+     *
+     * @param rowIndex number from 0 to rowCount
+     * @return         Color or null
+     */
+    public Color getColor(int rowIndex) {
+        if (colorIndex == UNDEFINED) colorIndex = getColorIndex();
+        if (colorIndex <= UNDEFINED) return null;
+        Colorable item = (Colorable) getValueAt(rowIndex, colorIndex);
+        return (item != null) ? item.getColor() : null;
     }
 
     /**
@@ -101,7 +136,7 @@ public abstract class TableModel<T> extends AbstractTableModel {
      *
      * @return all entities of the table
      */
-    protected abstract List<T> getEntities();
+    public abstract List<T> getEntities();
 
     /**
      * Gets the list of all table columns with their methods. This
@@ -110,4 +145,19 @@ public abstract class TableModel<T> extends AbstractTableModel {
      * @return all columns of the table
      */
     protected abstract List<Column<T, ?>> getColumns();
+
+    /**
+     * If it gets the position, it means there is a column that implements
+     * the interface {@link Colorable}, i.e. it contains gettable color data.
+     *
+     * @return index or UNDEFINED-1
+     */
+    protected int getColorIndex() {
+        for (int i = 0; i < getColumnCount(); i++) {
+            if (Colorable.class.isAssignableFrom(getColumnClass(i))) {
+                return i;
+            }
+        }
+        return UNDEFINED - 1;
+    }
 }

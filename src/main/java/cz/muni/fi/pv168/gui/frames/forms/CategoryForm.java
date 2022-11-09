@@ -1,48 +1,79 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import javax.swing.*;
+import cz.muni.fi.pv168.gui.coloring.DisplayableColor;
+import cz.muni.fi.pv168.gui.frames.TabLayout;
+import cz.muni.fi.pv168.model.Category;
+
 import java.awt.*;
+import javax.swing.*;
+
+import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
+import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
 
 public class CategoryForm extends AbstractForm {
-    
-    private final JLabel nameLabel = new JLabel("Name");
+
+    private final JLabel nameLabel = new JLabel("Enter name");
+    private final JLabel colorLabel = new JLabel("Select any color");
+
     private final JTextField nameInput = new JTextField(12);
-    private final JButton saveButton = new JButton("Save");
-    private final JButton cancelButton = new JButton("Cancel");
+    private final JColorChooser colorInput = new JColorChooser(Color.WHITE);
+    private Category category;
 
-    public CategoryForm(String name) {
-        super("Edit");
-        var frame = addFormComponents();
-        addSampleData(name);
-        frame.setVisible(true);
+    private CategoryForm(String title, String header) {
+        super(title, header);
+        initializeBody();
     }
+
+    public CategoryForm(Category category) {
+        this(EDIT, "Edit category");
+        this.category = category;
+        addSampleData();
+        show();
+    }
+
     public CategoryForm() {
-        super("Add");
-        addFormComponents().setVisible(true);
+        this("Add", "New category");
+        show();
     }
 
-    private JDialog addFormComponents() {
-        JPanel newPanel = new JPanel(new GridBagLayout());
-        var frame = getDialog();
-        GridBagConstraints constraints = getConstraints();
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(10, 10, 10, 10);
+    @Override
+    protected void initializeBody() {
+        nameInput.setToolTipText(NAME_TOOLTIP + "CATEGORIES!");
 
-        addComponent(newPanel, nameLabel, 0, 1);
-        addComponent(newPanel, nameInput, 1, 1);
-        addComponent(newPanel, saveButton, 0, 6, GridBagConstraints.WEST);
-        addComponent(newPanel, cancelButton, 1, 6, GridBagConstraints.EAST);
+        gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
 
-        saveButton.addActionListener(e -> frame.dispose());
-        cancelButton.addActionListener(e -> frame.dispose());
-        newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Category"));
-        frame.add(newPanel);
-        frame.pack();
-        return frame;
+        gridInsets(10);
+        gridAdd(nameLabel, 0, 0);
+        gridAdd(colorLabel, 0, 2);
+        gridAdd(colorInput, 0, 4);
+
+        gridInsets(-20, 10, 10, 10);
+        gridAdd(nameInput, 0, 1);
+        gridAdd(new JSeparator(SwingConstants.HORIZONTAL), 0, 3);
     }
 
-    private void addSampleData(String name) {
-        if (name == null) throw new NullPointerException("name of ingredient cannot be null");
-        nameInput.setText(name);
+    @Override
+    protected boolean onAction() {
+        var tableModel = TabLayout.getCategoriesModel();
+        if (!verifyName(tableModel, category, nameInput.getText())) {
+            return false;
+        }
+
+        DisplayableColor newColor = new DisplayableColor(colorInput.getColor().getRGB());
+
+        if (isEdit()) {
+            category.setName(nameInput.getText());
+            category.setColor(newColor);
+            tableModel.updateRow(category);
+        } else {
+            tableModel.addRow(new Category(nameInput.getText(), newColor));
+        }
+
+        return true;
+    }
+
+    private void addSampleData() {
+        nameInput.setText(category.getName());
+        colorInput.setColor(category.getColor());
     }
 }

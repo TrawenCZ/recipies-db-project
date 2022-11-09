@@ -16,9 +16,9 @@ import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.SETTINGS;
 
 public class MainWindow {
 
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 500;
-    private static final Dimension MINIMUM_SIZE = new Dimension(WIDTH - 200, HEIGHT - 200);
+    private static final int WIDTH = 1200;
+    private static final int HEIGHT = 600;
+    private static final Dimension MINIMUM_SIZE = new Dimension(WIDTH, HEIGHT - HEIGHT / 3);
     private static final String TITLE = "Recipes app";
 
     private static JFrame frame;
@@ -38,7 +38,7 @@ public class MainWindow {
         frame = new JFrame();
         menuBar = new JMenuBar();
         tabLayout = new TabLayout();
-
+        tabLayout.createTabs(frame);
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
@@ -46,7 +46,6 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
         frame.setMinimumSize(MINIMUM_SIZE);
 
-        tabLayout.createTabs(frame.getContentPane());
         addMenus();
 
         frame.setVisible(true);

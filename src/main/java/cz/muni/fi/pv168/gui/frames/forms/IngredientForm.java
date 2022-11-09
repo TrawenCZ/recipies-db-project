@@ -1,84 +1,186 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
+import cz.muni.fi.pv168.gui.frames.TabLayout;
+import cz.muni.fi.pv168.gui.models.IngredientTableModel;
+import cz.muni.fi.pv168.gui.models.UnitsTableModel;
+import cz.muni.fi.pv168.model.BaseUnitsEnum;
+import cz.muni.fi.pv168.model.Ingredient;
+import cz.muni.fi.pv168.model.Unit;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
+import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
 
 public class IngredientForm extends AbstractForm {
-    
-    private final JLabel nameLabel = new JLabel("Name");
-    private final JTextField nameInput = new JTextField(12);
-    private final JLabel energyValue = new JLabel("Energy value (kcal)");
-    private final JTextField energyValueInput = new JTextField(12);
-    private final JTextField gramsInput = new JTextField(12);
-    private final JButton saveButton = new JButton("Save");
-    private final JButton cancelButton = new JButton("Cancel");
-    private final JToggleButton customEnergyButton = new JToggleButton("Custom energy value");
-    private final JLabel energyPerIngredient = new JLabel("Energy value (kcal) per ingredient");
-    private final JLabel gramsPerIngredient = new JLabel("Grams per ingredient");
 
-    public IngredientForm(String name, int energy, int grams) {
-        super("Edit");
-        var frame = addFormComponents();
-        addSampleData(name, energy, grams);
-        frame.setVisible(true);
+    private final static String DEFAULT_ENERGY_TEXT = " Energy value (kcal) per 100g";
+    private final static String DEFAULT_CONVERSION_TEXT = "Enable kcal/unit conversion";
+
+    // all of those have added spaces to make it look better
+    private final JLabel nameLabel = new JLabel(" Name");
+    private final JLabel energyLabel = new JLabel(DEFAULT_ENERGY_TEXT);
+    private final JLabel ingredientValueLabel = new JLabel(" Ingredient weight");
+
+    private final JTextField nameInput = new JTextField(24);
+    private final DoubleTextField energyInput = new DoubleTextField(0.01d, 8);
+    private final DoubleTextField ingredientValueInput = new DoubleTextField(0.01d, 8);
+
+    private final JToggleButton toggleButton = new JToggleButton(DEFAULT_CONVERSION_TEXT);
+    private final JLabel unitsLabel = new JLabel(" Units");
+    private final JComboBox<Unit> unitsComboBox = new JComboBox<>(getAllUnits());
+
+    private boolean customEnergyEnabled;
+    private Ingredient ingredient;
+
+    private IngredientForm(String title, String header) {
+        super(title, header);
+        initializeBody();
+    }
+
+    public IngredientForm(Ingredient ingredient) {
+        this(EDIT, "Edit ingredient");
+        this.ingredient = ingredient;
+        addSampleData(ingredient);
+        show();
     }
 
     public IngredientForm() {
-        super("Add");
-        addFormComponents().setVisible(true);
+        this("Add", "New ingredient");
+        show();
     }
 
-    private JDialog addFormComponents() {
-        JPanel newPanel = new JPanel(new GridBagLayout());
-        var frame = getDialog();
-        GridBagConstraints constraints = getConstraints();
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(10, 10, 10, 10);
+    @Override
+    protected void initializeBody() {
+        nameInput.setToolTipText(NAME_TOOLTIP + "INGREDIENTS!");
 
-        addComponent(newPanel, nameLabel, 0, 1);
-        addComponent(newPanel, nameInput, 1, 1);
-        addComponent(newPanel, energyValue, 0, 2);
-        addComponent(newPanel, energyValueInput, 1, 2);
-        addComponent(newPanel, customEnergyButton, 0, 6, GridBagConstraints.WEST);
-        addComponent(newPanel, saveButton, 0, 7, GridBagConstraints.WEST);
-        addComponent(newPanel, cancelButton, 1, 7, GridBagConstraints.EAST);
+        gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
 
-        saveButton.addActionListener(e -> frame.dispose());
-        cancelButton.addActionListener(e -> frame.dispose());
+        gridInsets(10);
+        gridAdd(nameLabel, 0, 1);
+        gridAdd(energyLabel, 0, 2);
+        gridAdd(ingredientValueLabel, 0, 3);
+        gridAdd(unitsLabel, 0, 4);
+        gridAdd(toggleButton, 0, 5, 2, 1);
 
-        ItemListener energyValueListener = itemEvent -> {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                newPanel.remove(energyValue);
-                addComponent(newPanel, energyPerIngredient, 0, 2);
-                addComponent(newPanel, gramsPerIngredient, 0, 3);
-                gramsInput.setText("100");
-                addComponent(newPanel, gramsInput, 1, 3);
+        gridInsets(10, -80, 10, 10);
+        gridAdd(nameInput, 1, 1, 2, 1);
+        gridAdd(energyInput, 1, 2, 2, 1);
+        gridAdd(ingredientValueInput, 1, 3);
+        gridAdd(unitsComboBox, 1, 4);
 
-            } else {
-                newPanel.remove(energyPerIngredient);
-                newPanel.remove(gramsPerIngredient);
-                newPanel.remove(gramsInput);
-                addComponent(newPanel, energyValue, 0, 2);
+        ingredientValueLabel.setEnabled(false);
+        ingredientValueInput.setEnabled(false);
+        unitsLabel.setEnabled(false);
+        unitsComboBox.setEnabled(false);
+
+        unitsComboBox.addItemListener(this::comboBoxListener);
+        toggleButton.addItemListener(this::toggleListener);
+    }
+
+    @Override
+    protected boolean onAction() {
+        var tableModel = TabLayout.getIngredientsModel();
+        if (!verifyName(tableModel, ingredient, nameInput.getText())) {
+            return false;
+        }
+
+        saveIngredient();
+        return true;
+    }
+
+    private void saveIngredient() {
+        double energyValueNumber = (double) energyInput.parse();
+        BaseUnitsEnum baseUnit = BaseUnitsEnum.GRAM;
+
+        if (customEnergyEnabled) {
+            String[] baseUnitAndValue = getBaseUnit(unitsComboBox.getSelectedItem().toString());
+            double baseUnitValue = Double.parseDouble(baseUnitAndValue[0]);
+            String baseUnitName = baseUnitAndValue[1];
+            baseUnit = baseUnitFromString(baseUnitName);
+            energyValueNumber /= (double) ingredientValueInput.parse() * baseUnitValue;
+        } else {
+            energyValueNumber /= 100;
+        }
+
+        Unit unit = new Unit(baseUnit.getValue(), 1, baseUnit);
+        var tableModel = (IngredientTableModel) TabLayout.getIngredientsModel();
+        if (isEdit()) {
+            ingredient.setName(nameInput.getText());
+            ingredient.setKcal(energyValueNumber);
+            ingredient.setUnit(unit);
+            tableModel.updateRow(ingredient);
+        } else {
+            Ingredient ingredient = new Ingredient(nameInput.getText(),
+                                                   energyValueNumber,
+                                                   unit);
+            tableModel.addRow(ingredient);
+        }
+
+    }
+
+    private void toggleListener(ItemEvent itemEvent) {
+        boolean condition = itemEvent.getStateChange() == ItemEvent.SELECTED;
+
+        if (condition) {
+            toggleButton.setText("Disable kcal/unit conversion");
+            energyLabel.setText(" Energy value (kcal) per ingredient");
+        } else {
+            toggleButton.setText(DEFAULT_CONVERSION_TEXT);
+            energyLabel.setText(DEFAULT_ENERGY_TEXT);
+        }
+
+        customEnergyEnabled = condition;
+        ingredientValueLabel.setEnabled(condition);
+        ingredientValueInput.setEnabled(condition);
+        unitsLabel.setEnabled(condition);
+        unitsComboBox.setEnabled(condition);
+
+        refreshContent();
+    }
+
+    private String[] getBaseUnit(String name) {
+        JTable unitTable = TabLayout.getTab("units").getTable();
+        for (int i = 0; i < unitTable.getRowCount(); i++) {
+            if (unitTable.getValueAt(i, 0).toString().equals(name)) {
+                return new String[] {unitTable.getValueAt(i, 1).toString(), unitTable.getValueAt(i, 2).toString()};
             }
-            frame.add(newPanel);
-            frame.pack();
-        };
-        customEnergyButton.addItemListener(energyValueListener);
+        }
+        return null;
+    }
+    private void comboBoxListener(ItemEvent itemEvent) {
+        String baseUnit = getBaseUnit(unitsComboBox.getSelectedItem().toString())[1];
 
-        newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "New Ingredient"));
-        frame.add(newPanel);
-        frame.pack();
-        frame.setModal(true);
-        return frame;
+        switch (baseUnit) {
+            case "g" -> ingredientValueLabel.setText(" Ingredient weight");
+            case "ml" -> ingredientValueLabel.setText(" Ingredient volume");
+            case "pc(s)" -> ingredientValueLabel.setText(" Ingredient count");
+        }
     }
 
-    private void addSampleData(String name, int energy, int grams) {
-        if (name == null) throw new NullPointerException("name of ingredient cannot be null");
+    private void addSampleData(Ingredient ingredient) {
+        nameInput.setText(ingredient.getName());
+        energyInput.setText(String.valueOf(ingredient.getKcal() * 100));
 
-        nameInput.setText(name);
-        energyValueInput.setText(energy + "");
-        gramsInput.setText(grams + "");
+        String baseUnit = ingredient.getUnit().toString();
+        if (!baseUnit.equals("g")) {
+            toggleButton.doClick();
+            ingredientValueInput.setText("100");
+            unitsComboBox.setSelectedItem(baseUnit);
+        }
+    }
+
+    private Unit[] getAllUnits() {
+        List<Unit> units = new ArrayList<>();
+        var unitsTableModel = (UnitsTableModel) TabLayout.getUnitsModel();
+        for (int i = 0; i < unitsTableModel.getRowCount(); i++) {
+            units.add(unitsTableModel.getEntity(i));
+        }
+        return units.toArray(new Unit[0]);
     }
 }

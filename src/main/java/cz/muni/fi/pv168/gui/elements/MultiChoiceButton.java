@@ -1,6 +1,8 @@
 package cz.muni.fi.pv168.gui.elements;
 
 import java.awt.event.KeyEvent;
+import java.util.List;
+
 import javax.swing.JButton;
 
 /**
@@ -9,8 +11,8 @@ import javax.swing.JButton;
  *
  * @author Jan Martinek
  */
-public class MultiChoiceButton extends JButton {
-    
+public class MultiChoiceButton extends JButton implements Filterable<List<String>> {
+
     public final static String NO_TOOLTIP = null;
     public final static int NO_MNEMONIC = KeyEvent.VK_UNDEFINED;
 
@@ -47,15 +49,13 @@ public class MultiChoiceButton extends JButton {
     public MultiChoiceButton(String label, String... choices) {
         this(label, NO_TOOLTIP, NO_MNEMONIC, choices);
     }
-    
-    /**
-     * Gets the titles of all currently checked items.
-     * {@link MultiChoiceWindow#getChecked()}.
-     *
-     * @return checked item titles
-     */
-    public String[] getChecked() {
-        return window.getChecked();
+
+    public List<String> getFilters() {
+        return window.getFilters();
     }
 
+    @Override
+    public void resetFilters() {
+        window.resetFilters();
+    }
 }
