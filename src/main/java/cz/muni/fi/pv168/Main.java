@@ -2,6 +2,8 @@ package cz.muni.fi.pv168;
 
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import com.formdev.flatlaf.*;
+import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +15,7 @@ public class Main {
 
     public static final String THEME = "intellij";
     public static void main(String[] args) {
+        final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
         initFlatlafLookAndFeel(THEME); // can be reworked to load preconfigured
         SwingUtilities.invokeLater(MainWindow::new);
     }
