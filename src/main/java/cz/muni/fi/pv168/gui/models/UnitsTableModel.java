@@ -14,28 +14,22 @@ public class UnitsTableModel extends AbstractModel<Unit> {
 
     private final List<Unit> units;
 
-    private final List<Column<Unit, ?>> columns = List.of(
-        Column.readonly("Name", Unit.class, self -> self),
-        Column.readonly("Value", String.class, Unit::getPrettyValue),
-        Column.readonly("Base unit", String.class, Unit::getBaseUnitValue)
-    );
-
     public UnitsTableModel() {
         this(new ArrayList<Unit>());
     }
 
     public UnitsTableModel(List<Unit> units) {
+        super(List.of(
+            Column.readonly("Name", Unit.class, self -> self, 4),
+            Column.readonly("Value", Double.class, Unit::getPrettyValue, 2),
+            Column.readonly("Base unit", String.class, Unit::getBaseUnitValue, 4)
+        ));
         this.units = new ArrayList<>(units);
     }
 
     @Override
     public List<Unit> getEntities() {
         return units;
-    }
-
-    @Override
-    public List<Column<Unit, ?>> getColumns() {
-        return columns;
     }
 
     @Override

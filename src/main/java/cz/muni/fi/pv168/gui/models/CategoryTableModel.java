@@ -14,26 +14,20 @@ public class CategoryTableModel extends AbstractModel<Category> {
 
     private final List<Category> categories;
 
-    private final List<Column<Category, ?>> columns = List.of(
-        Column.readonly("Name", Category.class, self -> self)
-    );
-
     public CategoryTableModel() {
         this(new ArrayList<Category>());
     }
 
     public CategoryTableModel(List<Category> categories) {
+        super(List.of(
+            Column.readonly("Name", Category.class, self -> self, null)
+        ));
         this.categories = new ArrayList<>(categories);
     }
 
     @Override
     public List<Category> getEntities() {
         return categories;
-    }
-
-    @Override
-    protected List<Column<Category, ?>> getColumns() {
-        return columns;
     }
 
     @Override

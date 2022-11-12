@@ -87,8 +87,8 @@ public final class RangeTextField implements Filterable<List<Integer>> {
      * @param columns width of text fields
      */
     public RangeTextField(int columns) {
-        lower.setToolTipText("Cannot go higher than the right field, accepts only integers up to 999");
-        upper.setToolTipText("Cannot go lower than the left field, accepts only integers up to 999");
+        lower.setToolTipText("Cannot go higher than the right field,\n accepts only integers up to 999");
+        upper.setToolTipText("Cannot go lower than the left field,\n accepts only integers up to 999");
         lower.setText(0 + "");
         upper.setText(999 + "");
         lower.setColumns(columns);

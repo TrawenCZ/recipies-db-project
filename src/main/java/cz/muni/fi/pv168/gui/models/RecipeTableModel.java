@@ -15,20 +15,19 @@ public class RecipeTableModel extends AbstractModel<Recipe> {
 
     private final List<Recipe> recipes;
 
-    private final List<Column<Recipe, ?>> columns = List.of(
-        Column.readonly("Name", String.class, Recipe::getName),
-        Column.readonly("Category", Category.class, Recipe::getCategory),
-        Column.readonly("Time required (minutes)", int.class, Recipe::getRequiredTime),
-        Column.readonly("Portions", int.class, Recipe::getPortions),
-        Column.readonly("Description", String.class, Recipe::getDescription),
-        Column.readonly("Ingredients", List.class, Recipe::getIngredients)
-    );
-
     public RecipeTableModel() {
         this(new ArrayList<Recipe>());
     }
 
     public RecipeTableModel(List<Recipe> recipes) {
+        super(List.of(
+            Column.readonly("Name", String.class, Recipe::getName, 4),
+            Column.readonly("Category", Category.class, Recipe::getCategory, 4),
+            Column.readonly("Time required (minutes)", Integer.class, Recipe::getRequiredTime, 2),
+            Column.readonly("Portions", Integer.class, Recipe::getPortions, 2),
+            Column.readonly("Description", String.class, Recipe::getDescription, 4),
+            Column.readonly("Ingredients", List.class, Recipe::getIngredients, null)
+        ));
         this.recipes = new ArrayList<>(recipes);
     }
 
@@ -37,10 +36,6 @@ public class RecipeTableModel extends AbstractModel<Recipe> {
         return recipes;
     }
 
-    @Override
-    protected List<Column<Recipe, ?>> getColumns() {
-        return columns;
-    }
 
     @Override
     public String toString() {

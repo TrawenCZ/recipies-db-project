@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.model.Nameable;
 import cz.muni.fi.pv168.data.Validator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public abstract class AbstractService<T extends Nameable> {
      * @param indexes indexes of rows to select
      * @return list of selected records
      */
-    public List<T> selectRecords(List<Integer> indexes) {
+    public List<T> selectRecords(Collection<Integer> indexes) {
         if (indexes == null || indexes.size() == 0) return List.of();
         var hashedIndexes = new HashSet<>(indexes);
         List<T> records = new ArrayList<>();
@@ -44,37 +45,28 @@ public abstract class AbstractService<T extends Nameable> {
     }
 
     /**
-     * Removes duplicate records and verifies the rest agains its repository,
-     * detecting inconsistencies (duplicates with different values).
+     * Removes duplicate records and verifies it with its repository,
+     * detecting inconsistencies (same name, different values).
      *
      * @param records items we want to check against service's repository
-     * @return        list of all valid records
      * @throws InconsistentRecordException whenever a duplicite with different
      *                                     values to repository is found
      */
-    public List<T> verifyRecords(List<T> records) throws InconsistentRecordException {
-        List<T> validRecords = new ArrayList<>();
+    public Collection<T> verifyRecords(Collection<T> records) throws InconsistentRecordException {
+        var hashed = new HashSet<>(records);
+        var unique = new HashSet<T>();
 
-        // remove equal duplicates
-        records = new ArrayList<>(new HashSet<>(records));
-
-        // check records for unequal duplicates
-        for (var record : records) {
-            if (Validator.duplicateNotEqual(records, record)) {
-                throwError(record);
-            }
-        }
-
-        // check database
-        for (var record : records) {
-            if (Validator.duplicateNotEqual(repository, record)) {
-                throwError(record);
+        // validate
+        for (var record : hashed) {
+            if (Validator.duplicateNotEqual(hashed, record)) {
+                throwError(record, "selected file");
+            } else if (Validator.duplicateNotEqual(repository, record)) {
+                throwError(record, "database");
             } else if (Validator.isUnique(repository, record)) {
-                validRecords.add(record);
+                unique.add(record);
             }
         }
-
-        return validRecords;
+        return unique;
     }
 
     /**
@@ -84,8 +76,7 @@ public abstract class AbstractService<T extends Nameable> {
      * @param records list of records we want to save
      * @throws InconsistentRecordException whenever a validity check fails
      */
-    public int saveRecords(List<T> records) throws InconsistentRecordException {
-        records = new ArrayList<>(new HashSet<>(records));
+    public int saveRecords(Collection<T> records) throws InconsistentRecordException {
         return saveRecords(records, false);
     }
 
@@ -95,8 +86,7 @@ public abstract class AbstractService<T extends Nameable> {
      * @param records list of records we want to save
      * @throws InconsistentRecordException whenever a validity check fails
      */
-    public int saveRecords(List<T> records, boolean disableVerification) throws InconsistentRecordException {
-        records = new ArrayList<>(new HashSet<>(records));
+    protected int saveRecords(Collection<T> records, boolean disableVerification) throws InconsistentRecordException {
         if (disableVerification) {
             records.forEach(repository::addRow);
         } else {
@@ -113,13 +103,13 @@ public abstract class AbstractService<T extends Nameable> {
      * @param records list of records we want to delete
      * @throws InconsistentRecordException whenever a validity check fails
      */
-    public abstract void deleteRecords(List<T> records);
+    public abstract void deleteRecords(Collection<T> records);
 
-    private void throwError(T record) throws InconsistentRecordException {
+    private void throwError(T record, String location) throws InconsistentRecordException {
         throw new InconsistentRecordException(
             repositoryName + " of name " +
-                    record.getName() +
-                    " already exists with different properties"
+            record.getName() + " already exists in " +
+            location + ", but with different properties!"
         );
     }
 }

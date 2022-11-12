@@ -47,9 +47,9 @@ public class Unit implements Colorable, Nameable {
     }
 
     @JsonIgnore
-    public String getPrettyValue() {
-        DecimalFormat format = new DecimalFormat("0.#");
-        return format.format(valueInBaseUnit);
+    public Double getPrettyValue() {
+        DecimalFormat format = new DecimalFormat("0.##");
+        return Double.valueOf(format.format(valueInBaseUnit));
     }
 
     @Override @JsonIgnore

@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import cz.muni.fi.pv168.gui.coloring.DisplayableColor;
 import cz.muni.fi.pv168.gui.frames.TabLayout;
 import cz.muni.fi.pv168.model.Category;
 
@@ -59,7 +58,7 @@ public class CategoryForm extends AbstractForm {
             return false;
         }
 
-        DisplayableColor newColor = new DisplayableColor(colorInput.getColor().getRGB());
+        var newColor = new Color(colorInput.getColor().getRGB());
 
         if (isEdit()) {
             category.setName(nameInput.getText());
