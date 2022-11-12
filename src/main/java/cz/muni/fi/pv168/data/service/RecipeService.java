@@ -5,7 +5,7 @@ import cz.muni.fi.pv168.gui.models.RecipeTableModel;
 import cz.muni.fi.pv168.model.IngredientAmount;
 import cz.muni.fi.pv168.model.Recipe;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Radim Stejskal, Jan Martinek
@@ -27,37 +27,39 @@ public class RecipeService extends AbstractService<Recipe> {
     }
 
     @Override
-    public int saveRecords(List<Recipe> records) throws InconsistentRecordException {
+    public int saveRecords(Collection<Recipe> records) throws InconsistentRecordException {
+
+        // verify recipes
         records = verifyRecords(records);
 
-        var categories = records.stream().map(Recipe::getCategory).toList();
-        var ingredients = records.stream()
-                                 .map(Recipe::getIngredients)
-                                 .flatMap(List::stream)
-                                 .map(IngredientAmount::getIngredient)
-                                 .toList();
-        var units = records.stream()
-                           .map(Recipe::getIngredients)
-                           .flatMap(List::stream)
-                           .map(IngredientAmount::getUnit)
-                           .toList();
+        // verify all needed components
+        var categories = categoryService.verifyRecords(
+            records.stream().map(Recipe::getCategory).toList()
+        );
+        var units = unitsService.verifyRecords(
+            records.stream()
+                   .map(Recipe::getIngredients)
+                   .flatMap(Collection::stream)
+                   .map(IngredientAmount::getUnit)
+                   .toList()
+        );
+        var ingredients = ingredientService.verifyRecords(
+            records.stream()
+                   .map(Recipe::getIngredients)
+                   .flatMap(Collection::stream)
+                   .map(IngredientAmount::getIngredient)
+                   .toList()
+        );
 
-        // verification before saving
-        categories = categoryService.verifyRecords(categories);
-        units = unitsService.verifyRecords(units);
-        ingredients = ingredientService.verifyRecords(ingredients);
-
-        // saving only after all are verified, no verification needed now
+        // save after successfull verification, which can be disabled now
         categoryService.saveRecords(categories, true);
         unitsService.saveRecords(units, true);
         ingredientService.saveRecords(ingredients, true);
-
-        records.forEach(repository::addRow);
-        return records.size();
+        return saveRecords(records, true);
     }
 
     @Override
-    public void deleteRecords(List<Recipe> records) {
+    public void deleteRecords(Collection<Recipe> records) {
 
     }
 }

@@ -23,8 +23,23 @@ import javax.swing.table.AbstractTableModel;
 public abstract class AbstractModel<T extends Nameable> extends AbstractTableModel {
 
     protected static final int UNDEFINED = -1;
-
     private Integer colorIndex = UNDEFINED;
+
+    protected final List<Column<T, ?>> columns;
+
+    protected AbstractModel(List<Column<T, ?>> columns) {
+        this.columns = columns;
+    }
+
+    public Integer getColumnWidth(int columnIndex) {
+        return columns.get(columnIndex).getColumnWidth();
+    }
+
+    public Integer getTotalColumnWidth() {
+        return columns.stream()
+                      .map(c -> (c.getColumnWidth() != null) ? c.getColumnWidth() : 0)
+                      .reduce(0, Integer::sum);
+    }
 
     @Override
     public int getRowCount() {
@@ -33,34 +48,33 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
 
     @Override
     public int getColumnCount() {
-        return getColumns().size();
+        return columns.size();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         T entity = getEntity(rowIndex);
-        return getColumns().get(columnIndex).getValue(entity);
+        return columns.get(columnIndex).getValue(entity);
     }
 
     @Override
     public String getColumnName(int columnIndex) {
-        return getColumns().get(columnIndex).getName();
+        return columns.get(columnIndex).getName();
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return getColumns().get(columnIndex).getColumnType();
+        return columns.get(columnIndex).getColumnType();
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return getColumns().get(columnIndex).isEditable();
+        return columns.get(columnIndex).isEditable();
     }
 
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        T entity = getEntity(rowIndex);
-        getColumns().get(columnIndex).setValue(value, entity);
+        columns.get(columnIndex).setValue(value, getEntity(rowIndex));
     }
 
     /**
@@ -137,14 +151,6 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @return all entities of the table
      */
     public abstract List<T> getEntities();
-
-    /**
-     * Gets the list of all table columns with their methods. This
-     * list does not have to be modifiable.
-     *
-     * @return all columns of the table
-     */
-    protected abstract List<Column<T, ?>> getColumns();
 
     /**
      * If it gets the position, it means there is a column that implements

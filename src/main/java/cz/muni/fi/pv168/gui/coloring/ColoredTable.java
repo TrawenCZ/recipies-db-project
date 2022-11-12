@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.RowSorterEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -49,6 +48,19 @@ public class ColoredTable extends JTable {
         model = dm;
         setSelectionForeground(Color.BLACK);
         setAutoCreateRowSorter(false);
+        setRowHeight(30);
+    }
+
+    @Override
+    public void doLayout() {
+        var total = model.getTotalColumnWidth();
+        for (int i = 0; i < getColumnCount(); i++) {
+            var width = model.getColumnWidth(i);
+            if (width != null) getColumnModel().getColumn(i).setPreferredWidth(
+                Math.round(getWidth() * width / total)
+            );
+        }
+        super.doLayout();
     }
 
     @Override
@@ -71,14 +83,6 @@ public class ColoredTable extends JTable {
         c.setBackground(color);
 
         return c;
-    }
-
-    @Override
-    public void sorterChanged(RowSorterEvent e) {
-        super.sorterChanged(e);
-        if (e.getType() == RowSorterEvent.Type.SORTED) {
-            resizeAndRepaint(); // this protected method calls both revalidate() and repaint()
-        }
     }
 
     /**

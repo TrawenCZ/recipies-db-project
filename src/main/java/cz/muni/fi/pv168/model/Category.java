@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.muni.fi.pv168.gui.coloring.Colorable;
+
 import java.awt.Color;
 import java.util.Objects;
-import cz.muni.fi.pv168.gui.coloring.DisplayableColor;
 
 /**
  * @author Jan Martinek, Radim Stejskal
  */
 public class Category implements Colorable, Nameable {
 
-    public final static Category UNCATEGORIZED = new Category("", new DisplayableColor(0x000000));
+    public final static Category UNCATEGORIZED = new Category("", Color.WHITE);
 
     private String name;
-    private DisplayableColor color;
+    private Color color;
 
     /**
      * Serialized constructor, accessible to mapper via reflection. Takes color as an rgb-hex
@@ -27,7 +27,12 @@ public class Category implements Colorable, Nameable {
      */
     @JsonCreator
     private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
-        this(name, new DisplayableColor(Integer.parseInt(color,16)));
+        this(name, new Color(
+            Integer.valueOf(color.substring(2, 4), 16),
+            Integer.valueOf(color.substring(4, 6), 16),
+            Integer.valueOf(color.substring(6, 8), 16),
+            Integer.valueOf(color.substring(0, 2), 16)
+        ));
     }
 
     /**
@@ -37,7 +42,7 @@ public class Category implements Colorable, Nameable {
      * @param color non-null color object
      */
 
-    public Category(String name, DisplayableColor color) {
+    public Category(String name, Color color) {
         setName(name);
         setColor(color);
     }
@@ -49,7 +54,7 @@ public class Category implements Colorable, Nameable {
 
     @JsonProperty("color")
     public String getSerializedColor() {
-        return color.getRGB() + "";
+        return String.format("%08X", color.getRGB());
     }
 
     @Override
@@ -62,7 +67,7 @@ public class Category implements Colorable, Nameable {
         this.name = Objects.requireNonNull(name);
     }
 
-    public void setColor(DisplayableColor color) {
+    public void setColor(Color color) {
         this.color = Objects.requireNonNull(color);
     }
 

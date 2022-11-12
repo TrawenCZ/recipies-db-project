@@ -15,28 +15,22 @@ public class IngredientTableModel extends AbstractModel<Ingredient> {
 
     private final List<Ingredient> ingredients;
 
-    private final List<Column<Ingredient, ?>> columns = List.of(
-        Column.readonly("Name", String.class, Ingredient::getName),
-        Column.readonly("Kcal in 1U", double.class, Ingredient::getKcal),
-        Column.readonly("Unit", Unit.class, Ingredient::getUnit)
-    );
-
     public IngredientTableModel() {
         this(new ArrayList<Ingredient>());
     }
 
     public IngredientTableModel(List<Ingredient> ingredients) {
+        super(List.of(
+            Column.readonly("Name", String.class, Ingredient::getName, 4),
+            Column.readonly("Kcal in 1U", Double.class, Ingredient::getKcal, 2),
+            Column.readonly("Unit", Unit.class, Ingredient::getUnit, 4)
+        ));
         this.ingredients = new ArrayList<>(ingredients);
     }
 
     @Override
     public List<Ingredient> getEntities() {
         return ingredients;
-    }
-
-    @Override
-    protected List<Column<Ingredient, ?>> getColumns() {
-        return columns;
     }
 
     /**

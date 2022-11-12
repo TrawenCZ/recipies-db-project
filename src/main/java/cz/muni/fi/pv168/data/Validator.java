@@ -1,10 +1,7 @@
 package cz.muni.fi.pv168.data;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.model.Nameable;
@@ -86,7 +83,7 @@ public class Validator {
      * @param item  item it compares
      * @return      true if found AND not equal
      */
-    public static <T extends Nameable> boolean duplicateNotEqual(List<T> list, T item) {
+    public static <T extends Nameable> boolean duplicateNotEqual(Collection<T> list, T item) {
         if (list == null || item == null) throw new NullPointerException();
         for (var other : list) {
             if (item.getName().equals(other.getName()) && !item.equals(other)) {
@@ -94,17 +91,5 @@ public class Validator {
             }
         }
         return false;
-    }
-
-    /**
-     *
-     * @param list
-     * @param <T>
-     * @return true if the list contains two objects of the same name that are not equal, false otherwise
-     */
-    public static <T extends Nameable> boolean containsNonEqualDuplicates(List<T> list) {
-        Set<T> itemsSet = new HashSet<>(list);
-        Set<String> names = list.stream().map(T::getName).collect(Collectors.toSet());
-        return names.size() != itemsSet.size();
     }
 }
