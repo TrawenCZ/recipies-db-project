@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Category
 (
     `id`           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     `name`         VARCHAR(100) NOT NULL UNIQUE,
-    `color`        VARCHAR(20) NOT NULL, -- not really sure how to color is saved
+    `color`        VARCHAR(20) NOT NULL -- not really sure how to color is saved
 );
 
 --
