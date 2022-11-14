@@ -11,7 +11,6 @@ import java.util.Objects;
 public class IngredientAmount {
     private Ingredient ingredient;
     private Double amount;
-
     private Unit unit;
 
     @JsonCreator
