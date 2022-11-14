@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS IngredientList
     `ingredientId` BIGINT NOT NULL, -- so that means that they can more than one duplicates of these keys (double)
                                     -- if you wish to make them unique (double), delete `id` atr and make a double primary key
     --
-    `amount`       BIGINT NOT NULL,
+    `amount`       DOUBLE PRECISION NOT NULL,
     `unitId`       BIGINT NOT NULL,
     FOREIGN KEY (`recipeId`) REFERENCES Recipe(`id`),
     FOREIGN KEY (`ingredientId`) REFERENCES Ingredient(`id`),
