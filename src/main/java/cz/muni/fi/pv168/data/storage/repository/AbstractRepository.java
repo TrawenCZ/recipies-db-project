@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E extends Identifiable> {
     private final D dao;
     private final EntityMapper<EE, E> mapper;
-    private List<E> entities = new ArrayList<>();
+    protected List<E> entities = new ArrayList<>();
 
     public AbstractRepository(
             D dao,

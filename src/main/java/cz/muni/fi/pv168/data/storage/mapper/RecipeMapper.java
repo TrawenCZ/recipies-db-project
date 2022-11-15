@@ -1,27 +1,23 @@
 package cz.muni.fi.pv168.data.storage.mapper;
 
-import cz.muni.fi.pv168.data.storage.dao.CategoryDao;
-import cz.muni.fi.pv168.data.storage.dao.IngredientListDao;
-import cz.muni.fi.pv168.data.storage.dao.RecipeDao;
-import cz.muni.fi.pv168.data.storage.entity.CategoryEntity;
-import cz.muni.fi.pv168.data.storage.entity.IngredientListEntity;
 import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
-import cz.muni.fi.pv168.data.storage.repository.AbstractRepository;
+import cz.muni.fi.pv168.data.storage.repository.CategoryRepository;
 import cz.muni.fi.pv168.data.validation.Validator;
 import cz.muni.fi.pv168.model.Category;
-import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.IngredientAmount;
 import cz.muni.fi.pv168.model.Recipe;
+
+import java.util.List;
 
 public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
 
     private final Validator<Recipe> recipeValidator;
-    private final AbstractRepository<CategoryDao, CategoryEntity, Category> categories;
-    private final AbstractRepository<IngredientListDao, IngredientListEntity, IngredientAmount> ingredients;
+    private final CategoryRepository categories;
+    private final List<IngredientAmount> ingredients;
 
     public RecipeMapper(Validator<Recipe> recipeValidator,
-                        AbstractRepository<CategoryDao, CategoryEntity, Category> categories,
-                        AbstractRepository<IngredientListDao, IngredientListEntity, IngredientAmount> ingredients) {
+                        CategoryRepository categories,
+                        List<IngredientAmount> ingredients) {
         this.recipeValidator = recipeValidator;
         this.categories = categories;
         this.ingredients = ingredients;
@@ -50,6 +46,6 @@ public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
     public Recipe mapToModel(RecipeEntity entity) {
         Category category = categories.findById(entity.categoryId()).orElseThrow();
         return new Recipe(entity.id(), entity.name(), entity.description(), entity.instruction(), category,
-                entity.duration(), entity.portions(), ingredients.findAll());
+                (int) entity.duration(), (int) entity.portions(), ingredients);
     }
 }
