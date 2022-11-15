@@ -10,9 +10,10 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Recipe implements Nameable {
+public class Recipe implements Nameable, Identifiable {
 
     // shown in table
+    private long id;
     private String name;
     private String description;
     private String instructions;
@@ -24,13 +25,15 @@ public class Recipe implements Nameable {
     private List<IngredientAmount> ingredients;
 
     @JsonCreator
-    public Recipe(@JsonProperty("name") String name,
+    public Recipe(long id,
+            @JsonProperty("name") String name,
                   @JsonProperty("description") String description,
                   @JsonProperty("instruction") String instructions,
                   @JsonProperty("category") Category category,
                   @JsonProperty("preparationTime") int requiredTime,
                   @JsonProperty("portions") int portions,
                   @JsonProperty("ingredients") List<IngredientAmount> ingredients) {
+        setId(id);
         setName(name);
         setDescription(description);
         setInstructions(instructions);
@@ -40,6 +43,9 @@ public class Recipe implements Nameable {
         setIngredients(ingredients);
     }
 
+    public long getId() {
+        return id;
+    }
     @JsonProperty("name")
     public String getName() {
         return name;
@@ -73,6 +79,10 @@ public class Recipe implements Nameable {
     @JsonProperty("instructions")
     public String getInstructions() {
         return instructions;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

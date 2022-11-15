@@ -8,18 +8,26 @@ import java.util.Objects;
 /**
  * @author Radim Stejskal
  */
-public class IngredientAmount {
+public class IngredientAmount implements Identifiable {
+    private long id;
     private Ingredient ingredient;
     private Double amount;
     private Unit unit;
 
     @JsonCreator
-    public IngredientAmount(@JsonProperty("ingredient") Ingredient ingredient,
+    public IngredientAmount(long id,
+            @JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
+        this.id = id;
         this.ingredient = Objects.requireNonNull(ingredient, "ingredient must not be null");
         this.amount = Objects.requireNonNull(amount, "amount must not be null");
         this.unit = Objects.requireNonNull(unit, "unit must not be null");
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     @JsonProperty("ingredient")
@@ -50,6 +58,10 @@ public class IngredientAmount {
     @Override
     public int hashCode() {
         return Objects.hash(ingredient, amount, unit);
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setIngredient(Ingredient ingredient) {

@@ -11,9 +11,9 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Category implements Colorable, Nameable {
+public class Category implements Colorable, Nameable, Identifiable {
 
-    public final static Category UNCATEGORIZED = new Category("", Color.WHITE);
+    private long id;
 
     private String name;
     private Color color;
@@ -26,8 +26,8 @@ public class Category implements Colorable, Nameable {
      * @param color string parsable to hex-int, non-null
      */
     @JsonCreator
-    private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
-        this(name, new Color(
+    private Category(long id, @JsonProperty("name") String name, @JsonProperty("color") String color) {
+        this(id, name, new Color(
             Integer.valueOf(color.substring(2, 4), 16),
             Integer.valueOf(color.substring(4, 6), 16),
             Integer.valueOf(color.substring(6, 8), 16),
@@ -42,9 +42,14 @@ public class Category implements Colorable, Nameable {
      * @param color non-null color object
      */
 
-    public Category(String name, Color color) {
+    public Category(long id, String name, Color color) {
+        setId(id);
         setName(name);
         setColor(color);
+    }
+
+    public long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -60,7 +65,11 @@ public class Category implements Colorable, Nameable {
     @Override
     @JsonIgnore
     public Color getColor() {
-        return (this == Category.UNCATEGORIZED) ? null : color;
+        return color;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

@@ -8,16 +8,19 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Ingredient implements Nameable {
+public class Ingredient implements Nameable, Identifiable {
 
+    private long id;
     private String name;
     private double kcal;
     private Unit unit;
 
     @JsonCreator
-    public Ingredient(@JsonProperty("name") String name,
+    public Ingredient(long id,
+            @JsonProperty("name") String name,
                       @JsonProperty("kcal") double kcal,
                       @JsonProperty("unit") Unit unit) {
+        setId(id);
         setName(name);
         setKcal(kcal);
         setUnit(unit);
@@ -28,6 +31,11 @@ public class Ingredient implements Nameable {
         return name;
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
+
     @JsonProperty("kcal")
     public double getKcal() {
         return kcal;
@@ -36,6 +44,10 @@ public class Ingredient implements Nameable {
     @JsonProperty("unit")
     public Unit getUnit() {
         return unit;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

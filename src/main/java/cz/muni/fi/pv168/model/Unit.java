@@ -11,19 +11,27 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Unit implements Colorable, Nameable {
+public class Unit implements Colorable, Nameable, Identifiable {
 
+    private long id;
     private String name;
     private double valueInBaseUnit;
     private BaseUnitsEnum baseUnit;
 
     @JsonCreator
-    public Unit(@JsonProperty("name") String name,
+    public Unit(long id,
+            @JsonProperty("name") String name,
                 @JsonProperty("valueInBaseUnit") double value,
                 @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
+        this.id = id;
         this.name = name;
         this.valueInBaseUnit = value;
         this.baseUnit = baseUnit;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -56,6 +64,10 @@ public class Unit implements Colorable, Nameable {
     public Color getColor() {
         // TODO: REVIEW after base units are finished, may need some changes
         return (name.equals(baseUnit.getValue())) ? Color.GRAY : null;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name){
