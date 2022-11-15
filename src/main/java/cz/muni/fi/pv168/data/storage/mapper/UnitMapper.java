@@ -4,7 +4,6 @@ import cz.muni.fi.pv168.data.storage.entity.UnitEntity;
 import cz.muni.fi.pv168.data.storage.repository.UnitRepository;
 import cz.muni.fi.pv168.data.validation.Validator;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
-import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Unit;
 
 public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
@@ -20,8 +19,8 @@ public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
     public UnitEntity mapToEntity(Unit source) {
         unitValidator.validate(source).intoException();
 
-        Unit unit = units.findByName(source.getBaseUnit().getValue()).orElseThrow();
-        return new UnitEntity(source.getId(), source.getName(), source.getValueInBaseUnit(), unit.getId());
+        Unit baseUnit = units.findByName(source.getBaseUnit().getValue()).orElseThrow();
+        return new UnitEntity(source.getId(), source.getName(), source.getValueInBaseUnit(), baseUnit.getId());
     }
 
     @Override
