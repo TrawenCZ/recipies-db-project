@@ -25,7 +25,7 @@ public class Recipe implements Nameable, Identifiable {
     private List<IngredientAmount> ingredients;
 
     @JsonCreator
-    public Recipe(long id,
+    public Recipe(@JsonProperty("id") long id,
             @JsonProperty("name") String name,
                   @JsonProperty("description") String description,
                   @JsonProperty("instruction") String instructions,
@@ -43,9 +43,11 @@ public class Recipe implements Nameable, Identifiable {
         setIngredients(ingredients);
     }
 
+    @JsonProperty("id")
     public long getId() {
         return id;
     }
+
     @JsonProperty("name")
     public String getName() {
         return name;

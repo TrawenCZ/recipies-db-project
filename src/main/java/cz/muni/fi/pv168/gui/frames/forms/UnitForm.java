@@ -74,7 +74,7 @@ public class UnitForm extends AbstractForm {
             unit.setBaseUnit(baseUnit);
             tableModel.updateRow(unit);
         } else {
-            tableModel.addRow(new Unit(nameInput.getText(), valueInBaseUnit, baseUnit));
+            //tableModel.addRow(new Unit(nameInput.getText(), valueInBaseUnit, baseUnit));
         }
         return true;
     }

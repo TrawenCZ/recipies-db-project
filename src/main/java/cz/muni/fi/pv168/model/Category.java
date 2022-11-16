@@ -26,7 +26,7 @@ public class Category implements Colorable, Nameable, Identifiable {
      * @param color string parsable to hex-int, non-null
      */
     @JsonCreator
-    private Category(long id, @JsonProperty("name") String name, @JsonProperty("color") String color) {
+    private Category(@JsonProperty("id") long id, @JsonProperty("name") String name, @JsonProperty("color") String color) {
         this(id, name, new Color(
             Integer.valueOf(color.substring(2, 4), 16),
             Integer.valueOf(color.substring(4, 6), 16),
@@ -38,6 +38,7 @@ public class Category implements Colorable, Nameable, Identifiable {
     /**
      * Public constructor. Creates a new category with a given name and color
      *
+     * @param id    identifier
      * @param name  non-null string, used as identifier of the category
      * @param color non-null color object
      */
@@ -48,6 +49,7 @@ public class Category implements Colorable, Nameable, Identifiable {
         setColor(color);
     }
 
+    @JsonProperty("id")
     public long getId() {
         return id;
     }

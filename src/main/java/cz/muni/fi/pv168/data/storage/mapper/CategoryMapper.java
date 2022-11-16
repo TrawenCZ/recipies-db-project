@@ -26,7 +26,13 @@ public class CategoryMapper implements EntityMapper<CategoryEntity, Category> {
 
     @Override
     public Category mapToModel(CategoryEntity entity) {
-        Color color = new Color(10000); // TODO obtain correct color
+        String colorString = entity.color();
+        Color color = new Color(
+                Integer.valueOf(colorString.substring(2, 4), 16),
+                Integer.valueOf(colorString.substring(4, 6), 16),
+                Integer.valueOf(colorString.substring(6, 8), 16),
+                Integer.valueOf(colorString.substring(0, 2), 16)
+        );
         return new Category(
                 entity.id(),
                 entity.name(),

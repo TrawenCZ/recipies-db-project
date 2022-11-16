@@ -19,7 +19,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
     private BaseUnitsEnum baseUnit;
 
     @JsonCreator
-    public Unit(long id,
+    public Unit(@JsonProperty("id") long id,
             @JsonProperty("name") String name,
                 @JsonProperty("valueInBaseUnit") double value,
                 @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
@@ -29,7 +29,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
         this.baseUnit = baseUnit;
     }
 
-    @Override
+    @JsonProperty("id")
     public long getId() {
         return id;
     }

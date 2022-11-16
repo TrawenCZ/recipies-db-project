@@ -25,7 +25,7 @@ public final class CategoriesTab extends AbstractTab {
     @Override
     public void addSampleData(int sampleSize) {
         var model = (CategoryTableModel) table.getModel();
-        CategoryDataGenerator.getAll().stream().forEach(model::addRow);
+        //CategoryDataGenerator.getAll().stream().forEach(model::addRow);
     }
 
     @Override

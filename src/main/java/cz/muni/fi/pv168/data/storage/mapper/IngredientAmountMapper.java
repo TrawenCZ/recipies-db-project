@@ -12,23 +12,20 @@ import cz.muni.fi.pv168.model.Unit;
 public class IngredientAmountMapper implements EntityMapper<IngredientListEntity, IngredientAmount> {
     private final IngredientRepository ingredients;
     private final UnitRepository units;
-    private final RecipeRepository recipes;
 
     public IngredientAmountMapper(
             IngredientRepository ingredients,
-            UnitRepository units,
-            RecipeRepository recipes
+            UnitRepository units
     ) {
         this.ingredients = ingredients;
         this.units = units;
-        this.recipes = recipes;
     }
 
     @Override
     public IngredientListEntity mapToEntity(IngredientAmount source) {
         return new IngredientListEntity(
                 source.getId(),
-                source.getRecipe().getId(),
+                source.getRecipeId(),
                 source.getIngredient().getId(),
                 source.getAmount(),
                 source.getUnit().getId()
@@ -39,10 +36,9 @@ public class IngredientAmountMapper implements EntityMapper<IngredientListEntity
     public IngredientAmount mapToModel(IngredientListEntity entity) {
         Ingredient ingredient = ingredients.findById(entity.ingredientId()).orElseThrow();
         Unit unit = units.findById(entity.unitId()).orElseThrow();
-        Recipe recipe = recipes.findById(entity.recipeId()).orElseThrow();
         return new IngredientAmount(
                 entity.id(),
-                recipe,
+                entity.recipeId(),
                 ingredient,
                 entity.amount(),
                 unit

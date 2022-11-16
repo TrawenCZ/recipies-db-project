@@ -78,11 +78,8 @@ public class RecipeForm extends AbstractForm {
         }
 
         public IngredientAmount getIngredientAmount() {
-            return new IngredientAmount(0,
-                (Ingredient) ingredientComboBox.getSelectedItem(),
-                (double) ingredientAmount.parse(),
-                (Unit) unitComboBox.getSelectedItem()
-            );
+            //return new IngredientAmount(0,(Ingredient) ingredientComboBox.getSelectedItem(), (double) ingredientAmount.parse(),(Unit) unitComboBox.getSelectedItem());
+            return null;
         }
 
         private void initializeLayout() {

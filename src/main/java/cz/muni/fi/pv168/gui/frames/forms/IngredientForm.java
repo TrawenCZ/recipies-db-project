@@ -108,17 +108,15 @@ public class IngredientForm extends AbstractForm {
             energyValueNumber /= 100;
         }
 
-        Unit unit = new Unit(baseUnit.getValue(), 1, baseUnit);
+        //Unit unit = new Unit(baseUnit.getValue(), 1, baseUnit);
         var tableModel = (IngredientTableModel) TabLayout.getIngredientsModel();
         if (isEdit()) {
             ingredient.setName(nameInput.getText());
             ingredient.setKcal(energyValueNumber);
-            ingredient.setUnit(unit);
+            //ingredient.setUnit(unit);
             tableModel.updateRow(ingredient);
         } else {
-            Ingredient ingredient = new Ingredient(nameInput.getText(),
-                                                   energyValueNumber,
-                                                   unit);
+            //Ingredient ingredient = new Ingredient(nameInput.getText(), energyValueNumber, unit);
             tableModel.addRow(ingredient);
         }
 
