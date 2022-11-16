@@ -17,7 +17,7 @@ public class IngredientAmountMapper implements EntityMapper<IngredientListEntity
     public IngredientAmountMapper(
             IngredientRepository ingredients,
             UnitRepository units,
-            RecipeRepository recipes,
+            RecipeRepository recipes
     ) {
         this.ingredients = ingredients;
         this.units = units;
