@@ -10,16 +10,19 @@ import java.util.Objects;
  */
 public class IngredientAmount implements Identifiable {
     private long id;
+    private Recipe recipe;
     private Ingredient ingredient;
     private Double amount;
     private Unit unit;
 
     @JsonCreator
     public IngredientAmount(long id,
+            Recipe recipe,
             @JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
         this.id = id;
+        this.recipe = Objects.requireNonNull(recipe, "ingredient must not be null");
         this.ingredient = Objects.requireNonNull(ingredient, "ingredient must not be null");
         this.amount = Objects.requireNonNull(amount, "amount must not be null");
         this.unit = Objects.requireNonNull(unit, "unit must not be null");
@@ -28,6 +31,10 @@ public class IngredientAmount implements Identifiable {
     @Override
     public long getId() {
         return id;
+    }
+
+    public Recipe getRecipe() {
+        return recipe;
     }
 
     @JsonProperty("ingredient")
@@ -62,6 +69,10 @@ public class IngredientAmount implements Identifiable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
     }
 
     public void setIngredient(Ingredient ingredient) {
