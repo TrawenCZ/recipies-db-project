@@ -18,7 +18,7 @@ public class Ingredient implements Nameable, Identifiable {
 
     @JsonCreator
     public Ingredient(@JsonProperty("id") long id,
-            @JsonProperty("name") String name,
+                      @JsonProperty("name") String name,
                       @JsonProperty("kcal") double kcal,
                       @JsonProperty("unit") Unit unit) {
         setId(id);
@@ -26,6 +26,16 @@ public class Ingredient implements Nameable, Identifiable {
         setKcal(kcal);
         setUnit(unit);
     }
+
+    public Ingredient(String name,
+                      double kcal,
+                      Unit unit) {
+        setName(name);
+        setKcal(kcal);
+        setUnit(unit);
+    }
+
+
 
     @JsonProperty("name")
     public String getName() {

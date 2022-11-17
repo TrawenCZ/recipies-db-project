@@ -20,15 +20,20 @@ public class Unit implements Colorable, Nameable, Identifiable {
 
     @JsonCreator
     public Unit(@JsonProperty("id") long id,
-            @JsonProperty("name") String name,
-                @JsonProperty("valueInBaseUnit") double value,
+                @JsonProperty("name") String name,
+                @JsonProperty("valueInBaseUnit") double valueInBaseUnit,
                 @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
         this.id = id;
+        this.name = name;
+        this.valueInBaseUnit = valueInBaseUnit;
+        this.baseUnit = baseUnit;
+    }
+
+    public Unit(String name, double value, BaseUnitsEnum baseUnit) {
         this.name = name;
         this.valueInBaseUnit = value;
         this.baseUnit = baseUnit;
     }
-
     @JsonProperty("id")
     public long getId() {
         return id;
