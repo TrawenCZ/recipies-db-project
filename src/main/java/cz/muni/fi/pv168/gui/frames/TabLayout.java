@@ -13,10 +13,10 @@ public class TabLayout {
     private static final AbstractTab ingredients = new IngredientsTab();
     private static final AbstractTab recipes = new RecipeTab();
 
-    final static String RECIPES = TabNamesEnum.RECIPES.getName();
-    final static String CATEGORIES = TabNamesEnum.CATEGORIES.getName();
-    final static String INGREDIENTS = TabNamesEnum.INGREDIENTS.getName();
-    final static String UNITS = TabNamesEnum.UNITS.getName();
+    public static final String RECIPES = "recipes";
+    public static final String CATEGORIES = "categories";
+    public static final String INGREDIENTS = "ingredients";
+    public static final String UNITS = "units";
 
     public void createTabs(Container pane) {
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -30,10 +30,10 @@ public class TabLayout {
 
     public static AbstractTab getTab(String name) {
         switch (name.toLowerCase()) {
-            case "recipes": return recipes;
-            case "categories": return categories;
-            case "ingredients": return ingredients;
-            case "units": return units;
+            case RECIPES: return recipes;
+            case CATEGORIES: return categories;
+            case INGREDIENTS: return ingredients;
+            case UNITS: return units;
     }
         return null;
     }
