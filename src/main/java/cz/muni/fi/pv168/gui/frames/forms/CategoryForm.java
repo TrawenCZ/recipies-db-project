@@ -65,7 +65,7 @@ public class CategoryForm extends AbstractForm {
             category.setColor(newColor);
             tableModel.updateRow(category);
         } else {
-            //tableModel.addRow(new Category(nameInput.getText(), newColor));
+            tableModel.addRow(new Category(nameInput.getText(), newColor));
         }
 
         return true;

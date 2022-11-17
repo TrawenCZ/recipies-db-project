@@ -10,20 +10,20 @@ public class IngredientDataGenerator extends AbstractDataGenerator<Ingredient> {
     private static final UnitDataGenerator unitGenerator = new UnitDataGenerator();
 
     private static final List<Ingredient> INGREDIENTS = List.of(
-        new Ingredient(0L,"Mrkev", 1.35d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Rajče", 1.33d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Paprika", 1.47d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Kuřecí maso", 6.54d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Vepřové maso", 7.21d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Máslo", 4.74d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Mléko", 5d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Mouka", 20d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Voda", 1d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Cukr", 9.99d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Sůl", 0.11d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Pepř", 0.28d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Brambor", 8.34d, unitGenerator.createTestEntity()),
-        new Ingredient(0L,"Sýr", 500.3d, unitGenerator.createTestEntity())
+        new Ingredient("Mrkev", 1.35d, unitGenerator.createTestEntity()),
+        new Ingredient("Rajče", 1.33d, unitGenerator.createTestEntity()),
+        new Ingredient("Paprika", 1.47d, unitGenerator.createTestEntity()),
+        new Ingredient("Kuřecí maso", 6.54d, unitGenerator.createTestEntity()),
+        new Ingredient("Vepřové maso", 7.21d, unitGenerator.createTestEntity()),
+        new Ingredient("Máslo", 4.74d, unitGenerator.createTestEntity()),
+        new Ingredient("Mléko", 5d, unitGenerator.createTestEntity()),
+        new Ingredient("Mouka", 20d, unitGenerator.createTestEntity()),
+        new Ingredient("Voda", 1d, unitGenerator.createTestEntity()),
+        new Ingredient("Cukr", 9.99d, unitGenerator.createTestEntity()),
+        new Ingredient("Sůl", 0.11d, unitGenerator.createTestEntity()),
+        new Ingredient("Pepř", 0.28d, unitGenerator.createTestEntity()),
+        new Ingredient("Brambor", 8.34d, unitGenerator.createTestEntity()),
+        new Ingredient("Sýr", 500.3d, unitGenerator.createTestEntity())
     );
 
     public Ingredient createTestEntity() {

@@ -55,7 +55,7 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
         int portions = random.nextInt(1, 12);
         List<IngredientAmount> ingredients = getIngredients(2000d, random.nextInt(20));
 
-        return new Recipe( name, description, instructions, category, time, portions, ingredients);
+        return new Recipe(name, description, instructions, category, time, portions, ingredients);
     }
 
 

@@ -16,32 +16,27 @@ public class IngredientAmount implements Identifiable {
     private Unit unit;
 
     @JsonCreator
-    public IngredientAmount(@JsonProperty("id") Long id,
-                            @JsonProperty("recipeId") Long recipeId,
-                            @JsonProperty("ingredient") Ingredient ingredient,
+    public IngredientAmount(@JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
+        this(null, null, ingredient, amount, unit);
+    }
+    public IngredientAmount(Long id,
+                            Long recipeId,
+                            Ingredient ingredient,
+                            Double amount,
+                            Unit unit) {
         this.id = id;
         this.recipeId = recipeId;
         this.ingredient = Objects.requireNonNull(ingredient, "ingredient must not be null");
         this.amount = Objects.requireNonNull(amount, "amount must not be null");
         this.unit = Objects.requireNonNull(unit, "unit must not be null");
     }
-    public IngredientAmount(
-                            Ingredient ingredient,
-                            Double amount,
-                            Unit unit) {
-        this.ingredient = Objects.requireNonNull(ingredient, "ingredient must not be null");
-        this.amount = Objects.requireNonNull(amount, "amount must not be null");
-        this.unit = Objects.requireNonNull(unit, "unit must not be null");
-    }
 
-    @JsonProperty("id")
     public Long getId() {
         return id;
     }
 
-    @JsonProperty("recipeId")
     public Long getRecipeId() {
         return recipeId;
     }

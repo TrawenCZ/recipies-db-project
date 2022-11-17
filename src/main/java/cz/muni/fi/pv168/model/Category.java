@@ -25,13 +25,8 @@ public class Category implements Colorable, Nameable, Identifiable {
      * @param color string parsable to hex-int, non-null
      */
     @JsonCreator
-    private Category(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("color") String color) {
-        this(id, name, new Color(
-            Integer.valueOf(color.substring(2, 4), 16),
-            Integer.valueOf(color.substring(4, 6), 16),
-            Integer.valueOf(color.substring(6, 8), 16),
-            Integer.valueOf(color.substring(0, 2), 16)
-        ));
+    private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
+        this(null, name, color);
     }
 
     /**
@@ -48,12 +43,19 @@ public class Category implements Colorable, Nameable, Identifiable {
         setColor(color);
     }
 
-    public Category(String name, Color color) {
-        setName(name);
-        setColor(color);
+    public Category(Long id, String name, String color) {
+        this(id, name, new Color(
+                Integer.valueOf(color.substring(2, 4), 16),
+                Integer.valueOf(color.substring(4, 6), 16),
+                Integer.valueOf(color.substring(6, 8), 16),
+                Integer.valueOf(color.substring(0, 2), 16)
+        ));
     }
 
-    @JsonProperty("id")
+    public Category(String name, Color color) {
+        this(null, name, color);
+    }
+
     public Long getId() {
         return id;
     }
