@@ -55,14 +55,14 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
         int portions = random.nextInt(1, 12);
         List<IngredientAmount> ingredients = getIngredients(2000d, random.nextInt(20));
 
-        return new Recipe(0, name, description, instructions, category, time, portions, ingredients);
+        return new Recipe( name, description, instructions, category, time, portions, ingredients);
     }
 
 
     private List<IngredientAmount> getIngredients(Double maxValue, int count) {
         List<IngredientAmount> m = new ArrayList<>();
         for (Ingredient i : ingredients.createTestData(count)) {
-            m.add(new IngredientAmount(0, 0,
+            m.add(new IngredientAmount(0L, 0L,
                 i,
                 (double) Math.round(random.nextDouble(2000) * 100) / 100,
                 units.createTestEntity()));

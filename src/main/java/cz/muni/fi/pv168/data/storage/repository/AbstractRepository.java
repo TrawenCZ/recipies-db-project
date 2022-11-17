@@ -29,7 +29,7 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         return entities.size();
     }
 
-    public Optional<E> findById(long id) {
+    public Optional<E> findById(Long id) {
         return entities.stream().filter(e -> e.getId() == id).findFirst();
     }
 

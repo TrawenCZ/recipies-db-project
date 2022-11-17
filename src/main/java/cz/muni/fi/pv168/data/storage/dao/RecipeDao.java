@@ -7,10 +7,7 @@ import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class RecipeDao implements DataAccessObject<RecipeEntity>{
@@ -62,7 +59,8 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
     @Override
     public Collection<RecipeEntity> findAll() {
         var sql = """
-            SELECT name,
+            SELECT id,
+                   name,
                    description,
                    categoryId,
                    portions,
@@ -90,7 +88,8 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
     @Override
     public Optional<RecipeEntity> findById(long id) {
         var sql = """
-            SELECT name,
+            SELECT id,
+                   name,
                    description,
                    categoryId,
                    portions,
@@ -120,7 +119,40 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
 
     @Override
     public RecipeEntity update(RecipeEntity entity) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Objects.requireNonNull(entity.id(), "Entity id cannot be null");
+
+        final var sql = """
+                UPDATE Recipe
+                    SET
+                    name = ?,
+                    description = ?,
+                    categoryId = ?,
+                    portions = ?,
+                    duration = ?,
+                    instruction = ?
+                    WHERE id = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, entity.name());
+            statement.setString(2, entity.description());
+            statement.setLong(3, entity.categoryId());
+            statement.setLong(4, entity.portions());
+            statement.setLong(5, entity.duration());
+            statement.setString(6, entity.instruction());
+            statement.setLong(7, entity.id());
+
+            if (statement.executeUpdate() == 0) {
+                throw new DataStorageException("Failed to update non-existing recipe: " + entity);
+            }
+        } catch (SQLException ex) {
+            throw new DataStorageException("Failed to update recipe with id: " + entity.id(), ex);
+        }
+
+        return findById(entity.id()).orElseThrow(); // returns changed entity
     }
 
     @Override
