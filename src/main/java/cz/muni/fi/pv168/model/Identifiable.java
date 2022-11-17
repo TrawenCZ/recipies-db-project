@@ -7,5 +7,5 @@ package cz.muni.fi.pv168.model;
  * @author Adam Slíva
  */
 public interface Identifiable {
-    long getId();
+    Long getId();
 }

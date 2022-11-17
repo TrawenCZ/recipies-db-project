@@ -9,15 +9,15 @@ import java.util.Objects;
  * @author Radim Stejskal
  */
 public class IngredientAmount implements Identifiable {
-    private long id;
-    private long recipeId;
+    private Long id;
+    private Long recipeId;
     private Ingredient ingredient;
     private Double amount;
     private Unit unit;
 
     @JsonCreator
-    public IngredientAmount(@JsonProperty("id") long id,
-                            @JsonProperty("recipeId") long recipeId,
+    public IngredientAmount(@JsonProperty("id") Long id,
+                            @JsonProperty("recipeId") Long recipeId,
                             @JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
@@ -37,12 +37,12 @@ public class IngredientAmount implements Identifiable {
     }
 
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
     @JsonProperty("recipeId")
-    public long getRecipeId() {
+    public Long getRecipeId() {
         return recipeId;
     }
 
@@ -76,11 +76,11 @@ public class IngredientAmount implements Identifiable {
         return Objects.hash(ingredient, amount, unit);
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setRecipeId(long recipeId) {
+    public void setRecipeId(Long recipeId) {
         this.recipeId = recipeId;
     }
 

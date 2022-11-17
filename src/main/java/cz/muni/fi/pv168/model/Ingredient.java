@@ -11,13 +11,13 @@ import java.util.Objects;
  */
 public class Ingredient implements Nameable, Identifiable {
 
-    private long id;
+    private Long id;
     private String name;
     private double kcal;
     private Unit unit;
 
     @JsonCreator
-    public Ingredient(@JsonProperty("id") long id,
+    public Ingredient(@JsonProperty("id") Long id,
                       @JsonProperty("name") String name,
                       @JsonProperty("kcal") double kcal,
                       @JsonProperty("unit") Unit unit) {
@@ -43,7 +43,7 @@ public class Ingredient implements Nameable, Identifiable {
     }
 
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -57,7 +57,7 @@ public class Ingredient implements Nameable, Identifiable {
         return unit;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

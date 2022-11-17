@@ -13,13 +13,13 @@ import java.util.Objects;
  */
 public class Unit implements Colorable, Nameable, Identifiable {
 
-    private long id;
+    private Long id;
     private String name;
     private double valueInBaseUnit;
     private BaseUnitsEnum baseUnit;
 
     @JsonCreator
-    public Unit(@JsonProperty("id") long id,
+    public Unit(@JsonProperty("id") Long id,
                 @JsonProperty("name") String name,
                 @JsonProperty("valueInBaseUnit") double valueInBaseUnit,
                 @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
@@ -35,7 +35,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
         this.baseUnit = baseUnit;
     }
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -71,7 +71,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
         return (name.equals(baseUnit.getValue())) ? Color.GRAY : null;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
