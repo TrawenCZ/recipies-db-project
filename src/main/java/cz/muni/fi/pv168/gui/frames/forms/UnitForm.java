@@ -9,15 +9,12 @@ import cz.muni.fi.pv168.model.Unit;
 import javax.swing.*;
 import java.awt.*;
 
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
-
 public class UnitForm extends AbstractForm {
 
     JPanel newPanel = new JPanel(new GridBagLayout());
 
-    private JLabel nameLabel = new JLabel("Name");
-    private JLabel unitLabel = new JLabel("Value");
+    private JLabel nameLabel = new JLabel("Name (*)");
+    private JLabel unitLabel = new JLabel("Value (*)");
     private JLabel equivalentLabel = new JLabel("per unit");
 
     private JTextField nameInput = new JTextField(24);

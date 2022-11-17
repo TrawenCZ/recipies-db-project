@@ -20,9 +20,6 @@ import java.util.function.Function;
 
 import javax.swing.*;
 
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
-
 public class RecipeForm extends AbstractForm {
 
     protected final JTextField nameInput = new JTextField(24);
@@ -171,7 +168,7 @@ public class RecipeForm extends AbstractForm {
      * Recipe details
      */
     public RecipeForm(String header) {
-        super("Details", header, null, "Go Back");
+        super("Details", header, null, "Close");
     }
 
     @Override
@@ -189,14 +186,18 @@ public class RecipeForm extends AbstractForm {
 
         // labels
         gridInsets(10, 10, 10, 10);
-        gridAdd(new JLabel(" Name"), 0, 0);
-        gridAdd(new JLabel(" Description"), 0, 2);
+        gridAdd(new JLabel(" Name (*)"), 0, 0);
+        gridAdd(new JLabel(" Description (*)"), 0, 2);
         gridAdd(new JLabel(" Category"), 0, 4);
-        gridAdd(new JLabel(" Portions"), 2, 4);
-        gridAdd(new JLabel(" Duration (min)"), 3, 4);
-        gridAdd(new JLabel(" Instructions"), 0, 9);
-        gridAdd(new JLabel(" Ingredients"), 4, 0);
+        gridAdd(new JLabel(" Portions (*)"), 2, 4);
+        gridAdd(new JLabel(" Preparation time (*)"), 3, 4);
+        gridAdd(new JLabel(" Instructions (*)"), 0, 9);
+        gridAdd(new JLabel(" Ingredients (* at least one)"), 4, 0);
         gridAdd(ingredientButton, 5, 0);
+
+        // preparation time minute label
+        gridInsets(-10, -40, 10, 10);
+        gridAdd(new JLabel("min"), 4, 5);
 
         // input fields
         gridInsets(-10, 10, 10, 10);
@@ -220,11 +221,11 @@ public class RecipeForm extends AbstractForm {
         }
 
         if (TextValidator.empty(descriptionInput.getText())) {
-            // TODO: description empty
+            showErrorDialog("Description is required and cannot be empty!", "Missing description");
             return false;
         }
         if (TextValidator.empty(instructionsInput.getText())) {
-            // TODO: instructions empty
+            showErrorDialog("Instructions are required and cannot be empty!", "Missing instructions");
             return false;
         }
 
@@ -233,7 +234,7 @@ public class RecipeForm extends AbstractForm {
             .toList();
 
         if (ingredientsList == null || ingredientsList.size() == 0) {
-            // TODO: at least one ingredient
+            showErrorDialog("Recipe must have at least ONE ingredient!", "Missing ingredients");
             return false;
         }
 

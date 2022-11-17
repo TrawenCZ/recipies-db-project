@@ -2,12 +2,15 @@ package cz.muni.fi.pv168.gui.frames.tabs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -29,7 +32,6 @@ import cz.muni.fi.pv168.gui.filters.Sorter;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
-import net.miginfocom.swing.MigLayout;
 
 import static cz.muni.fi.pv168.gui.resources.Messages.DELETING_ERR_TITLE;
 
@@ -115,12 +117,22 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected JPanel createFilterPanel() {
-        JPanel panel = new JPanel();
+        var panel = new JPanel(new GridBagLayout());
+        var c = new GridBagConstraints();
 
-        panel.setLayout(new MigLayout("align 0% 50%"));
-        panel.add(searchButton);
-        panel.add(resetButton);
-        panel.add(searchBar, "span, grow");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(4, 4, 2, 2);
+        c.ipady = 10;
+
+        c.weightx = 1;
+        panel.add(searchBar, c);
+
+        c.weightx = 0;
+        panel.add(searchButton, c);
+        panel.add(resetButton, c);
+
+        c.weightx = 2;
+        panel.add(Box.createHorizontalStrut(200), c);
 
         return panel;
     }
@@ -164,12 +176,7 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected void exportEntities(ActionEvent event) {
-        var selectedRows = IntStream.of(table.getSelectedRows()).map(table::convertRowIndexToModel).boxed().toList();
-        if (selectedRows.size() == 0) {
-            exportAction.actionPerformed(event);
-        } else {
-            exportAction.actionPerformed(event, selectedRows);
-        }
+        exportAction.actionPerformed(event);
     }
 
     protected void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {

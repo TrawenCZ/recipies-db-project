@@ -17,6 +17,7 @@ public final class DoubleTextField extends JFormattedTextField {
         super(new DoubleFormatter(lowerLimit, upperLimit));
         this.setColumns(columns);
         this.setToolTipText("Accepts only decimals");
+        this.setValue(lowerLimit);
     }
 
 

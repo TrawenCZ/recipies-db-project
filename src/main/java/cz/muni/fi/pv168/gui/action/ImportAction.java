@@ -3,19 +3,22 @@ package cz.muni.fi.pv168.gui.action;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import javax.swing.*;
 
+import cz.muni.fi.pv168.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
 import cz.muni.fi.pv168.data.service.AbstractService;
 import cz.muni.fi.pv168.exceptions.InconsistentRecordException;
+import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
 
+/**
+ * @author Jan Martinek, Radim Stejskal
+ */
 public class ImportAction<T extends Nameable> extends AbstractAction {
 
     private final static String ERROR_TITLE = "Invalid import";
@@ -38,14 +41,11 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        var fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
+        var fileChooser = new JsonFileChooser(false, true);
         if (fileChooser.showOpenDialog(table) == JFileChooser.APPROVE_OPTION) {
-            File importFile = fileChooser.getSelectedFile();
             try {
                 List<T> importedEntities = JSONImporter.loadEntities(
-                    importFile.getAbsolutePath(),
+                    fileChooser.getSelectedFile().getAbsolutePath(),
                     aClass
                 );
                 showSuccessfulImportMessage(
@@ -59,12 +59,12 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
                     ERROR_TITLE,
                     JOptionPane.ERROR_MESSAGE
                 );
-            } catch (IOException ex) {
+            } catch (DataManipulationException ex) {
                 JOptionPane.showMessageDialog(
                     new JFrame(),
                     """
-                        Please check that you are trying to import records of the
-                        same type as the current tab and that the JSON file fits the format.
+                        Please check that you are trying to import records of the same
+                        type as the current tab and that the JSON file fits the format.
                     """,
                     ERROR_TITLE,
                     JOptionPane.ERROR_MESSAGE
