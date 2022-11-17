@@ -8,7 +8,9 @@ import java.util.Objects;
 /**
  * @author Radim Stejskal
  */
-public class IngredientAmount {
+public class IngredientAmount implements Identifiable {
+    private Long id;
+    private Long recipeId;
     private Ingredient ingredient;
     private Double amount;
     private Unit unit;
@@ -17,9 +19,26 @@ public class IngredientAmount {
     public IngredientAmount(@JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
+        this(null, null, ingredient, amount, unit);
+    }
+    public IngredientAmount(Long id,
+                            Long recipeId,
+                            Ingredient ingredient,
+                            Double amount,
+                            Unit unit) {
+        this.id = id;
+        this.recipeId = recipeId;
         this.ingredient = Objects.requireNonNull(ingredient, "ingredient must not be null");
         this.amount = Objects.requireNonNull(amount, "amount must not be null");
         this.unit = Objects.requireNonNull(unit, "unit must not be null");
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getRecipeId() {
+        return recipeId;
     }
 
     @JsonProperty("ingredient")
@@ -50,6 +69,14 @@ public class IngredientAmount {
     @Override
     public int hashCode() {
         return Objects.hash(ingredient, amount, unit);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
     }
 
     public void setIngredient(Ingredient ingredient) {

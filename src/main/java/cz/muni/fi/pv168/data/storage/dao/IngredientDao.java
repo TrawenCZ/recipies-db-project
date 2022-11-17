@@ -7,10 +7,7 @@ import cz.muni.fi.pv168.data.storage.entity.IngredientEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class IngredientDao implements DataAccessObject<IngredientEntity> {
@@ -107,8 +104,34 @@ public class IngredientDao implements DataAccessObject<IngredientEntity> {
 
     @Override
     public IngredientEntity update(IngredientEntity entity) {
-        // TODO: not implemented yet
-        throw new UnsupportedOperationException("Not implemented yet");
+        Objects.requireNonNull(entity.id(), "Entity id cannot be null");
+
+        final var sql = """
+                UPDATE INGREDIENT
+                    SET
+                    name = ?,
+                    kcalPerUnit = ?,
+                    baseUnitId = ?
+                    WHERE id = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, entity.name());
+            statement.setDouble(2, entity.kcalPerUnit());
+            statement.setLong(3, entity.baseUnitId());
+            statement.setLong(4, entity.id());
+
+            if (statement.executeUpdate() == 0) {
+                throw new DataStorageException("Failed to update non-existing ingredient: " + entity);
+            }
+        } catch (SQLException ex) {
+            throw new DataStorageException("Failed to update ingredient with id: " + entity.id(), ex);
+        }
+
+        return findById(entity.id()).orElseThrow(); // returns changed entity
 
     }
 

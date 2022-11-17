@@ -11,10 +11,9 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Category implements Colorable, Nameable {
+public class Category implements Colorable, Nameable, Identifiable {
 
-    public final static Category UNCATEGORIZED = new Category("", Color.WHITE);
-
+    private Long id;
     private String name;
     private Color color;
 
@@ -27,24 +26,38 @@ public class Category implements Colorable, Nameable {
      */
     @JsonCreator
     private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
-        this(name, new Color(
-            Integer.valueOf(color.substring(2, 4), 16),
-            Integer.valueOf(color.substring(4, 6), 16),
-            Integer.valueOf(color.substring(6, 8), 16),
-            Integer.valueOf(color.substring(0, 2), 16)
-        ));
+        this(null, name, color);
     }
 
     /**
      * Public constructor. Creates a new category with a given name and color
      *
+     * @param id    identifier
      * @param name  non-null string, used as identifier of the category
      * @param color non-null color object
      */
 
-    public Category(String name, Color color) {
+    public Category(Long id, String name, Color color) {
+        setId(id);
         setName(name);
         setColor(color);
+    }
+
+    public Category(Long id, String name, String color) {
+        this(id, name, new Color(
+                Integer.valueOf(color.substring(2, 4), 16),
+                Integer.valueOf(color.substring(4, 6), 16),
+                Integer.valueOf(color.substring(6, 8), 16),
+                Integer.valueOf(color.substring(0, 2), 16)
+        ));
+    }
+
+    public Category(String name, Color color) {
+        this(null, name, color);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -60,7 +73,11 @@ public class Category implements Colorable, Nameable {
     @Override
     @JsonIgnore
     public Color getColor() {
-        return (this == Category.UNCATEGORIZED) ? null : color;
+        return color;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

@@ -49,7 +49,8 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
 
         String description = selectRandom(DESCRIPTIONS);
         String instructions = "instructions";
-        Category category = (random.nextInt(0, 10) == 0) ? Category.UNCATEGORIZED : categories.createTestEntity();
+        //Category category = (random.nextInt(0, 10) == 0) ? Category.UNCATEGORIZED : categories.createTestEntity(); -- original line 52
+        Category category = categories.createTestEntity();
         int time = random.nextInt(1, 120);
         int portions = random.nextInt(1, 12);
         List<IngredientAmount> ingredients = getIngredients(2000d, random.nextInt(20));
@@ -61,7 +62,7 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
     private List<IngredientAmount> getIngredients(Double maxValue, int count) {
         List<IngredientAmount> m = new ArrayList<>();
         for (Ingredient i : ingredients.createTestData(count)) {
-            m.add(new IngredientAmount(
+            m.add(new IngredientAmount(0L, 0L,
                 i,
                 (double) Math.round(random.nextDouble(2000) * 100) / 100,
                 units.createTestEntity()));

@@ -122,9 +122,7 @@ public class IngredientForm extends AbstractForm {
             ingredient.setUnit(unit);
             tableModel.updateRow(ingredient);
         } else {
-            Ingredient ingredient = new Ingredient(nameInput.getText(),
-                                                   energyValueNumber,
-                                                   unit);
+            Ingredient ingredient = new Ingredient(nameInput.getText(), energyValueNumber, unit);
             tableModel.addRow(ingredient);
         }
 

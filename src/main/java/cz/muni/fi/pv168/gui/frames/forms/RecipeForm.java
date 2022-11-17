@@ -75,11 +75,7 @@ public class RecipeForm extends AbstractForm {
         }
 
         public IngredientAmount getIngredientAmount() {
-            return new IngredientAmount(
-                (Ingredient) ingredientComboBox.getSelectedItem(),
-                (double) ingredientAmount.parse(),
-                (Unit) unitComboBox.getSelectedItem()
-            );
+            return new IngredientAmount((Ingredient) ingredientComboBox.getSelectedItem(), (double) ingredientAmount.parse(),(Unit) unitComboBox.getSelectedItem());
         }
 
         private void initializeLayout() {
@@ -257,7 +253,6 @@ public class RecipeForm extends AbstractForm {
 
     private Category[] getAllCategories() {
         List<Category> categories = new ArrayList<>();
-        categories.add(Category.UNCATEGORIZED);
         var categoryModel = (CategoryTableModel) TabLayout.getCategoriesModel();
         for (int i = 0; i < categoryModel.getRowCount(); i++) {
             categories.add(TabLayout.getCategoriesModel().getEntity(i));
@@ -283,6 +278,7 @@ public class RecipeForm extends AbstractForm {
     }
 
     private void addRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
+        // DATABASE...
         model.addRow(new Recipe(
             nameInput.getText(),
             descriptionInput.getText(),
