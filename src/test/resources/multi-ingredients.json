@@ -1,0 +1,28 @@
+[{
+  "name": "brokolice",
+  "kcal": 510.0,
+  "unit": {
+    "name": "g",
+    "valueInBaseUnit": 1000.0,
+    "baseUnit": "GRAM"
+  }
+},
+  {
+    "name": "mrkev",
+    "kcal": 510.0,
+    "unit": {
+      "name": "g",
+      "valueInBaseUnit": 4000.0,
+      "baseUnit": "GRAM"
+    }
+  },
+  {
+    "name": "kukurice",
+    "kcal": 113.0,
+    "unit": {
+      "name": "g",
+      "valueInBaseUnit": 130.0,
+      "baseUnit": "GRAM"
+    }
+  }
+]
