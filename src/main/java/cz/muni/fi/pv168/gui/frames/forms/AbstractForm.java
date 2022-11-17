@@ -33,7 +33,7 @@ public abstract class AbstractForm {
     protected final JPanel body = new JPanel(new GridBagLayout());
 
     private final GridBagConstraints c = new GridBagConstraints();
-    private final JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    private final JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
     /**
      * Constructs the basic layout of form missing body, i.e. only header and
@@ -70,7 +70,7 @@ public abstract class AbstractForm {
      * @see AbstractForm#AbstractForm(String, String, String, String)
      */
     protected AbstractForm(String title, String header) {
-        this(title, header, "Save", "Close");
+        this(title, header, "OK", "Cancel");
     }
 
     /**
@@ -88,27 +88,13 @@ public abstract class AbstractForm {
      */
     protected abstract boolean onAction();
 
-    /**
-     * Implement this if you use {@link AbstractForm#verifyName(Nameable, String)}.
-     */
-    protected void showEmptyName() {
-        showErrorDialog("Name cannot be empty!", "Missing name");
-    }
-
-    /**
-     * Implement this if you use {@link AbstractForm#verifyName(Nameable, String)}.
-     */
-    protected void showNotUnique() {
-        showErrorDialog("Name must be unique!", "Duplicate name");
-    }
-
     protected boolean verifyName(AbstractModel<?> model, Nameable item, String input) {
         if (TextValidator.empty(input)) {
-            showEmptyName();
+            showErrorDialog("Name cannot be empty!", "Missing name");
             return false;
         }
         if (!Validator.isUnique(model, input) && !(isEdit() && item.getName().equals(input))) {
-            showNotUnique();
+            showErrorDialog("Name must be unique!", "Duplicate name");
             return false;
         }
         return true;
@@ -131,7 +117,7 @@ public abstract class AbstractForm {
 
     protected void pack() {
         dialog.pack();
-        dialog.setSize(dialog.getWidth() + 200, dialog.getHeight() + 50);
+        dialog.setSize(dialog.getWidth() + 100, dialog.getHeight() + 50);
         dialog.setLocationRelativeTo(MainWindow.getContentPane());
     }
 

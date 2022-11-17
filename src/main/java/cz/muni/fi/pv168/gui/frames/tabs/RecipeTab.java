@@ -82,7 +82,7 @@ public final class RecipeTab extends AbstractTab {
     protected void initialize() {
         c = new GridBagConstraints();
 
-        timeLabel     = new JLabel("Preparation time");
+        timeLabel     = new JLabel("Preparation (min)");
         portionsLabel = new JLabel("Portions");
         timeField     = new RangeTextField();
         portionsField = new RangeTextField();
@@ -118,34 +118,34 @@ public final class RecipeTab extends AbstractTab {
 
         // search
         c.gridwidth = 2;
-        addComponent(panel, searchBar, 4, 0);
+        addComponent(panel, searchBar, 0, 0);
 
         // filters
         c.gridwidth = 1;
-        addComponent(panel, categoryFilter, 4, 1);
-        addComponent(panel, ingredientsFilter, 5, 1);
+        addComponent(panel, categoryFilter, 0, 1);
+        addComponent(panel, ingredientsFilter, 1, 1);
 
         // time
         c.weightx = 0.4;
         c.gridwidth = 2;
-        addComponent(panel, timeLabel, 6, 0, right_anchor);
+        addComponent(panel, timeLabel, 2, 0, right_anchor);
         c.gridwidth = 1;
-        addComponent(panel, timeField.lower(), 6, 1);
-        addComponent(panel, timeField.upper(), 7, 1);
+        addComponent(panel, timeField.lower(), 2, 1);
+        addComponent(panel, timeField.upper(), 3, 1);
 
         // portions
         c.weightx = 0.4;
         c.gridwidth = 2;
-        addComponent(panel, portionsLabel, 8, 0, right_anchor);
+        addComponent(panel, portionsLabel, 4, 0, right_anchor);
         c.gridwidth = 1;
-        addComponent(panel, portionsField.lower(), 8, 1);
-        addComponent(panel, portionsField.upper(), 9, 1);
+        addComponent(panel, portionsField.lower(), 4, 1);
+        addComponent(panel, portionsField.upper(), 5, 1);
 
         c.weightx = 0.3;
         c.gridwidth = 2;
         c.gridheight = 2;
-        addComponent(panel, searchButton, 0, 0);
-        addComponent(panel, resetButton, 2, 0);
+        addComponent(panel, searchButton, 6, 0);
+        addComponent(panel, resetButton, 8, 0);
 
         return panel;
     }

@@ -6,12 +6,9 @@ import cz.muni.fi.pv168.model.Category;
 import java.awt.*;
 import javax.swing.*;
 
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
-
 public class CategoryForm extends AbstractForm {
 
-    private final JLabel nameLabel = new JLabel("Enter name");
+    private final JLabel nameLabel = new JLabel("Enter name (*)");
     private final JLabel colorLabel = new JLabel("Select any color");
 
     private final JTextField nameInput = new JTextField(12);

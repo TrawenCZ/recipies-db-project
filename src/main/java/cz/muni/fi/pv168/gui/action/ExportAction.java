@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.gui.action;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +12,7 @@ import javax.swing.*;
 
 import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.data.service.AbstractService;
+import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
 
@@ -37,25 +37,25 @@ public class ExportAction<T extends Nameable> extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.actionPerformed(e, IntStream.rangeClosed(0, table.getRowCount()).boxed().toList());
-    }
+        var indexes = IntStream.rangeClosed(0, table.getRowCount()).boxed().toList();
+        var fileChooser = new JsonFileChooser(false, true);
 
-    public void actionPerformed(ActionEvent e, List<Integer> indexes) {
-        var fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
-        int dialogResult = fileChooser.showOpenDialog(table);
-        if (dialogResult == JFileChooser.APPROVE_OPTION) {
-            File importFile = fileChooser.getSelectedFile();
+        if (fileChooser.showOpenDialog(table) == JFileChooser.APPROVE_OPTION) {
             try {
                 List<T> exportedEntities = service.selectRecords(indexes);
-                exporter.saveEntities(importFile.getAbsolutePath(), exportedEntities);
-                JOptionPane.showMessageDialog(new Frame(), "The export was successfully created.");
+                exporter.saveEntities(fileChooser.getJsonPath(), exportedEntities);
+                JOptionPane.showMessageDialog(new Frame(), "Exporting was successful.");
             } catch (IOException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(new JFrame(), "The records could not be exported, please " +
-                                "check your permissions for the selected directory.", "Export error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    """
+                        The records could not be exported, please check the write
+                        permissions to the selected directory.
+                    """,
+                    "Export error",
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }

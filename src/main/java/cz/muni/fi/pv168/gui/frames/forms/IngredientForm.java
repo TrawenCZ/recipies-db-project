@@ -14,18 +14,15 @@ import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
-
 public class IngredientForm extends AbstractForm {
 
-    private final static String DEFAULT_ENERGY_TEXT = " Energy value (kcal) per 100g";
+    private final static String DEFAULT_ENERGY_TEXT = " Energy value (kcal) per 100g (*)";
     private final static String DEFAULT_CONVERSION_TEXT = "Enable kcal/unit conversion";
 
     // all of those have added spaces to make it look better
-    private final JLabel nameLabel = new JLabel(" Name");
+    private final JLabel nameLabel = new JLabel(" Name (*)");
     private final JLabel energyLabel = new JLabel(DEFAULT_ENERGY_TEXT);
-    private final JLabel ingredientValueLabel = new JLabel(" Ingredient weight");
+    private final JLabel ingredientValueLabel = new JLabel();
 
     private final JTextField nameInput = new JTextField(24);
     private final DoubleTextField energyInput = new DoubleTextField(0.01d, 8);
@@ -61,6 +58,7 @@ public class IngredientForm extends AbstractForm {
 
         gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
 
+        // labels
         gridInsets(10);
         gridAdd(nameLabel, 0, 1);
         gridAdd(energyLabel, 0, 2);
@@ -68,9 +66,14 @@ public class IngredientForm extends AbstractForm {
         gridAdd(unitsLabel, 0, 4);
         gridAdd(toggleButton, 0, 5, 2, 1);
 
+        // spacing
+        gridInsets(10, 10, 10, 250);
+        gridAdd(new JLabel(), 0, 0, 1, 4);
+
+        // inputs
         gridInsets(10, -80, 10, 10);
-        gridAdd(nameInput, 1, 1, 2, 1);
-        gridAdd(energyInput, 1, 2, 2, 1);
+        gridAdd(nameInput, 1, 1);
+        gridAdd(energyInput, 1, 2);
         gridAdd(ingredientValueInput, 1, 3);
         gridAdd(unitsComboBox, 1, 4);
 
@@ -78,6 +81,9 @@ public class IngredientForm extends AbstractForm {
         ingredientValueInput.setEnabled(false);
         unitsLabel.setEnabled(false);
         unitsComboBox.setEnabled(false);
+
+        // load default value to ingredientValueLabel
+        comboBoxListener(null);
 
         unitsComboBox.addItemListener(this::comboBoxListener);
         toggleButton.addItemListener(this::toggleListener);
@@ -129,7 +135,7 @@ public class IngredientForm extends AbstractForm {
 
         if (condition) {
             toggleButton.setText("Disable kcal/unit conversion");
-            energyLabel.setText(" Energy value (kcal) per ingredient");
+            energyLabel.setText(" Energy value (kcal) per ingredient (*)");
         } else {
             toggleButton.setText(DEFAULT_CONVERSION_TEXT);
             energyLabel.setText(DEFAULT_ENERGY_TEXT);
