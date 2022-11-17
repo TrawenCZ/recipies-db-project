@@ -14,7 +14,6 @@ import java.util.Objects;
 public class Category implements Colorable, Nameable, Identifiable {
 
     private long id;
-
     private String name;
     private Color color;
 
@@ -45,6 +44,11 @@ public class Category implements Colorable, Nameable, Identifiable {
 
     public Category(long id, String name, Color color) {
         setId(id);
+        setName(name);
+        setColor(color);
+    }
+
+    public Category(String name, Color color) {
         setName(name);
         setColor(color);
     }
