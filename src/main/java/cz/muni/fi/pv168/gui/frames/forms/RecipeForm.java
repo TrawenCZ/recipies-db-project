@@ -278,7 +278,8 @@ public class RecipeForm extends AbstractForm {
     }
 
     private void addRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
-        model.addRow(new Recipe(0,
+        // DATABASE...
+        model.addRow(new Recipe(
             nameInput.getText(),
             descriptionInput.getText(),
             instructionsInput.getText(),

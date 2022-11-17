@@ -13,7 +13,7 @@ import java.util.Objects;
 public class Recipe implements Nameable, Identifiable {
 
     // shown in table
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private String instructions;
@@ -25,7 +25,7 @@ public class Recipe implements Nameable, Identifiable {
     private List<IngredientAmount> ingredients;
 
     @JsonCreator
-    public Recipe(@JsonProperty("id") long id,
+    public Recipe(@JsonProperty("id") Long id,
                   @JsonProperty("name") String name,
                   @JsonProperty("description") String description,
                   @JsonProperty("instruction") String instructions,
@@ -61,7 +61,7 @@ public class Recipe implements Nameable, Identifiable {
 
 
     @JsonProperty("id")
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -100,7 +100,7 @@ public class Recipe implements Nameable, Identifiable {
         return instructions;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
