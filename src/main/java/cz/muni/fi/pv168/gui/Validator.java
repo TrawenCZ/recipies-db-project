@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.data;
+package cz.muni.fi.pv168.gui;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -21,7 +21,7 @@ public class Validator {
      */
     public static boolean isUnique(AbstractModel<?> model, String name) {
         if (model == null || name == null) throw new NullPointerException();
-        return !model.getEntity(name).isPresent();
+        return model.getEntity(name) == null;
     }
 
     /**
@@ -34,7 +34,7 @@ public class Validator {
      */
     public static boolean isUnique(AbstractModel<?> model, Nameable item) {
         if (model == null || item == null) throw new NullPointerException();
-        return !model.getEntity(item.getName()).isPresent();
+        return model.getEntity(item.getName()) == null;
     }
 
     /**
@@ -72,7 +72,7 @@ public class Validator {
     public static boolean duplicateNotEqual(AbstractModel<?> model, Nameable item) {
         if (model == null || item == null) throw new NullPointerException();
         var savedItem = model.getEntity(item.getName());
-        return savedItem.isPresent() && !item.equals(savedItem.get());
+        return savedItem != null && !item.equals(savedItem);
     }
 
     /**

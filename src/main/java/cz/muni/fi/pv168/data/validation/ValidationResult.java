@@ -8,6 +8,7 @@ import java.util.*;
  * otherwise the result is not valid
  */
 public final class ValidationResult {
+
     private final List<String> validationErrors;
 
     public static ValidationResult failed(String... validationErrors) {

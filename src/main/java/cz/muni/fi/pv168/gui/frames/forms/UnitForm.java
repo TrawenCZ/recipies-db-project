@@ -1,8 +1,7 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
-import cz.muni.fi.pv168.gui.frames.TabLayout;
-import cz.muni.fi.pv168.gui.models.UnitsTableModel;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
 import cz.muni.fi.pv168.model.Unit;
 
@@ -58,7 +57,7 @@ public class UnitForm extends AbstractForm {
 
     @Override
     protected boolean onAction() {
-        var tableModel = (UnitsTableModel) TabLayout.getUnitsModel();
+        var tableModel = MainWindow.getUnitsModel();
         if (!verifyName(tableModel, unit, nameInput.getText())) {
             return false;
         }

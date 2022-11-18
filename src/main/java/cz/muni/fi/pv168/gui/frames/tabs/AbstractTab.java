@@ -21,8 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 
-import cz.muni.fi.pv168.data.Validator;
 import cz.muni.fi.pv168.data.service.AbstractService;
+import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.action.*;
 import cz.muni.fi.pv168.gui.coloring.ColoredTable;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
@@ -80,7 +80,7 @@ public abstract class AbstractTab extends JPanel {
         this.table.setRowSorter(sorter);
         this.table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
 
-        addSampleData(100);
+        // addSampleData(100);
 
         entries = new JLabel();
         updateEntries();
@@ -101,11 +101,6 @@ public abstract class AbstractTab extends JPanel {
                 .sorted(Comparator.reverseOrder())
                 .forEach(model::deleteRow);
         updateEntries();
-    }
-
-
-    public AbstractModel<?> getModel() {
-        return table.getAbstractModel();
     }
 
     public ColoredTable getTable() {
@@ -222,7 +217,7 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected Sorter createSorter() {
-        return new Sorter(table, getModel(), searchBar);
+        return new Sorter(table, table.getAbstractModel(), searchBar);
     }
 
     private void setLayout() {

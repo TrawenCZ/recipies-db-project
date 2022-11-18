@@ -10,6 +10,7 @@ import java.util.Optional;
  */
 @FunctionalInterface
 public interface Validator<M> {
+
     ValidationResult validate(M model);
 
     default Validator<M> and(Validator<M> other) {
@@ -17,17 +18,15 @@ public interface Validator<M> {
     }
 
     static <M> Validator<M> compose(List<Validator<M>> validators) {
-        return model -> validators
-                .stream()
-                .map(x -> x.validate(model))
-                .reduce(new ValidationResult(), (r, e) -> {
-                    r.add(e.getValidationErrors());
-                    return r;
-                });
+        return model -> validators.stream()
+                                   .map(x -> x.validate(model))
+                                   .reduce(new ValidationResult(), (r, e) -> {
+                                       r.add(e.getValidationErrors());
+                                       return r;
+                                   });
     }
 
     default Optional<String> validateStringLength(String name, String value, int min, int max) {
-
         if (value.length() < min) {
             return Optional.of(name + " is too short");
         } else if (value.length() > max) {

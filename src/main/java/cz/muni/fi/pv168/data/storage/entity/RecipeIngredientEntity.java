@@ -1,13 +1,13 @@
 package cz.muni.fi.pv168.data.storage.entity;
 
-public record IngredientListEntity(
+public record RecipeIngredientEntity(
         Long id,
         long recipeId,     // foreign key
         long ingredientId, // foreign key
         double amount,
         long unitId        // foreign key
 ) {
-    public IngredientListEntity(
+    public RecipeIngredientEntity(
             long recipeId,
             long ingredientId,
             double amount,

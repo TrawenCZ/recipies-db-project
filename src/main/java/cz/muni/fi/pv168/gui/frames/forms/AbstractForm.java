@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import cz.muni.fi.pv168.data.Validator;
 import cz.muni.fi.pv168.gui.TextValidator;
+import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;

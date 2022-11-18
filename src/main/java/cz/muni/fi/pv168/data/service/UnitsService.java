@@ -1,17 +1,19 @@
 package cz.muni.fi.pv168.data.service;
 
-import cz.muni.fi.pv168.gui.models.UnitsTableModel;
+import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Unit;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  * @author Radim Stejskal. Jan Martinek
  */
 public class UnitsService extends AbstractService<Unit> {
 
-    public UnitsService(UnitsTableModel unitRepository) {
-        super(unitRepository, "Unit");
+    public UnitsService(Repository<Unit> unitRepository, Supplier<TransactionHandler> transactions) {
+        super(unitRepository, transactions);
     }
 
     @Override

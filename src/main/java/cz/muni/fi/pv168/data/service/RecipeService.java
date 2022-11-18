@@ -1,26 +1,33 @@
 package cz.muni.fi.pv168.data.service;
 
+import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.exceptions.InconsistentRecordException;
-import cz.muni.fi.pv168.gui.models.RecipeTableModel;
-import cz.muni.fi.pv168.model.IngredientAmount;
+import cz.muni.fi.pv168.model.RecipeIngredient;
+import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.Recipe;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  * @author Radim Stejskal, Jan Martinek
  */
 public class RecipeService extends AbstractService<Recipe> {
 
-    private UnitsService unitsService;
-    private CategoryService categoryService;
-    private IngredientService ingredientService;
+    private Service<Unit> unitsService;
+    private Service<Category> categoryService;
+    private Service<Ingredient> ingredientService;
 
-    public RecipeService(RecipeTableModel recipeRepository,
-                             UnitsService unitsService,
-                             CategoryService categoryService,
-                             IngredientService ingredientService) {
-        super(recipeRepository, "Recipe");
+    public RecipeService(Repository<Recipe> recipeRepository,
+                         Service<Unit> unitsService,
+                         Service<Category> categoryService,
+                         Service<Ingredient> ingredientService,
+                         Supplier<TransactionHandler> transactions
+    ) {
+        super(recipeRepository, transactions);
         this.unitsService = unitsService;
         this.categoryService = categoryService;
         this.ingredientService = ingredientService;
@@ -40,14 +47,14 @@ public class RecipeService extends AbstractService<Recipe> {
             records.stream()
                    .map(Recipe::getIngredients)
                    .flatMap(Collection::stream)
-                   .map(IngredientAmount::getUnit)
+                   .map(RecipeIngredient::getUnit)
                    .toList()
         );
         var ingredients = ingredientService.verifyRecords(
             records.stream()
                    .map(Recipe::getIngredients)
                    .flatMap(Collection::stream)
-                   .map(IngredientAmount::getIngredient)
+                   .map(RecipeIngredient::getIngredient)
                    .toList()
         );
 

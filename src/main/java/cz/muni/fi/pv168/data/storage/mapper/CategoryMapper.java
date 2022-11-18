@@ -1,11 +1,8 @@
 package cz.muni.fi.pv168.data.storage.mapper;
 
-
 import cz.muni.fi.pv168.data.storage.entity.CategoryEntity;
 import cz.muni.fi.pv168.data.validation.Validator;
 import cz.muni.fi.pv168.model.Category;
-
-import java.awt.*;
 
 public class CategoryMapper implements EntityMapper<CategoryEntity, Category> {
 

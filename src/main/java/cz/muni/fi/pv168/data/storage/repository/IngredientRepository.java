@@ -6,7 +6,13 @@ import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Ingredient;
 
 public class IngredientRepository extends AbstractRepository<IngredientDao, IngredientEntity, Ingredient> {
+
     public IngredientRepository(IngredientDao dao, EntityMapper<IngredientEntity, Ingredient> mapper) {
         super(dao, mapper);
+    }
+
+    @Override
+    public String toString() {
+        return "Ingredient";
     }
 }

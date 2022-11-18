@@ -16,21 +16,15 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.generators.RecipeDataGenerator;
-import cz.muni.fi.pv168.data.manipulation.*;
-import cz.muni.fi.pv168.data.service.*;
-import cz.muni.fi.pv168.gui.action.ExportAction;
-import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.text.RangeTextField;
 import cz.muni.fi.pv168.gui.filters.SorterRecipe;
-import cz.muni.fi.pv168.gui.frames.TabLayout;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
-import cz.muni.fi.pv168.gui.models.*;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
-import cz.muni.fi.pv168.model.Recipe;
 
 public final class RecipeTab extends AbstractTab {
 
@@ -46,7 +40,7 @@ public final class RecipeTab extends AbstractTab {
     private GridBagConstraints c;
 
     public RecipeTab() {
-        super(new RecipeTableModel(), ICON_SIZE);
+        super(MainWindow.getRecipeModel(), ICON_SIZE);
 
         // hide ingredients column from user
         table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
@@ -60,21 +54,21 @@ public final class RecipeTab extends AbstractTab {
             }
         });
 
-        var unitsService = new UnitsService((UnitsTableModel) TabLayout.getUnitsModel());
-        service = new RecipeService(
-            (RecipeTableModel) table.getModel(), unitsService,
-            new CategoryService((CategoryTableModel) TabLayout.getCategoriesModel()),
-            new IngredientService((IngredientTableModel) TabLayout.getIngredientsModel(),
-            unitsService)
-        );
-        importAction = new ImportAction<>(table, new JsonImporterImpl(), (RecipeService) service, Recipe.class);
-        exportAction = new ExportAction<>(table, new JsonExporterImpl(), (RecipeService) service);
+        // var unitsService = new UnitsService(unitModel);
+        // service = new RecipeService(
+        //     recipeModel, unitsService,
+        //     new CategoryService(categoryModel),
+        //     new IngredientService(ingredientModel,
+        //     unitsService)
+        // );
+        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (RecipeService) service, Recipe.class);
+        // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (RecipeService) service);
     }
 
     @Override
     public void addSampleData(int sampleSize) {
         var recipeGenerator = new RecipeDataGenerator();
-        var model = (RecipeTableModel) table.getModel();
+        var model = MainWindow.getRecipeModel();
         recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
     }
 
@@ -91,17 +85,17 @@ public final class RecipeTab extends AbstractTab {
             "Choose ingredients",
             "Show recipes that contain all of the selected ingredients",
             MultiChoiceButton.NO_MNEMONIC,
-            TabLayout.getIngredientsModel().getEntities().stream()
-                                                         .map(Nameable::getName)
-                                                         .toArray(String[]::new)
+            MainWindow.getIngredientModel().getRepository().findAll().stream()
+                                                                     .map(Nameable::getName)
+                                                                     .toArray(String[]::new)
         );
         categoryFilter = new MultiChoiceButton( // TODO: dynamic
             "Choose categories",
             "Show recipes of any selected category",
             MultiChoiceButton.NO_MNEMONIC,
-            TabLayout.getCategoriesModel().getEntities().stream()
-                                                        .map(Nameable::getName)
-                                                        .toArray(String[]::new)
+            MainWindow.getCategoryModel().getRepository().findAll().stream()
+                                                                   .map(Nameable::getName)
+                                                                   .toArray(String[]::new)
         );
     }
 
@@ -184,7 +178,7 @@ public final class RecipeTab extends AbstractTab {
 
     @Override
     protected void editSelectedRow(ActionEvent actionEvent) {
-        new RecipeForm((Recipe) table.getAbstractModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow())));
+        new RecipeForm(MainWindow.getRecipeModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow())));
     }
 
     private void viewDetails(ActionEvent actionEvent) {
@@ -193,13 +187,13 @@ public final class RecipeTab extends AbstractTab {
 
     private void showDetailsForm(int row) {
         if (row < 0 || row >= table.getRowSorter().getModelRowCount()) return;
-        new RecipeDetails((Recipe) table.getAbstractModel().getEntity(row));
+        new RecipeDetails(MainWindow.getRecipeModel().getEntity(row));
     }
 
     @Override
     protected SorterRecipe createSorter() {
         return new SorterRecipe(table,
-                                getModel(),
+                                MainWindow.getRecipeModel(),
                                 searchBar,
                                 categoryFilter,
                                 timeField,

@@ -21,7 +21,7 @@ public class Main {
         final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
         initFlatlafLookAndFeel(THEME);
         UIManager.getLookAndFeelDefaults().put("defaultFont", defaultFont);
-        SwingUtilities.invokeLater(MainWindow::new);
+        SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
     }
 
     /**

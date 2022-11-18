@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.data.generators;
 
 import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Ingredient;
-import cz.muni.fi.pv168.model.IngredientAmount;
+import cz.muni.fi.pv168.model.RecipeIngredient;
 import cz.muni.fi.pv168.model.Recipe;
 
 import java.util.ArrayList;
@@ -53,16 +53,16 @@ public class RecipeDataGenerator extends AbstractDataGenerator<Recipe> {
         Category category = categories.createTestEntity();
         int time = random.nextInt(1, 120);
         int portions = random.nextInt(1, 12);
-        List<IngredientAmount> ingredients = getIngredients(2000d, random.nextInt(20));
+        List<RecipeIngredient> ingredients = getIngredients(2000d, random.nextInt(20));
 
         return new Recipe(name, description, instructions, category, time, portions, ingredients);
     }
 
 
-    private List<IngredientAmount> getIngredients(Double maxValue, int count) {
-        List<IngredientAmount> m = new ArrayList<>();
+    private List<RecipeIngredient> getIngredients(Double maxValue, int count) {
+        List<RecipeIngredient> m = new ArrayList<>();
         for (Ingredient i : ingredients.createTestData(count)) {
-            m.add(new IngredientAmount(0L, 0L,
+            m.add(new RecipeIngredient(0L, 0L,
                 i,
                 (double) Math.round(random.nextDouble(2000) * 100) / 100,
                 units.createTestEntity()));

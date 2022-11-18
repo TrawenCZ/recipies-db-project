@@ -9,13 +9,12 @@ import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 public final class ProductionDependencyProvider extends CommonDependencyProvider {
 
     public ProductionDependencyProvider() {
-        super(getDatabaseManager());
+        super(createDatabaseManager());
     }
 
-    private static DatabaseManager getDatabaseManager() {
+    private static DatabaseManager createDatabaseManager() {
         DatabaseManager databaseManager = DatabaseManager.createProductionInstance();
         databaseManager.initSchema();
-
         return databaseManager;
     }
 }
