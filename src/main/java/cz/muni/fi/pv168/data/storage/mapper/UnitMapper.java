@@ -49,9 +49,8 @@ public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
 
     @Override
     public Unit mapToModel(UnitEntity entity) {
-        BaseUnitsEnum baseUnit = BaseUnitsEnum.valueOf(
-            unitSupplier.get(entity.baseUnitId()).orElseThrow().getName()
-        );
+        BaseUnitsEnum baseUnit = BaseUnitsEnum.stringToEnum(
+                unitSupplier.get(entity.baseUnitId()).orElseThrow().getName());
 
         return new Unit(
             entity.id(),

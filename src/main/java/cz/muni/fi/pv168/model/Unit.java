@@ -26,6 +26,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
     }
 
     public Unit(Long id, String name, double valueInBaseUnit, BaseUnitsEnum baseUnit) {
+        this.id = id;
         this.name = name;
         this.valueInBaseUnit = valueInBaseUnit;
         this.baseUnit = baseUnit;

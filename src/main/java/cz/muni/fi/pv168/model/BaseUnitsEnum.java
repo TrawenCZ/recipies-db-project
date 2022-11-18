@@ -21,6 +21,15 @@ public enum BaseUnitsEnum {
         return value;
     }
 
+    public static BaseUnitsEnum stringToEnum(String value) {
+        return switch (value) {
+            case "g" -> BaseUnitsEnum.GRAM;
+            case "ml" -> BaseUnitsEnum.MILLILITER;
+            case "pc(s)" -> BaseUnitsEnum.PIECE;
+            default -> null;
+        };
+    }
+
     public static String[] getAllValues() {
         return Arrays.stream(BaseUnitsEnum.values()).map(BaseUnitsEnum::getValue).toArray(String[]::new);
     }
