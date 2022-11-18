@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.data.storage.dao;
 
 import cz.muni.fi.pv168.data.storage.DataStorageException;
 import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
-import cz.muni.fi.pv168.data.storage.entity.IngredientListEntity;
+import cz.muni.fi.pv168.data.storage.entity.RecipeIngredientEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,12 +10,12 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class IngredientListDao implements DataAccessObject<IngredientListEntity> {
+public class RecipeIngredientDao implements DataAccessObject<RecipeIngredientEntity> {
     private final Supplier<ConnectionHandler> connections;
-    public IngredientListDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
+    public RecipeIngredientDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
 
     @Override
-    public IngredientListEntity create(IngredientListEntity entity) {
+    public RecipeIngredientEntity create(RecipeIngredientEntity entity) {
         String sql = "INSERT INTO Unit (recipeId, ingredientId, amount, unitId) VALUES (?, ?, ?, ?);";
         try (
                 var connection = connections.get();
@@ -47,7 +47,7 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
     }
 
     @Override
-    public Collection<IngredientListEntity> findAll() {
+    public Collection<RecipeIngredientEntity> findAll() {
         var sql = """
                 SELECT id,
                        recipeId,
@@ -60,7 +60,7 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
         ) {
-            List<IngredientListEntity> ingredientLists = new ArrayList<>();
+            List<RecipeIngredientEntity> ingredientLists = new ArrayList<>();
             try (var resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     var ingredientList = ingredientListFromResultSet(resultSet);
@@ -75,7 +75,7 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
     }
 
     @Override
-    public Optional<IngredientListEntity> findById(long id) {
+    public Optional<RecipeIngredientEntity> findById(long id) {
         var sql = """
                 SELECT id,
                        recipeId,
@@ -98,43 +98,25 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
                 // ingredient list not found
                 return Optional.empty();
             }
-        } catch (
-                SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataStorageException("Failed to load ingredient list by id: " + id, ex);
         }
     }
 
-    public Optional<IngredientListEntity> findByRecipeId(long recipeId) {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                    WHERE recipeId = ?
-                """;
+    public Optional<List<RecipeIngredientEntity>> findByRecipeId(long recipeId) {
+        return findByCustomId("recipeId", recipeId);
+    }
 
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, recipeId);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(ingredientListFromResultSet(resultSet));
-            } else {
-                // ingredient list not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load ingredient list by id: " + recipeId, ex);
-        }
+    public Optional<List<RecipeIngredientEntity>> findByIngredientId(long categoryId) {
+        return findByCustomId("ingredientId", categoryId);
+    }
+
+    public Optional<List<RecipeIngredientEntity>> findByUnitId(long unitId) {
+        return findByCustomId("unitId", unitId);
     }
 
     @Override
-    public IngredientListEntity update(IngredientListEntity entity) {
+    public RecipeIngredientEntity update(RecipeIngredientEntity entity) {
         Objects.requireNonNull(entity.id(), "Entity id cannot be null");
 
         final var sql = """
@@ -162,7 +144,7 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
             throw new DataStorageException("Failed to update ingredient list with id: " + entity.id(), ex);
         }
 
-        return findById(entity.id()).orElseThrow(); // returns changed entity
+        return findById(entity.id()).orElseThrow();
     }
 
     @Override
@@ -187,14 +169,48 @@ public class IngredientListDao implements DataAccessObject<IngredientListEntity>
         }
     }
 
-    private static IngredientListEntity ingredientListFromResultSet(ResultSet resultSet) throws SQLException {
-        return new IngredientListEntity
-                (
-                        resultSet.getLong("id"),
-                        resultSet.getLong("recipeId"),
-                        resultSet.getLong("ingredientId"),
-                        resultSet.getDouble("amount"),
-                        resultSet.getLong("unitId")
-                );
+    private static RecipeIngredientEntity ingredientListFromResultSet(ResultSet resultSet) throws SQLException {
+        return new RecipeIngredientEntity(
+                resultSet.getLong("id"),
+                resultSet.getLong("recipeId"),
+                resultSet.getLong("ingredientId"),
+                resultSet.getDouble("amount"),
+                resultSet.getLong("unitId")
+        );
+    }
+
+    private Optional<List<RecipeIngredientEntity>> findByCustomId(String idName, long id) {
+        var sql = """
+                SELECT id,
+                       recipeId,
+                       ingredientId,
+                       amount,
+                       unitId
+                    FROM IngredientList
+                    WHERE ? = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, idName);
+            statement.setLong(2, id);
+            var resultSet = statement.executeQuery();
+
+            List<RecipeIngredientEntity> entities = new ArrayList<>();
+            while (resultSet.next()) {
+                entities.add(new RecipeIngredientEntity(
+                    resultSet.getLong("id"),
+                    resultSet.getLong("recipeId"),
+                    resultSet.getLong("ingredientId"),
+                    resultSet.getDouble("amount"),
+                    resultSet.getLong("unitId")
+                ));
+            }
+            return (entities.size() == 0) ? Optional.empty() : Optional.of(entities);
+        } catch (SQLException ex) {
+            throw new DataStorageException("Failed to load ingredient list by " + idName + " id: " + id, ex);
+        }
     }
 }

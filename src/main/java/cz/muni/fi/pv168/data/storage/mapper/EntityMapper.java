@@ -8,6 +8,7 @@ package cz.muni.fi.pv168.data.storage.mapper;
  * @param <M> Type of the Entity (business entity)
  */
 public interface EntityMapper<E, M> {
+
     E mapToEntity(M model);
 
     M mapToModel(E entity);

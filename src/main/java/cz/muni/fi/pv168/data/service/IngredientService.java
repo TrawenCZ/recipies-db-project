@@ -1,20 +1,23 @@
 package cz.muni.fi.pv168.data.service;
 
+import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.exceptions.InconsistentRecordException;
-import cz.muni.fi.pv168.gui.models.IngredientTableModel;
 import cz.muni.fi.pv168.model.Ingredient;
+import cz.muni.fi.pv168.model.Unit;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  * @author Radim Stejskal, Jan Martinek
  */
 public class IngredientService extends AbstractService<Ingredient> {
 
-    private UnitsService unitsService;
+    private Service<Unit> unitsService;
 
-    public IngredientService(IngredientTableModel ingredientRepository, UnitsService unitsService) {
-        super(ingredientRepository, "Ingredient");
+    public IngredientService(Repository<Ingredient> ingredientRepository, Service<Unit> unitsService, Supplier<TransactionHandler> transactions) {
+        super(ingredientRepository, transactions);
         this.unitsService = unitsService;
     }
 

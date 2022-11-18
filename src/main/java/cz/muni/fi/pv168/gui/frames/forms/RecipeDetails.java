@@ -17,7 +17,7 @@ public class RecipeDetails extends RecipeForm {
         private JTextField unit = new JTextField(16);
         private JTextField amount = new JTextField(6);
 
-        public SingleIngredient(IngredientAmount ingredientAmount) {
+        public SingleIngredient(RecipeIngredient ingredientAmount) {
             super(new GridBagLayout());
 
             if (ingredientAmount == null) throw new NullPointerException();

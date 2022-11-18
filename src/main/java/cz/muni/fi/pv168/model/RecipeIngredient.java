@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @author Radim Stejskal
  */
-public class IngredientAmount implements Identifiable {
+public class RecipeIngredient implements Identifiable {
     private Long id;
     private Long recipeId;
     private Ingredient ingredient;
@@ -16,12 +16,12 @@ public class IngredientAmount implements Identifiable {
     private Unit unit;
 
     @JsonCreator
-    public IngredientAmount(@JsonProperty("ingredient") Ingredient ingredient,
+    public RecipeIngredient(@JsonProperty("ingredient") Ingredient ingredient,
                             @JsonProperty("amount") Double amount,
                             @JsonProperty("unit") Unit unit) {
         this(null, null, ingredient, amount, unit);
     }
-    public IngredientAmount(Long id,
+    public RecipeIngredient(Long id,
                             Long recipeId,
                             Ingredient ingredient,
                             Double amount,
@@ -60,7 +60,7 @@ public class IngredientAmount implements Identifiable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IngredientAmount other = (IngredientAmount) o;
+        RecipeIngredient other = (RecipeIngredient) o;
         return ingredient.equals(other.ingredient)
             && amount.equals(other.amount)
             && unit.equals(other.unit);

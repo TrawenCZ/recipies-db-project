@@ -1,10 +1,16 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import cz.muni.fi.pv168.gui.frames.TabLayout;
-import cz.muni.fi.pv168.model.Category;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
 
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.JColorChooser;
+import javax.swing.JLabel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import cz.muni.fi.pv168.gui.frames.MainWindow;
+import cz.muni.fi.pv168.model.Category;
 
 public class CategoryForm extends AbstractForm {
 
@@ -50,7 +56,7 @@ public class CategoryForm extends AbstractForm {
 
     @Override
     protected boolean onAction() {
-        var tableModel = TabLayout.getCategoriesModel();
+        var tableModel = MainWindow.getCategoryModel();
         if (!verifyName(tableModel, category, nameInput.getText())) {
             return false;
         }

@@ -1,51 +1,65 @@
 package cz.muni.fi.pv168.data.storage.mapper;
 
+import java.util.List;
+import java.util.Objects;
+
 import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
-import cz.muni.fi.pv168.data.storage.repository.CategoryRepository;
+import cz.muni.fi.pv168.data.storage.entity.RecipeIngredientEntity;
 import cz.muni.fi.pv168.data.validation.Validator;
 import cz.muni.fi.pv168.model.Category;
-import cz.muni.fi.pv168.model.IngredientAmount;
 import cz.muni.fi.pv168.model.Recipe;
-
-import java.util.List;
+import cz.muni.fi.pv168.model.RecipeIngredient;
 
 public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
 
     private final Validator<Recipe> recipeValidator;
-    private final CategoryRepository categories;
-    private final List<IngredientAmount> ingredients;
+    private final Lookup<Category> categorySupplier;
+    private final Lookup<List<RecipeIngredientEntity>> recipeIngredientEntitySupplier;
+    private final RecipeIngredientMapper recipeIngredientMapper;
 
     public RecipeMapper(Validator<Recipe> recipeValidator,
-                        CategoryRepository categories,
-                        List<IngredientAmount> ingredients) {
-        this.recipeValidator = recipeValidator;
-        this.categories = categories;
-        this.ingredients = ingredients;
+                        Lookup<Category> categorySupplier,
+                        Lookup<List<RecipeIngredientEntity>> recipeIngredientEntitySupplier,
+                        RecipeIngredientMapper recipeIngredientMapper
+    ) {
+        this.recipeValidator = Objects.requireNonNull(recipeValidator);
+        this.categorySupplier = Objects.requireNonNull(categorySupplier);
+        this.recipeIngredientEntitySupplier = Objects.requireNonNull(recipeIngredientEntitySupplier);
+        this.recipeIngredientMapper = Objects.requireNonNull(recipeIngredientMapper);
     }
 
     @Override
     public RecipeEntity mapToEntity(Recipe source) {
         recipeValidator.validate(source).intoException();
 
-        Long categoryId = null;
-        if (source.getCategory() != null) {
-            categoryId = source.getCategory().getId();
-        }
-
         return new RecipeEntity(
-                source.getId(),
-                source.getName(),
-                source.getDescription(),
-                categoryId,
-                source.getPortions(),
-                source.getRequiredTime(),
-                source.getInstructions());
+            source.getId(),
+            source.getName(),
+            source.getDescription(),
+            (source.getCategory() == null) ? null : source.getCategory().getId(),
+            source.getPortions(),
+            source.getRequiredTime(),
+            source.getInstructions()
+        );
     }
 
     @Override
     public Recipe mapToModel(RecipeEntity entity) {
-        Category category = categories.findById(entity.categoryId()).orElseThrow();
-        return new Recipe(entity.id(), entity.name(), entity.description(), entity.instruction(), category,
-                (int) entity.duration(), (int) entity.portions(), ingredients);
+        Category category = categorySupplier.get(entity.categoryId()).orElseThrow();
+        List<RecipeIngredient> ingredients = recipeIngredientEntitySupplier.get(entity.id()).orElseThrow()
+                                                                           .stream()
+                                                                           .map(recipeIngredientMapper::mapToModel)
+                                                                           .toList();
+
+        return new Recipe(
+            entity.id(),
+            entity.name(),
+            entity.description(),
+            entity.instruction(),
+            category,
+            (int) entity.duration(),
+            (int) entity.portions(),
+            ingredients
+        );
     }
 }

@@ -1,9 +1,7 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
-import cz.muni.fi.pv168.gui.frames.TabLayout;
-import cz.muni.fi.pv168.gui.models.IngredientTableModel;
-import cz.muni.fi.pv168.gui.models.UnitsTableModel;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.Unit;
@@ -91,7 +89,7 @@ public class IngredientForm extends AbstractForm {
 
     @Override
     protected boolean onAction() {
-        var tableModel = TabLayout.getIngredientsModel();
+        var tableModel = MainWindow.getIngredientModel();
         if (!verifyName(tableModel, ingredient, nameInput.getText())) {
             return false;
         }
@@ -105,17 +103,18 @@ public class IngredientForm extends AbstractForm {
         BaseUnitsEnum baseUnit = BaseUnitsEnum.GRAM;
 
         if (customEnergyEnabled) {
-            String[] baseUnitAndValue = getBaseUnit(unitsComboBox.getSelectedItem().toString());
-            double baseUnitValue = Double.parseDouble(baseUnitAndValue[0]);
-            String baseUnitName = baseUnitAndValue[1];
-            baseUnit = baseUnitFromString(baseUnitName);
+            Unit selected = (Unit) unitsComboBox.getSelectedItem();
+
+            double baseUnitValue = (selected == null) ? 1d : selected.getValueInBaseUnit();
+            baseUnit = (selected == null) ? baseUnit : selected.getBaseUnit();
+
             energyValueNumber /= (double) ingredientValueInput.parse() * baseUnitValue;
         } else {
             energyValueNumber /= 100;
         }
 
         Unit unit = new Unit(baseUnit.getValue(), 1, baseUnit);
-        var tableModel = (IngredientTableModel) TabLayout.getIngredientsModel();
+        var tableModel = MainWindow.getIngredientModel();
         if (isEdit()) {
             ingredient.setName(nameInput.getText());
             ingredient.setKcal(energyValueNumber);
@@ -148,17 +147,9 @@ public class IngredientForm extends AbstractForm {
         refreshContent();
     }
 
-    private String[] getBaseUnit(String name) {
-        JTable unitTable = TabLayout.getTab("units").getTable();
-        for (int i = 0; i < unitTable.getRowCount(); i++) {
-            if (unitTable.getValueAt(i, 0).toString().equals(name)) {
-                return new String[] {unitTable.getValueAt(i, 1).toString(), unitTable.getValueAt(i, 2).toString()};
-            }
-        }
-        return null;
-    }
     private void comboBoxListener(ItemEvent itemEvent) {
-        String baseUnit = getBaseUnit(unitsComboBox.getSelectedItem().toString())[1];
+        Unit selected = (Unit) unitsComboBox.getSelectedItem();
+        String baseUnit = (selected == null) ? "" : selected.getBaseUnit().getValue();
 
         switch (baseUnit) {
             case "g" -> ingredientValueLabel.setText(" Ingredient weight");
@@ -181,7 +172,7 @@ public class IngredientForm extends AbstractForm {
 
     private Unit[] getAllUnits() {
         List<Unit> units = new ArrayList<>();
-        var unitsTableModel = (UnitsTableModel) TabLayout.getUnitsModel();
+        var unitsTableModel = MainWindow.getUnitsModel();
         for (int i = 0; i < unitsTableModel.getRowCount(); i++) {
             units.add(unitsTableModel.getEntity(i));
         }

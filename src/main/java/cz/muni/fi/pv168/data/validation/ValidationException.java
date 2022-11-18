@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ValidationException extends DataStorageException {
+
     private final List<String> validationErrors;
 
     public ValidationException(String message, List<String> validationErrors) {

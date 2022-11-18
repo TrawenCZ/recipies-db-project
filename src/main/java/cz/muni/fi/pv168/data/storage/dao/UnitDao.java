@@ -48,13 +48,7 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
 
     @Override
     public Collection<UnitEntity> findAll() {
-        var sql = """
-                SELECT id,
-                       name,
-                       value,
-                       baseUnitId
-                    FROM Unit
-                """;
+        var sql = "SELECT * FROM Unit";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)

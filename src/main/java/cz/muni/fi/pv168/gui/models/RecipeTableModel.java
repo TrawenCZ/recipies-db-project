@@ -1,10 +1,10 @@
 package cz.muni.fi.pv168.gui.models;
 
+import java.util.List;
+
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Recipe;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Model of recipe data class in a tabular representation
@@ -13,13 +13,9 @@ import java.util.List;
  */
 public class RecipeTableModel extends AbstractModel<Recipe> {
 
-    private final List<Recipe> recipes;
+    private final Repository<Recipe> recipes;
 
-    public RecipeTableModel() {
-        this(new ArrayList<Recipe>());
-    }
-
-    public RecipeTableModel(List<Recipe> recipes) {
+    public RecipeTableModel(Repository<Recipe> recipes) {
         super(List.of(
             Column.readonly("Name", String.class, Recipe::getName, 4),
             Column.readonly("Category", Category.class, Recipe::getCategory, 4),
@@ -28,11 +24,11 @@ public class RecipeTableModel extends AbstractModel<Recipe> {
             Column.readonly("Description", String.class, Recipe::getDescription, 4),
             Column.readonly("Ingredients", List.class, Recipe::getIngredients, null)
         ));
-        this.recipes = new ArrayList<>(recipes);
+        this.recipes = recipes;
     }
 
     @Override
-    public List<Recipe> getEntities() {
+    public Repository<Recipe> getRepository() {
         return recipes;
     }
 
