@@ -68,6 +68,35 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
     }
 
     @Override
+    public Optional<UnitEntity> findByName(String name) {
+        var sql = """
+               SELECT id,
+                      name,
+                      value,
+                      baseUnitId
+                   FROM Unit
+                   WHERE name = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(unitFromResultSet(resultSet));
+            } else {
+                // unit not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load unit by id: " + name, ex);
+        }
+    }
+
+    @Override
     public Optional<UnitEntity> findById(long id) {
         var sql = """
                SELECT id,

@@ -14,6 +14,8 @@ public interface Repository<M> {
 
     public Optional<M> findById(long id);
 
+    public Optional<M> findByName(String name);
+
     public Optional<M> findByIndex(int index);
 
     public List<M> findAll();
@@ -22,7 +24,7 @@ public interface Repository<M> {
 
     public void create(M newEntity);
 
-    public void update(M entity);
+    public void update(M oldEntity);
 
     public void deleteByIndex(int index);
 }

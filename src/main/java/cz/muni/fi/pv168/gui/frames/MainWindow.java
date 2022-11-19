@@ -1,10 +1,18 @@
 package cz.muni.fi.pv168.gui.frames;
 
+import cz.muni.fi.pv168.data.service.RecipeService;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.tabs.*;
 import cz.muni.fi.pv168.gui.menu.CustomMenu;
 import cz.muni.fi.pv168.gui.models.*;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.model.Ingredient;
+import cz.muni.fi.pv168.model.Recipe;
+import cz.muni.fi.pv168.model.Unit;
 import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.TabNamesEnum;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -43,10 +51,10 @@ public class MainWindow {
         ingredientModel = new IngredientTableModel(dependencyProvider.getIngredientRepository());
         recipeModel = new RecipeTableModel(dependencyProvider.getRecipeRepository());
 
-        setLayout();
+        setLayout(dependencyProvider);
     }
 
-    private void setLayout() {
+    private void setLayout(DependencyProvider dependencyProvider) {
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
@@ -54,7 +62,7 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
         frame.setMinimumSize(MINIMUM_SIZE);
 
-        addTabs();
+        addTabs(dependencyProvider);
         addMenus();
 
         frame.setVisible(true);
@@ -96,13 +104,26 @@ public class MainWindow {
         helpMenu.setMnemonic(KeyEvent.VK_H);
         menuBar.add(helpMenu);
     }
-
-    public void addTabs() {
+    //TODO: inject tables to exporetrs
+    public void addTabs(DependencyProvider dependencyProvider) {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Recipes", new RecipeTab());
-        tabbedPane.addTab("Categories", new CategoriesTab());
-        tabbedPane.addTab("Ingredient", new IngredientsTab());
-        tabbedPane.addTab("Units", new UnitsTab());
+        tabbedPane.addTab("Recipes", new RecipeTab(
+                (ImportAction<Recipe>) dependencyProvider.getImportAction(TabNamesEnum.RECIPES.getName()),
+                null //(ExportAction<Recipe>) dependencyProvider.getExportAction(TabNamesEnum.RECIPES.getName())
+
+        ));
+        tabbedPane.addTab("Categories", new CategoriesTab(
+                (ImportAction<Category>) dependencyProvider.getImportAction(TabNamesEnum.CATEGORIES.getName()),
+                null //(ExportAction<Category>) dependencyProvider.getExportAction(TabNamesEnum.CATEGORIES.getName())
+        ));
+        tabbedPane.addTab("Ingredient", new IngredientsTab(
+                (ImportAction<Ingredient>) dependencyProvider.getImportAction(TabNamesEnum.INGREDIENTS.getName()),
+                null //(ExportAction<Ingredient>) dependencyProvider.getExportAction(TabNamesEnum.INGREDIENTS.getName())
+        ));
+        tabbedPane.addTab("Units", new UnitsTab(
+                (ImportAction<Unit>) dependencyProvider.getImportAction(TabNamesEnum.UNITS.getName()),
+                null // (ExportAction<Unit>) dependencyProvider.getExportAction(TabNamesEnum.UNITS.getName())
+        ));
         frame.add(tabbedPane, BorderLayout.CENTER);
     }
 

@@ -29,13 +29,20 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
+    public Optional<E> findByName(String name) {
+        Optional<EE> record = dao.findByName(name);
+        return record.map(mapper::mapToModel);
+    }
+
+    @Override
     public int getSize() {
         return entities.size();
     }
 
     @Override
     public Optional<E> findById(long id) {
-        return entities.stream().filter(e -> e.getId() == id).findFirst();
+        Optional<EE> record = dao.findById(id);
+        return record.map(mapper::mapToModel);
     }
 
     @Override
@@ -62,16 +69,18 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
                 .map(dao::create)
                 .map(mapper::mapToModel)
                 .forEach(e -> entities.add(e));
+        refresh();
     }
 
     @Override
-    public void update(E entity) {
-        int index = entities.indexOf(entity);
-        Stream.of(entity)
+    public void update(E oldEntity) {
+        int index = entities.indexOf(oldEntity);
+        Stream.of(oldEntity)
                 .map(mapper::mapToEntity)
                 .map(dao::update)
                 .map(mapper::mapToModel)
                 .forEach(e -> entities.set(index, e));
+        refresh();
     }
 
     @Override

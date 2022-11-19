@@ -46,6 +46,34 @@ public class CategoryDao implements DataAccessObject<CategoryEntity> {
     }
 
     @Override
+    public Optional<CategoryEntity> findByName(String name) {
+        var sql = """
+                SELECT id,
+                       name,
+                       color
+                    FROM Category
+                    WHERE name = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(categoryFromResultSet(resultSet));
+            } else {
+                // category not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load category by name: " + name, ex);
+        }
+    }
+
+    @Override
     public Collection<CategoryEntity> findAll() {
         var sql = """
                 SELECT id,

@@ -1,8 +1,11 @@
 package cz.muni.fi.pv168.gui;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.model.Nameable;
 
@@ -37,6 +40,10 @@ public class Validator {
         return model.getEntity(item.getName()) == null;
     }
 
+    public static boolean isUnique(Repository<?> repository, Nameable item) {
+        if (repository == null || item == null) throw new NullPointerException();
+        return repository.findByName(item.getName()).isEmpty();
+    }
     /**
      * Looks for a given {@code K item} in a given {@code model}. Comparison
      * done with usage of {@code equals()} on results from {@code valueGetter}
@@ -75,6 +82,11 @@ public class Validator {
         return savedItem != null && !item.equals(savedItem);
     }
 
+    public static boolean duplicateNotEqual(Repository<?> repository, Nameable item) {
+        if (repository == null || item == null) throw new NullPointerException();
+        var savedItem = repository.findByName(item.getName());
+        return savedItem.isPresent() && !item.equals(savedItem.get());
+    }
     /**
      * Looks through list to find non-equal items with same name as given
      * {@code T item} and its counterpart in the {@code List<T> list}.
@@ -91,5 +103,9 @@ public class Validator {
             }
         }
         return false;
+    }
+
+    public static boolean containsNonEqualNameDuplicates(Collection<? extends Nameable> records) {
+        return new HashSet<>(records).size() == records.stream().map(Nameable::getName).collect(Collectors.toSet()).size();
     }
 }

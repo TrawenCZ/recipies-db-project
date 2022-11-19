@@ -1,0 +1,55 @@
+[ {
+  "name" : "kremik",
+  "description" : "it's orange",
+  "category" : {
+    "name" : "soup",
+    "color" : "-7825763"
+  },
+  "preparationTime" : 50,
+  "portions" : 6,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "mrkev",
+      "kcal" : 510.0,
+      "unit" : {
+        "name" : "tons",
+        "valueInBaseUnit" : 1000.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 4.0,
+    "unit" : {
+      "name" : "tons",
+      "valueInBaseUnit" : 1000.0,
+      "baseUnit" : "GRAM"
+    }
+  } ],
+  "instructions" : "cook it"
+}, {
+  "name" : "krem",
+  "description" : "it's green",
+  "category" : {
+    "name" : "soups",
+    "color" : "-7825761"
+  },
+  "preparationTime" : 50,
+  "portions" : 6,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "brokoslice",
+      "kcal" : 510.0,
+      "unit" : {
+        "name" : "tons",
+        "valueInBaseUnit" : 1000.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 4.0,
+    "unit" : {
+      "name" : "tons",
+      "valueInBaseUnit" : 1000.0,
+      "baseUnit" : "GRAM"
+    }
+  } ],
+  "instructions" : "cook it"
+} ]

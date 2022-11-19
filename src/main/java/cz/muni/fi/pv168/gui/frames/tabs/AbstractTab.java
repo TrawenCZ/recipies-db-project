@@ -51,21 +51,22 @@ public abstract class AbstractTab extends JPanel {
     protected final JLabel entries;
 
     protected AbstractService<?> service;
-    protected ImportAction<?> importAction;
-    protected ExportAction<?> exportAction;
+    protected final ImportAction<?> importAction;
+    protected final ExportAction<?> exportAction;
 
-    protected AbstractTab(AbstractModel<?> model) {
-        this(model, SEARCH_BAR_SIZE);
+    protected AbstractTab(AbstractModel<?> model, ImportAction<?> importAction, ExportAction<?> exportAction) {
+        this(model, importAction, exportAction, SEARCH_BAR_SIZE);
     }
 
-    protected AbstractTab(AbstractModel<?> model, int searchBarSize) {
+    protected AbstractTab(AbstractModel<?> model, ImportAction<?> importAction, ExportAction<?> exportAction, int searchBarSize) {
         if (model == null) throw new NullPointerException("Model cannot be null");
 
         initialize();
 
         this.table = new ColoredTable(model);
         searchBar = new SearchBar(searchBarSize);
-
+        this.importAction = importAction;
+        this.exportAction = exportAction;
         var sorter = createSorter();
         searchButton = createSearchButton(searchBarSize, sorter);
         resetButton = createResetButton(searchBarSize, sorter);

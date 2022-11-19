@@ -16,6 +16,8 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.generators.RecipeDataGenerator;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.text.RangeTextField;
@@ -25,6 +27,7 @@ import cz.muni.fi.pv168.gui.frames.forms.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
+import cz.muni.fi.pv168.model.Recipe;
 
 public final class RecipeTab extends AbstractTab {
 
@@ -39,8 +42,8 @@ public final class RecipeTab extends AbstractTab {
     private RangeTextField portionsField;
     private GridBagConstraints c;
 
-    public RecipeTab() {
-        super(MainWindow.getRecipeModel(), ICON_SIZE);
+    public RecipeTab(ImportAction<Recipe> importAction, ExportAction<Recipe> exportAction) {
+        super(MainWindow.getRecipeModel(),importAction, exportAction, ICON_SIZE);
 
         // hide ingredients column from user
         table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
@@ -61,8 +64,6 @@ public final class RecipeTab extends AbstractTab {
         //     new IngredientService(ingredientModel,
         //     unitsService)
         // );
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (RecipeService) service, Recipe.class);
-        // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (RecipeService) service);
     }
 
     @Override

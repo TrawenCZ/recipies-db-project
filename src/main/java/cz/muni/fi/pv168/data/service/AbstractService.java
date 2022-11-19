@@ -1,7 +1,9 @@
 package cz.muni.fi.pv168.data.service;
 
+import cz.muni.fi.pv168.exceptions.ImportVsDatabaseRecordsConflictException;
 import cz.muni.fi.pv168.exceptions.InconsistentRecordException;
 import cz.muni.fi.pv168.gui.Validator;
+import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
@@ -11,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -41,39 +44,69 @@ public abstract class AbstractService<M extends Nameable> implements Service<M> 
         return records;
     }
 
+    public Collection<M> filterValidRecords(Collection<M> records, boolean skipInconsistent) {
+        records = new HashSet<>(records);
+        Set<M> recordsToSave = new HashSet<>();
+
+        for (var record : records) {
+            if (repository.findByName(record.getName()).isPresent()) {
+                if (Validator.duplicateNotEqual(repository, record) && !skipInconsistent) {
+                    throw new ImportVsDatabaseRecordsConflictException();
+                }
+            } else {
+                recordsToSave.add(record);
+            }
+        }
+        return recordsToSave;
+    }
+
     @Override
     public Collection<M> verifyRecords(Collection<M> records) throws InconsistentRecordException {
         var hashed = new HashSet<>(records);
         var unique = new HashSet<M>();
 
-        // // validate
-        // for (var record : hashed) {
-        //     if (Validator.duplicateNotEqual(hashed, record)) {
-        //         throwError(record, "selected file");
-        //     } else if (Validator.duplicateNotEqual(repository, record)) {
-        //         throwError(record, "database");
-        //     } else if (Validator.isUnique(repository, record)) {
-        //         unique.add(record);
-        //     }
-        // }
+         // validate
+         for (var record : hashed) {
+             if (Validator.duplicateNotEqual(hashed, record)) {
+                 throwError(record, "selected file");
+             } else if (Validator.duplicateNotEqual(repository, record)) {
+                 throwError(record, "database");
+             } else if (Validator.isUnique(repository, record)) {
+                 unique.add(record);
+             }
+         }
         return unique;
     }
 
     @Override
-    public int saveRecords(Collection<M> records) throws InconsistentRecordException {
+    public int saveRecords(Collection<M> records) throws ImportVsDatabaseRecordsConflictException {
         return saveRecords(records, false);
     }
 
+
+    // TODO: implement dis
     @Override
-    public int saveRecords(Collection<M> records, boolean disableVerification) throws InconsistentRecordException {
+    public int saveOrUpdateRecords(Collection<M> records) {
+        records = new HashSet<>(records);
+//
+//        for (var record : records) {
+//            if (repository.findByName(record.getName()).isPresent()) {
+//                if (Validator.duplicateNotEqual(repository, record)) {
+//                    M oldRecord = repository.findByName(record.getName()).get();
+//                    repository.update(oldRecord, record);
+//                    throw new ImportVsDatabaseRecordsConflictException();
+//                }
+//            }
+//        }
+        return 0;
+    }
+
+    @Override
+    public int saveRecords(Collection<M> records, boolean skipInconsistencies) throws ImportVsDatabaseRecordsConflictException {
         try (var transaction = transactions.get()) {
-        if (disableVerification) {
+            records = filterValidRecords(records, skipInconsistencies);
             records.forEach(repository::create);
-        } else {
-            records = verifyRecords(records);
-            records.forEach(repository::create);
-        }
-        return records.size();
+            return records.size();
         }
     }
 
@@ -82,16 +115,19 @@ public abstract class AbstractService<M extends Nameable> implements Service<M> 
      * to delete the given records.
      *
      * @param records list of records we want to delete
-     * @throws InconsistentRecordException whenever a validity check fails
+     * @throws ImportVsDatabaseRecordsConflictException whenever a validity check fails
      */
     @Override
     public abstract void deleteRecords(Collection<M> records);
 
     private void throwError(M record, String location) throws InconsistentRecordException {
-        throw new InconsistentRecordException(
+        throw new ImportVsDatabaseRecordsConflictException(
             repository + " of name " +
             record.getName() + " already exists in " +
             location + ", but with different properties!"
         );
+    }
+    public boolean validateRecordsBatch(Collection<M> records) {
+        return Validator.containsNonEqualNameDuplicates(records);
     }
 }

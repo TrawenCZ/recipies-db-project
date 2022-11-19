@@ -4,14 +4,16 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import cz.muni.fi.pv168.data.generators.CategoryDataGenerator;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
 import cz.muni.fi.pv168.model.Category;
 
 public final class CategoriesTab extends AbstractTab {
 
-    public CategoriesTab() {
-        super(MainWindow.getCategoryModel());
+    public CategoriesTab(ImportAction<Category> importAction, ExportAction<Category> exportAction) {
+        super(MainWindow.getCategoryModel(), importAction, exportAction);
         // importAction = new ImportAction<>(table, new JsonImporterImpl(), (CategoryService) service, Category.class);
         // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (CategoryService) service);
     }

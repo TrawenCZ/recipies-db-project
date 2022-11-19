@@ -1,0 +1,1805 @@
+[ {
+  "name" : "Boloňské špagety",
+  "description" : "Varování: Přežírání může zmenšovat oblečení.",
+  "category" : {
+    "name" : "Světová kuchyně",
+    "color" : "-5614166"
+  },
+  "preparationTime" : 45,
+  "portions" : 3,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 429.7774581551086
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 331.69991658146205
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 324.2392012618029
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1102.594399162152
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1670.201579353935
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 238.345932830607
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1748.4430607279778
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1374.136054429633
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1101.8627052864456
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1296.8720675245163
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Šopský salát",
+  "description" : "Celý život jsem si myslel, že vzduch je zadarmo. Myslel jsem si to do té doby, než jsem si připravil tohle jídlo.",
+  "category" : {
+    "name" : "Salát",
+    "color" : "-7798904"
+  },
+  "preparationTime" : 116,
+  "portions" : 7,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1576.601782974713
+  }, {
+    "ingredient" : {
+      "name" : "Voda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "hrnek",
+        "valueInBaseUnit" : 250.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1308.7310928477675
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 588.7307491717131
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 409.6242055180401
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 447.95398031495415
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 94.11042575950246
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 506.0908479425925
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 642.4822276638776
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1925.0536961923012
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 209.46167779949954
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 109.57513261644158
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1725.536127729815
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1544.9354691391547
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1061.7505512193165
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1183.1101907768425
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Šopský salát",
+  "description" : "Varování: Přežírání může zmenšovat oblečení.",
+  "category" : {
+    "name" : "Světová kuchyně",
+    "color" : "-5614166"
+  },
+  "preparationTime" : 64,
+  "portions" : 3,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1953.2618761858016
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 123.3042455180744
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 330.3215752008566
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1353.3959823226683
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1991.1564152733904
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 516.9106543530775
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 913.5430489314444
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 953.5195830035997
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 687.0933014128365
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 100.87537389111256
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1420.5456964530745
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1657.3744739740348
+  }, {
+    "ingredient" : {
+      "name" : "Voda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "hrnek",
+        "valueInBaseUnit" : 250.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1703.6683106388314
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 970.7282509147722
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1535.4434317079106
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1255.9879020654246
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 934.5958230656555
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Uzenářské ragů",
+  "description" : "Varování: Přežírání může zmenšovat oblečení.",
+  "category" : {
+    "name" : "Black sample",
+    "color" : "-16777216"
+  },
+  "preparationTime" : 69,
+  "portions" : 5,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 623.1632860996182
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1772.7047096881436
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 923.3765832054677
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 451.64453025013216
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 54.904365713074554
+  }, {
+    "ingredient" : {
+      "name" : "Voda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "hrnek",
+        "valueInBaseUnit" : 250.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1779.2377241575755
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1983.3163498934189
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Srbské rizoto",
+  "description" : "Celý život jsem si myslel, že vzduch je zadarmo. Myslel jsem si to do té doby, než jsem si připravil tohle jídlo.",
+  "category" : {
+    "name" : "Světová kuchyně",
+    "color" : "-5614166"
+  },
+  "preparationTime" : 87,
+  "portions" : 11,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1299.5946155839815
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1926.8997803659922
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1852.3475187977344
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1484.7403691064846
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1021.5962710813913
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1338.5046865426266
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 798.2099067937783
+  }, {
+    "ingredient" : {
+      "name" : "Voda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "hrnek",
+        "valueInBaseUnit" : 250.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1486.7456646662085
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 262.90104244429904
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1612.1938189847608
+  }, {
+    "ingredient" : {
+      "name" : "Voda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "hrnek",
+        "valueInBaseUnit" : 250.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 31.493748819789282
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Pestrá selská pánev",
+  "description" : "Pravá česká kuchyně přímo od babičky.",
+  "category" : {
+    "name" : "Salát",
+    "color" : "-7798904"
+  },
+  "preparationTime" : 48,
+  "portions" : 7,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 769.2264325825686
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 251.34205064504144
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 631.4759387482607
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1969.0516048431164
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 776.9870376219559
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 388.8811314957297
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1631.8552982116705
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Jahodový dort",
+  "description" : "Pravá česká kuchyně přímo od babičky.",
+  "category" : {
+    "name" : "Salát",
+    "color" : "-7798904"
+  },
+  "preparationTime" : 54,
+  "portions" : 4,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 756.9988859352019
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Svíčková",
+  "description" : "Celý život jsem si myslel, že vzduch je zadarmo. Myslel jsem si to do té doby, než jsem si připravil tohle jídlo.",
+  "category" : {
+    "name" : "Salát",
+    "color" : "-7798904"
+  },
+  "preparationTime" : 41,
+  "portions" : 1,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1171.9129799073455
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 306.7161189704235
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 819.9616253077849
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1192.5494793040148
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 707.523478835457
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1746.3449289351017
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1959.4973623101566
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 465.47090043349095
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1516.7862765514888
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1996.622949218947
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 921.4108852422842
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1989.9511687027104
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Jahodový dort",
+  "description" : "Varování: Přežírání může zmenšovat oblečení.",
+  "category" : {
+    "name" : "Staročeská kuchyně",
+    "color" : "-1118703"
+  },
+  "preparationTime" : 77,
+  "portions" : 8,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1919.106030972872
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1277.4453363385014
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 804.6373698711565
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1073.3187191114944
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 50.23037093881211
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 431.38265831153853
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 909.317900361315
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 639.5354894412267
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1689.8860934926834
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 56.64139576549032
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1758.5278532890584
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 207.33593331543852
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1958.6090213790258
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1176.3105830573982
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1327.570129016855
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 884.8707856595994
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 261.1485884031124
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Šopský salát",
+  "description" : "Pravá česká kuchyně přímo od babičky.",
+  "category" : {
+    "name" : "Dezert",
+    "color" : "-43691"
+  },
+  "preparationTime" : 48,
+  "portions" : 8,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 181.3968167314437
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1630.7654184588228
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1205.2917965298045
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 528.1010012369536
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 242.29117702030445
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 176.18529533198603
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 206.26093546366664
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Kuřecí řízek",
+  "description" : "Varování: Přežírání může zmenšovat oblečení.",
+  "category" : {
+    "name" : "Black sample",
+    "color" : "-16777216"
+  },
+  "preparationTime" : 71,
+  "portions" : 7,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 356.2480577377354
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1199.6563442113531
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 683.0051528165188
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1839.1072547985705
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1744.2397221725596
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 41.26005500764629
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1541.346687272457
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 229.56975691847202
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 339.83453855285273
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 351.16264751198514
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1257.2347153091482
+  }, {
+    "ingredient" : {
+      "name" : "Máslo",
+      "kcal" : 4.74,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 41.953306950601956
+  }, {
+    "ingredient" : {
+      "name" : "Mouka",
+      "kcal" : 2.0,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1905.6465026250892
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 583.0144893665286
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 410.7106234688185
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 226.75678893044758
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1660.1840693628658
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 598.3733576484871
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Kuřecí řízek",
+  "description" : "Celý život jsem si myslel, že vzduch je zadarmo. Myslel jsem si to do té doby, než jsem si připravil tohle jídlo.",
+  "category" : {
+    "name" : "Staročeská kuchyně",
+    "color" : "-1118703"
+  },
+  "preparationTime" : 71,
+  "portions" : 6,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1626.0604761644574
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 162.3157079375366
+  }, {
+    "ingredient" : {
+      "name" : "Kuřecí maso",
+      "kcal" : 6.54,
+      "unit" : {
+        "name" : "tucet",
+        "valueInBaseUnit" : 12.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1455.5406160415143
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1161.6729816756335
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1159.5459744895986
+  }, {
+    "ingredient" : {
+      "name" : "Paprika",
+      "kcal" : 1.47,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 721.4268665710475
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1787.9432972959705
+  }, {
+    "ingredient" : {
+      "name" : "Sůl",
+      "kcal" : 0.11,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 870.7552545016715
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1233.7931215454773
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1123.3214208034024
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1062.7947925559354
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1474.983806249126
+  }, {
+    "ingredient" : {
+      "name" : "Sýr",
+      "kcal" : 5.3,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 780.9709055532594
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1748.5039674241386
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1790.4917096660056
+  } ],
+  "instructions" : "instructions"
+}, {
+  "name" : "Kuřecí řízek",
+  "description" : "Velmi chutný lehký pokrm.",
+  "category" : {
+    "name" : "Black sample",
+    "color" : "-16777216"
+  },
+  "preparationTime" : 54,
+  "portions" : 10,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1938.036057982294
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 108.68032048826004
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 813.0613152081951
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 622.0449540483321
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 39.96946201178297
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 991.901068244704
+  }, {
+    "ingredient" : {
+      "name" : "Vepřové maso",
+      "kcal" : 7.21,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 679.3621452493605
+  }, {
+    "ingredient" : {
+      "name" : "Mléko",
+      "kcal" : 5.0,
+      "unit" : {
+        "name" : "ml",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1800.8907202785306
+  }, {
+    "ingredient" : {
+      "name" : "Mrkev",
+      "kcal" : 1.35,
+      "unit" : {
+        "name" : "kubík",
+        "valueInBaseUnit" : 1000000.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 1050.7429802375611
+  }, {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 9.99,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 676.606499993869
+  }, {
+    "ingredient" : {
+      "name" : "Brambor",
+      "kcal" : 8.34,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : "PIECE"
+      }
+    },
+    "amount" : 1601.1300827078178
+  }, {
+    "ingredient" : {
+      "name" : "Pepř",
+      "kcal" : 0.28,
+      "unit" : {
+        "name" : "lžíčka",
+        "valueInBaseUnit" : 20.0,
+        "baseUnit" : "MILLILITER"
+      }
+    },
+    "amount" : 93.12218928278226
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 1653.150012277829
+  }, {
+    "ingredient" : {
+      "name" : "Rajče",
+      "kcal" : 1.33,
+      "unit" : {
+        "name" : "dg",
+        "valueInBaseUnit" : 100.0,
+        "baseUnit" : "GRAM"
+      }
+    },
+    "amount" : 177.80970433740072
+  } ],
+  "instructions" : "instructions"
+} ]

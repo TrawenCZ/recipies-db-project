@@ -86,6 +86,38 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
     }
 
     @Override
+    public Optional<RecipeEntity> findByName(String name) {
+        var sql = """
+            SELECT id,
+                   name,
+                   description,
+                   categoryId,
+                   portions,
+                   duration,
+                   instruction
+                FROM Recipe
+                WHERE name = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(recipeFromResultSet(resultSet));
+            } else {
+                // recipe not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load recipe by id: " + name, ex);
+        }
+    }
+
+    @Override
     public Optional<RecipeEntity> findById(long id) {
         var sql = """
             SELECT id,

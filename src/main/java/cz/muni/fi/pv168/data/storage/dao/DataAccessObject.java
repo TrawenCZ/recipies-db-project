@@ -12,6 +12,7 @@ import java.util.Optional;
  */
 public interface DataAccessObject<E> {
 
+    Optional<E> findByName(String name);
     /**
      * Creates a new entity using the underlying data source.
      *

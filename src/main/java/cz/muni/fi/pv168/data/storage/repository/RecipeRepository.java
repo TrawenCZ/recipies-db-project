@@ -31,6 +31,7 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         newEntity.getIngredients().stream()
                 .map(ingredientMapper::mapToEntity)
                 .map(ingredientDao::create);
+        refresh();
     }
 
     public void update(Recipe entity) {
@@ -38,6 +39,7 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         entity.getIngredients().stream()
                 .map(ingredientMapper::mapToEntity)
                 .map(ingredientDao::update);
+        refresh();
     }
 
     @Override
