@@ -17,7 +17,7 @@ public class UnitsTableModel extends AbstractModel<Unit> {
     public UnitsTableModel(Repository<Unit> units) {
         super(List.of(
             Column.readonly("Name", Unit.class, self -> self, 4),
-            Column.readonly("Value", Double.class, Unit::getPrettyValue, 2),
+            Column.readonly("Value", Double.class, Unit::getValueInBaseUnit, 2),
             Column.readonly("Base unit", String.class, Unit::getBaseUnitValue, 4)
         ));
         this.units = units;

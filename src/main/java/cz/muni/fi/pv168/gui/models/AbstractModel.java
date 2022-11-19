@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.gui.models;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.gui.coloring.Colorable;
 import cz.muni.fi.pv168.model.Nameable;
+import cz.muni.fi.pv168.model.Identifiable;
 
 import java.awt.Color;
 import java.util.List;
@@ -20,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Jan Martinek
  */
-public abstract class AbstractModel<T extends Nameable> extends AbstractTableModel {
+public abstract class AbstractModel<T extends Nameable & Identifiable> extends AbstractTableModel {
 
     protected static final int UNDEFINED = -1;
     private Integer colorIndex = UNDEFINED;
@@ -106,9 +107,12 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param entity row we want to update
      */
     public void updateRow(T entity) {
-        var rowIndex = getRepository().findAll().indexOf(entity);
-        getRepository().update(entity);
-        fireTableRowsUpdated(rowIndex, rowIndex);
+        var rowIndex = 0;
+        for (var e : getRepository().findAll()) {
+            if (e.getId().equals(entity.getId())) break;
+            rowIndex++;
+        }
+        updateRow(rowIndex, entity);
     }
 
     /**

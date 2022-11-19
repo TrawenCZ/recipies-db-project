@@ -34,6 +34,7 @@ public class RecipeForm extends AbstractForm {
 
     private class SingleIngredient extends JPanel {
 
+        private Long id = null;
         private JComboBox<Ingredient> ingredientComboBox = new JComboBox<>(getAllIngredients());
         private JComboBox<Unit> unitComboBox;
 
@@ -44,15 +45,12 @@ public class RecipeForm extends AbstractForm {
             super(new GridBagLayout());
 
             if (ingredient != null) {
+                id = ingredient.getId();
                 ingredientComboBox.setSelectedItem(ingredient.getIngredient());
-                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
-                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
                 ingredientAmount.setText(String.valueOf(ingredient.getAmount()));
-                unitComboBox.setSelectedItem(ingredient.getUnit());
-            } else {
-                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
-                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
             }
+
+            unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(safeBaseComboboxSelect()));
             ingredientComboBox.setToolTipText("Enter an ingredient");
             ingredientAmount.setToolTipText("Enter an amount");
             unitComboBox.setToolTipText("Enter an unit");
@@ -71,7 +69,13 @@ public class RecipeForm extends AbstractForm {
         }
 
         public RecipeIngredient getIngredientAmount() {
-            return new RecipeIngredient((Ingredient) ingredientComboBox.getSelectedItem(), (double) ingredientAmount.parse(),(Unit) unitComboBox.getSelectedItem());
+            return new RecipeIngredient(
+                id,
+                (recipe == null) ? null : recipe.getId(),
+                (Ingredient) ingredientComboBox.getSelectedItem(),
+                (double) ingredientAmount.parse(),
+                (Unit) unitComboBox.getSelectedItem()
+            );
         }
 
         private void initializeLayout() {
@@ -106,18 +110,32 @@ public class RecipeForm extends AbstractForm {
 
         private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
             return MainWindow.getUnitsModel().getRepository().findAll().stream()
-                .filter(e -> e.getBaseUnit().equals(baseUnit))
-                .toArray(size -> new Unit[size]);
+                .filter(e ->
+                    (e.getBaseUnit() == null && baseUnit.getValue().equals(e.getName())) ||
+                    (e.getBaseUnit() != null && baseUnit.equals(e.getBaseUnit()))
+                ).toArray(size -> new Unit[size]);
         }
 
         private void ingredientListener(ItemEvent e) {
-            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(safeBaseComboboxSelect());
             unitComboBox.removeAllItems();
-            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit());
+
             for (Unit unit : allUnitsByBaseUnit) {
                 unitComboBox.addItem(unit);
             }
             unitComboBox.setSelectedItem(allUnitsByBaseUnit[0]);
+        }
+
+        private BaseUnitsEnum safeBaseComboboxSelect() {
+            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+            var selected = BaseUnitsEnum.GRAM;
+
+            if (selectedIngredient != null) {
+                selected = selectedIngredient.getUnit().getBaseUnit();
+                if (selected == null) selected = BaseUnitsEnum.stringToEnum(selectedIngredient.getUnit().getName());
+            }
+
+            return selected;
         }
     }
 
@@ -162,7 +180,13 @@ public class RecipeForm extends AbstractForm {
         instructionsInput.setWrapStyleWord(true);
 
         ingredients.setPreferredSize(new Dimension(410, 500));
-        ingredientButton.addActionListener(e -> new SingleIngredient());
+        ingredientButton.addActionListener(e -> {
+            if (MainWindow.getIngredientModel().getRowCount() == 0) {
+                showErrorDialog("No ingredients available", "Missing ingredients");
+            } else {
+                new SingleIngredient();
+            }
+        });
 
         gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
 

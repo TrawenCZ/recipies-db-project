@@ -41,7 +41,6 @@ final class SqlFileExecutor {
             for (var fileName : fileNames) {
                 executeSQLFile(connection, fileName);
             }
-
             transaction.commit();
         }
     }

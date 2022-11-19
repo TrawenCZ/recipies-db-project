@@ -5,6 +5,7 @@ import java.util.Optional;
 /**
  * Funcional contract that promises 'get' function.
  *
+ * @param <T> type of returned object
  * @author Jan Martinek
  */
 @FunctionalInterface

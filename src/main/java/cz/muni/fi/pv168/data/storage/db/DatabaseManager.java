@@ -28,7 +28,8 @@ public final class DatabaseManager {
     }
 
     public static DatabaseManager createProductionInstance() {
-        String connectionString = "jdbc:h2:%s;%s".formatted(createDbFileSystemPath(), DB_PROPERTIES_STRING);
+        String removeLater = "tcp://localhost/";
+        String connectionString = "jdbc:h2:%s;%s".formatted(removeLater + createDbFileSystemPath(), DB_PROPERTIES_STRING);
 
         // We need this for debugging purposes
         System.out.println("JDBC connection URI: " + connectionString);
@@ -39,10 +40,12 @@ public final class DatabaseManager {
     public static DatabaseManager createTestInstance() {
         String connectionString = "jdbc:h2:mem:%s;%s".formatted(PROJECT_NAME, DB_PROPERTIES_STRING);
         var databaseManager = new DatabaseManager(connectionString);
-        databaseManager.initSchema();
-        databaseManager.initData("production");
-
+        databaseManager.load();
         return databaseManager;
+    }
+
+    public void load() {
+        this.initSchema();
     }
 
     public ConnectionHandler getConnectionHandler() {
@@ -85,4 +88,3 @@ public final class DatabaseManager {
         return projectDbPath;
     }
 }
-

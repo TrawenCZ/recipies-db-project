@@ -7,6 +7,7 @@ import java.util.Optional;
  * Represents a repository for any model
  *
  * @param <M> the type of the model
+ * @author Jan Martinek
  */
 public interface Repository<M> {
 
