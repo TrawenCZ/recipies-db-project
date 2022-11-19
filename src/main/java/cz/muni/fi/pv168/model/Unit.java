@@ -43,7 +43,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
 
     @JsonProperty("valueInBaseUnit")
     public double getValueInBaseUnit() {
-            return valueInBaseUnit;
+        return valueInBaseUnit;
     }
 
     @JsonProperty("baseUnit")
@@ -53,7 +53,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
 
     @JsonIgnore
     public String getBaseUnitValue() {
-        return baseUnit.getValue();
+        return (baseUnit == null) ? "" : baseUnit.getValue();
     }
 
     @JsonIgnore
@@ -64,8 +64,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
 
     @Override @JsonIgnore
     public Color getColor() {
-        // TODO: REVIEW after base units are finished, may need some changes
-        return (name.equals(baseUnit.getValue())) ? Color.GRAY : null;
+        return (baseUnit == null) ? Color.GRAY : null;
     }
 
     public void setId(Long id) {
@@ -81,7 +80,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
     }
 
     public void setBaseUnit(BaseUnitsEnum baseUnit) {
-        this.baseUnit = baseUnit; // no need for null check
+        this.baseUnit = baseUnit;
     }
 
     @Override

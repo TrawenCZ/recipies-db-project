@@ -89,11 +89,11 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         entities.remove(index);
     }
 
-    private void deleteEntityByIndex(int index) {
+    protected void deleteEntityByIndex(int index) {
         dao.deleteById(entities.get(index).getId());
     }
 
-    private List<E> fetchAllEntities() {
+    protected List<E> fetchAllEntities() {
         return dao.findAll().stream()
                 .map(mapper::mapToModel)
                 .collect(Collectors.toCollection(ArrayList::new));

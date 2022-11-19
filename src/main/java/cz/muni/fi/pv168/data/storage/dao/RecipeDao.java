@@ -11,8 +11,20 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class RecipeDao implements DataAccessObject<RecipeEntity>{
-    private final Supplier<ConnectionHandler> connections;
-    public RecipeDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
+
+    private Supplier<ConnectionHandler> connections;
+
+    public RecipeDao(Supplier<ConnectionHandler> connections) {
+        changeConnection(connections);
+    }
+
+    /**
+     * Allows for integration inside of transaction WITHOUT creating new
+     * instantiating new dao.
+     */
+    public void changeConnection(Supplier<ConnectionHandler> connections) {
+        this.connections = Objects.requireNonNull(connections);
+    }
 
     @Override
     public RecipeEntity create(RecipeEntity entity) {

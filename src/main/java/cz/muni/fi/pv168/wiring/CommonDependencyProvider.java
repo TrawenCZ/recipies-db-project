@@ -56,9 +56,11 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             new CategoryMapper(categoryValidator)
         );
 
+        var unitDao = new UnitDao(databaseManager::getConnectionHandler);
+
         units = new UnitRepository(
-            new UnitDao(databaseManager::getConnectionHandler),
-            new UnitMapper(unitValidator)
+            unitDao,
+            new UnitMapper(unitValidator, unitDao::findById)
         );
 
         ingredients = new IngredientRepository(
@@ -66,14 +68,15 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             new IngredientMapper(ingredientValidator, units::findById)
         );
 
-        var recipeIngredientDao = new RecipeIngredientDao(databaseManager::getConnectionHandler);
-        var recipeIngredientMapper = new RecipeIngredientMapper(units::findById, ingredients::findById);
+        var recipeDao = new RecipeDao(databaseManager::getConnectionHandler);
 
         recipes = new RecipeRepository(
-            new RecipeDao(databaseManager::getConnectionHandler),
-            new RecipeMapper(recipeValidator, categories::findById, recipeIngredientDao::findByRecipeId, recipeIngredientMapper),
-            recipeIngredientDao,
-            recipeIngredientMapper
+            recipeDao,
+            new RecipeMapper(recipeValidator, categories::findById),
+            new RecipeIngredientDao(databaseManager::getConnectionHandler),
+            new RecipeIngredientMapper(units::findById, ingredients::findById, recipeDao::findById),
+            databaseManager::getConnectionHandler,
+            databaseManager::getTransactionHandler
         );
 
         categoryService = new CategoryService(categories, databaseManager::getTransactionHandler);

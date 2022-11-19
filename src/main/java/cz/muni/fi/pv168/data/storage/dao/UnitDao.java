@@ -13,23 +13,28 @@ import java.util.function.Supplier;
 public class UnitDao implements DataAccessObject<UnitEntity> {
 
     private final Supplier<ConnectionHandler> connections;
-    public UnitDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
+    public UnitDao(Supplier<ConnectionHandler> connections) {
+        this.connections = connections;
+    }
 
     @Override
     public UnitEntity create(UnitEntity entity) {
-        String sql = "INSERT INTO Unit (name, value, baseUnitId) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO Unit (name, amount, baseUnitId) VALUES (?, ?, ?);";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, entity.name());
-            statement.setDouble(2, entity.value());
-            statement.setLong(3, entity.baseUnitId());
+            statement.setDouble(2, entity.amount());
+            if (entity.baseUnitId() == 0) {
+                statement.setNull(3, 0);
+            } else {
+                statement.setLong(3, entity.baseUnitId());
+            }
             statement.executeUpdate();
 
             try (ResultSet keyResultSet = statement.getGeneratedKeys()) {
                 long unitId;
-
                 if (keyResultSet.next()) {
                     unitId = keyResultSet.getLong(1);
                 } else {
@@ -38,7 +43,6 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
                 if (keyResultSet.next()) {
                     throw new DataStorageException("Multiple keys returned for: " + entity);
                 }
-
                 return findById(unitId).orElseThrow();
             }
         } catch (SQLException ex) {
@@ -98,15 +102,27 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
 
     @Override
     public Optional<UnitEntity> findById(long id) {
-        var sql = """
-               SELECT id,
-                      name,
-                      value,
-                      baseUnitId
-                   FROM Unit
-                   WHERE id = ?
-                """;
+        var sql = "SELECT * FROM Unit WHERE id = ?";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setLong(1, id);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(unitFromResultSet(resultSet));
+            } else {
+                // unit not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load unit by id: " + id, ex);
+        }
+    }
 
+    public Optional<UnitEntity> findByBaseUnitId(long id) {
+        var sql = "SELECT * FROM Unit WHERE baseUnitId = ?";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -134,7 +150,7 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
                 UPDATE Unit
                     SET
                     name = ?,
-                    value = ?,
+                    amount = ?,
                     baseUnitId = ?
                     WHERE id = ?
                 """;
@@ -144,7 +160,7 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
                 var statement = connection.use().prepareStatement(sql)
         ) {
             statement.setString(1, entity.name());
-            statement.setDouble(2, entity.value());
+            statement.setDouble(2, entity.amount());
             statement.setLong(3, entity.baseUnitId());
             statement.setLong(4, entity.id());
 
@@ -179,13 +195,13 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
             throw new DataStorageException("Failed to delete unit %d".formatted(entityId), ex);
         }
     }
+
     private static UnitEntity unitFromResultSet(ResultSet resultSet) throws SQLException {
-        return new UnitEntity
-                (
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getDouble("value"),
-                        resultSet.getLong("baseUnitId")
-                );
+        return new UnitEntity (
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDouble("amount"),
+            resultSet.getLong("baseUnitId")
+        );
     }
 }

@@ -12,7 +12,7 @@ package cz.muni.fi.pv168.data.storage.entity;
 public record UnitEntity (
         Long id,
         String name,
-        double value,
+        double amount,
         long baseUnitId // foreign key
 ) {
     /**
@@ -20,10 +20,10 @@ public record UnitEntity (
      */
     public UnitEntity(
             String name,
-            double value,
+            double amount,
             long baseUnitId
     ) {
-        this(null, name, value, baseUnitId);
+        this(null, name, amount, baseUnitId);
     }
 
 }

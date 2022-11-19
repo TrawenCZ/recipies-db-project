@@ -101,19 +101,18 @@ public class IngredientForm extends AbstractForm {
     private void saveIngredient() {
         double energyValueNumber = (double) energyInput.parse();
         BaseUnitsEnum baseUnit = BaseUnitsEnum.GRAM;
+        Unit selected = null;
 
         if (customEnergyEnabled) {
-            Unit selected = (Unit) unitsComboBox.getSelectedItem();
-
-            double baseUnitValue = (selected == null) ? 1d : selected.getValueInBaseUnit();
-            baseUnit = (selected == null) ? baseUnit : selected.getBaseUnit();
-
+            selected = (Unit) unitsComboBox.getSelectedItem();
+            double baseUnitValue = selected.getValueInBaseUnit();
+            baseUnit = selected.getBaseUnit();
             energyValueNumber /= (double) ingredientValueInput.parse() * baseUnitValue;
         } else {
             energyValueNumber /= 100;
         }
 
-        Unit unit = new Unit(baseUnit.getValue(), 1, baseUnit);
+        Unit unit = (baseUnit == null) ? selected : MainWindow.getUnitsModel().getEntity(baseUnit.getValue());
         var tableModel = MainWindow.getIngredientModel();
         if (isEdit()) {
             ingredient.setName(nameInput.getText());
@@ -149,7 +148,13 @@ public class IngredientForm extends AbstractForm {
 
     private void comboBoxListener(ItemEvent itemEvent) {
         Unit selected = (Unit) unitsComboBox.getSelectedItem();
-        String baseUnit = (selected == null) ? "" : selected.getBaseUnit().getValue();
+        String baseUnit = BaseUnitsEnum.GRAM.getValue();
+
+        if (selected != null && selected.getBaseUnit() == null) {
+            baseUnit = selected.getName();
+        } else if (selected != null) {
+            baseUnit = selected.getBaseUnit().getValue();
+        }
 
         switch (baseUnit) {
             case "g" -> ingredientValueLabel.setText(" Ingredient weight");

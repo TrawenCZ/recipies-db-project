@@ -10,6 +10,8 @@ public class UnitValidator implements Validator<Unit> {
 
         validateStringLength("Unit name", unit.getName(), 1, 100)
                 .ifPresent(result::add);
+        validateDoubleValue(unit.getValueInBaseUnit(), 0.001d, Double.MAX_VALUE - 1)
+                .ifPresent(result::add);
 
         return result;
     }
