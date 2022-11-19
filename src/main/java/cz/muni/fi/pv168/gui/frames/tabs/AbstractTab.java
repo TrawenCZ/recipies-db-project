@@ -31,6 +31,7 @@ import cz.muni.fi.pv168.gui.elements.Toolbar;
 import cz.muni.fi.pv168.gui.filters.Sorter;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
 
 import static cz.muni.fi.pv168.gui.resources.Messages.DELETING_ERR_TITLE;
@@ -199,7 +200,7 @@ public abstract class AbstractTab extends JPanel {
                 this, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    protected <K extends Nameable, V> boolean deleteSafeSearch(AbstractModel<K> model, Function<K, String> nameGetter) {
+    protected <K extends Nameable & Identifiable, V> boolean deleteSafeSearch(AbstractModel<K> model, Function<K, String> nameGetter) {
         for (int selectedRow : table.getSelectedRows()) {
             String selectedName = table.getAbstractModel().getEntity(selectedRow).getName();
             if (!Validator.isUnique(model, nameGetter, selectedName)) {

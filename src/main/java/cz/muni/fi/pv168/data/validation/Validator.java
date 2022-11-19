@@ -32,7 +32,18 @@ public interface Validator<M> {
         } else if (value.length() > max) {
             return Optional.of(name + " is too long");
         }
+        return Optional.empty();
+    }
 
+    default Optional<String> validateIntValue(int value, int min, int max) {
+        if (value < min) return Optional.of(String.format("Value: %d is must be at least (%d)", value, min));
+        if (value > max) return Optional.of(String.format("Value: %d is exceeds (%d)", value, max));
+        return Optional.empty();
+    }
+
+    default Optional<String> validateDoubleValue(double value, double min, double max) {
+        if (value < min) return Optional.of(String.format("Value: %.2f is must be at least (%.2f)", value, min));
+        if (value > max) return Optional.of(String.format("Value: %.2f is exceeds (%.2f)", value, max));
         return Optional.empty();
     }
 }

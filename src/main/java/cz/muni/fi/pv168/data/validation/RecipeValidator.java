@@ -14,6 +14,10 @@ public class RecipeValidator implements Validator<Recipe> {
                 .ifPresent(result::add);
         validateStringLength("Recipe instructions", recipe.getDescription(), 1, 512)
                 .ifPresent(result::add);
+        validateIntValue(recipe.getPortions(), 1, Integer.MAX_VALUE - 1)
+                .ifPresent(result::add);
+        validateIntValue(recipe.getRequiredTime(), 1, Integer.MAX_VALUE - 1)
+                .ifPresent(result::add);
 
         return result;
     }

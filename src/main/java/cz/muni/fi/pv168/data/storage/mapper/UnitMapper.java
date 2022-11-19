@@ -8,6 +8,9 @@ import cz.muni.fi.pv168.data.validation.Validator;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
 import cz.muni.fi.pv168.model.Unit;
 
+/**
+ * @author Jan Martinek
+ */
 public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
 
     @FunctionalInterface
@@ -16,7 +19,7 @@ public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
     }
 
     private final Validator<Unit> unitValidator;
-    private Lookup<Unit> unitSupplier;
+    private final Lookup<UnitEntity> unitSupplier;
     private NameLookup<Unit> baseUnitSupplier;
 
     /**
@@ -25,38 +28,46 @@ public class UnitMapper implements EntityMapper<UnitEntity, Unit> {
      *
      * <p> This needed to be done to keep repositories uniform.
      */
-    public UnitMapper(Validator<Unit> unitValidator) {
+    public UnitMapper(Validator<Unit> unitValidator, Lookup<UnitEntity> unitSupplier) {
         this.unitValidator = Objects.requireNonNull(unitValidator);
+        this.unitSupplier = Objects.requireNonNull(unitSupplier);
     }
 
-    public void updateSuppliers(Lookup<Unit> unitSupplier, NameLookup<Unit> baseUnitSupplier) {
-        this.unitSupplier = Objects.requireNonNull(unitSupplier);
+    public void setBaseUnitSupplier(NameLookup<Unit> baseUnitSupplier) {
         this.baseUnitSupplier = Objects.requireNonNull(baseUnitSupplier);
     }
 
     @Override
     public UnitEntity mapToEntity(Unit source) {
         unitValidator.validate(source).intoException();
-        Unit baseUnit = baseUnitSupplier.get(source.getBaseUnit().getValue()).orElseThrow();
+
+        Optional<Unit> baseUnit = Optional.empty();
+        if (source.getBaseUnit() != null) baseUnit = baseUnitSupplier.get(
+            source.getBaseUnit().getValue()
+        );
 
         return new UnitEntity(
             source.getId(),
             source.getName(),
             source.getValueInBaseUnit(),
-            baseUnit.getId()
+            (baseUnit.isPresent() && source.getId() != baseUnit.get().getId())
+                ? baseUnit.get().getId()
+                : 0
         );
     }
 
     @Override
     public Unit mapToModel(UnitEntity entity) {
-        BaseUnitsEnum baseUnit = BaseUnitsEnum.stringToEnum(
-                unitSupplier.get(entity.baseUnitId()).orElseThrow().getName());
+        Optional<UnitEntity> baseUnit = Optional.empty();
+        if (entity.baseUnitId() != 0) baseUnit = unitSupplier.get(entity.baseUnitId());
 
         return new Unit(
             entity.id(),
             entity.name(),
-            entity.value(),
-            baseUnit
+            entity.amount(),
+            (baseUnit.isPresent())
+                ? BaseUnitsEnum.stringToEnum(baseUnit.get().name())
+                : null
         );
     }
 }

@@ -11,8 +11,11 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class IngredientDao implements DataAccessObject<IngredientEntity> {
+
     private final Supplier<ConnectionHandler> connections;
-    public IngredientDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
+    public IngredientDao(Supplier<ConnectionHandler> connections) {
+        this.connections = connections;
+    }
 
     @Override
     public IngredientEntity create(IngredientEntity entity) {

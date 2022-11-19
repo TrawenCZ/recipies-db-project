@@ -11,15 +11,27 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class RecipeIngredientDao implements DataAccessObject<RecipeIngredientEntity> {
-    private final Supplier<ConnectionHandler> connections;
-    public RecipeIngredientDao(Supplier<ConnectionHandler> connections) { this.connections = connections; }
+
+    private Supplier<ConnectionHandler> connections;
+
+    public RecipeIngredientDao(Supplier<ConnectionHandler> connections) {
+        changeConnection(connections);
+    }
+
+    /**
+     * Allows for integration inside of transaction WITHOUT creating new
+     * instantiating new dao.
+     */
+    public void changeConnection(Supplier<ConnectionHandler> connections) {
+        this.connections = Objects.requireNonNull(connections);
+    }
 
     @Override
     public RecipeIngredientEntity create(RecipeIngredientEntity entity) {
-        String sql = "INSERT INTO Unit (recipeId, ingredientId, amount, unitId) VALUES (?, ?, ?, ?);";
+        String sql = "INSERT INTO IngredientList (recipeId, ingredientId, amount, unitId) VALUES (?, ?, ?, ?);";
         try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+            var connection = connections.get();
+            var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             statement.setLong(1, entity.recipeId());
             statement.setLong(2, entity.ingredientId());
@@ -180,22 +192,13 @@ public class RecipeIngredientDao implements DataAccessObject<RecipeIngredientEnt
     }
 
     private Optional<List<RecipeIngredientEntity>> findByCustomId(String idName, long id) {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                    WHERE ? = ?
-                """;
+        var sql = "SELECT * FROM IngredientList WHERE " + idName + " = ?";
 
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
         ) {
-            statement.setString(1, idName);
-            statement.setLong(2, id);
+            statement.setLong(1, id);
             var resultSet = statement.executeQuery();
 
             List<RecipeIngredientEntity> entities = new ArrayList<>();

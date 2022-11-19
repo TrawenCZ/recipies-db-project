@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.function.Function;
 
 import cz.muni.fi.pv168.gui.models.AbstractModel;
+import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
 
 /**
@@ -48,9 +49,10 @@ public class Validator {
      * @param item  item it will search for
      * @return      true if unique
      */
-    public static <T extends Nameable, K> boolean isUnique(AbstractModel<T> model,
-                                                       Function<T, K> valueGetter,
-                                                       K item
+    public static <T extends Nameable & Identifiable, K> boolean isUnique(
+        AbstractModel<T> model,
+        Function<T, K> valueGetter,
+        K item
     ) {
         if (model == null || valueGetter == null) throw new NullPointerException();
         for (int i = 0; i < model.getRowCount(); i++) {
