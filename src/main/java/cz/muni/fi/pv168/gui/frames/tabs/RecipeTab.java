@@ -56,14 +56,6 @@ public final class RecipeTab extends AbstractTab {
                 }
             }
         });
-
-        // var unitsService = new UnitsService(unitModel);
-        // service = new RecipeService(
-        //     recipeModel, unitsService,
-        //     new CategoryService(categoryModel),
-        //     new IngredientService(ingredientModel,
-        //     unitsService)
-        // );
     }
 
     @Override

@@ -14,7 +14,6 @@ public final class CategoriesTab extends AbstractTab {
 
     public CategoriesTab(ImportAction<Category> importAction, ExportAction<Category> exportAction) {
         super(MainWindow.getCategoryModel(), importAction, exportAction);
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (CategoryService) service, Category.class);
         // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (CategoryService) service);
     }
 

@@ -73,9 +73,9 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
-    public void update(E oldEntity) {
-        int index = entities.indexOf(oldEntity);
-        Stream.of(oldEntity)
+    public void update(E entity) {
+        int index = entities.indexOf(entity);
+        Stream.of(entity)
                 .map(mapper::mapToEntity)
                 .map(dao::update)
                 .map(mapper::mapToModel)

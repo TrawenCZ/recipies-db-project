@@ -19,11 +19,6 @@ public final class IngredientsTab extends AbstractTab {
 
     public IngredientsTab(ImportAction<Ingredient> importAction, ExportAction<Ingredient> exportAction) {
         super(MainWindow.getIngredientModel(), importAction, exportAction);
-
-        // service = new IngredientService(
-        //     ingredientModel,
-        //     new UnitsService(unitModel)
-        // );
     }
 
     @Override

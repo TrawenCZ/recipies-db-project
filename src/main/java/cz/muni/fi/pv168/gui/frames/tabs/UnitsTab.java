@@ -19,9 +19,6 @@ public final class UnitsTab extends AbstractTab {
 
     public UnitsTab(ImportAction<Unit> importAction, ExportAction<Unit> exportAction) {
         super(MainWindow.getUnitsModel(), importAction, exportAction);
-
-        // service = new UnitsService(unitModel);
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (UnitsService) service, Unit.class);
         // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (UnitsService) service);
     }
 
