@@ -72,15 +72,7 @@ public class UnitDao extends AbstractDao<UnitEntity> {
 
     @Override
     public Optional<UnitEntity> findByName(String name) {
-        var sql = """
-               SELECT id,
-                      name,
-                      value,
-                      baseUnitId
-                   FROM Unit
-                   WHERE name = ?
-                """;
-
+        var sql = "SELECT * FROM Unit WHERE name = ?";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -160,7 +152,11 @@ public class UnitDao extends AbstractDao<UnitEntity> {
         ) {
             statement.setString(1, entity.name());
             statement.setDouble(2, entity.amount());
-            statement.setLong(3, entity.baseUnitId());
+            if (entity.baseUnitId() == 0) {
+                statement.setNull(3, java.sql.Types.NULL);
+            } else {
+                statement.setLong(3, entity.baseUnitId());
+            }
             statement.setLong(4, entity.id());
 
             if (statement.executeUpdate() == 0) {

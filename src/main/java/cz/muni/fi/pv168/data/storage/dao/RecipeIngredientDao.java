@@ -12,8 +12,6 @@ import java.util.function.Supplier;
 
 public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
-    private Supplier<ConnectionHandler> connections;
-
     public RecipeIngredientDao(Supplier<ConnectionHandler> connections) {
         super(connections);
     }
@@ -80,15 +78,7 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
     @Override
     public Optional<RecipeIngredientEntity> findByName(String name) {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                    WHERE name = ?
-                """;
+        var sql = "SELECT * FROM IngredientList WHERE name = ?";
 
         try (
                 var connection = connections.get();
@@ -109,15 +99,7 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
     @Override
     public Optional<RecipeIngredientEntity> findById(long id) {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                    WHERE id = ?
-                """;
+        var sql = "SELECT * FROM IngredientList WHERE id = ?";
 
         try (
                 var connection = connections.get();

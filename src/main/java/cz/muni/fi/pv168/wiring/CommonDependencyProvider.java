@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporterImpl;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
 import cz.muni.fi.pv168.data.manipulation.JsonImporterImpl;
+import cz.muni.fi.pv168.data.manipulation.services.IngredientService;
 import cz.muni.fi.pv168.data.manipulation.services.RecipeService;
 import cz.muni.fi.pv168.data.manipulation.services.Service;
 import cz.muni.fi.pv168.data.manipulation.services.ServiceImpl;
@@ -73,8 +74,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
         categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
         unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
-        ingredientService = new ServiceImpl<>(ingredients, databaseManager::getTransactionHandler);
-        recipeService = new RecipeService(recipes, databaseManager::getTransactionHandler);
+        ingredientService = new IngredientService(ingredients, units, databaseManager::getTransactionHandler);
+        recipeService = new RecipeService(recipes, categories, ingredients, units, databaseManager::getTransactionHandler);
     }
 
     @Override

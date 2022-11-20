@@ -60,16 +60,7 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
 
     @Override
     public Collection<RecipeEntity> findAll() {
-        var sql = """
-            SELECT id,
-                   name,
-                   description,
-                   categoryId,
-                   portions,
-                   duration,
-                   instruction
-                FROM Recipe
-                """;
+        var sql = "SELECT * FROM Recipe";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -89,18 +80,7 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
 
     @Override
     public Optional<RecipeEntity> findByName(String name) {
-        var sql = """
-            SELECT id,
-                   name,
-                   description,
-                   categoryId,
-                   portions,
-                   duration,
-                   instruction
-                FROM Recipe
-                WHERE name = ?
-                """;
-
+        var sql = "SELECT * FROM Recipe WHERE name = ?";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -121,18 +101,7 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
 
     @Override
     public Optional<RecipeEntity> findById(long id) {
-        var sql = """
-            SELECT id,
-                   name,
-                   description,
-                   categoryId,
-                   portions,
-                   duration,
-                   instruction
-                FROM Recipe
-                WHERE id = ?
-                """;
-
+        var sql = "SELECT * FROM Recipe WHERE id = ?";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -210,16 +179,16 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         }
 
     }
+
     private static RecipeEntity recipeFromResultSet(ResultSet resultSet) throws SQLException {
-        return new RecipeEntity
-                (
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getLong("categoryId"),
-                        resultSet.getLong("portions"),
-                        resultSet.getLong("duration"),
-                        resultSet.getString("instruction")
-                );
+        return new RecipeEntity (
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getLong("categoryId"),
+            resultSet.getLong("portions"),
+            resultSet.getLong("duration"),
+            resultSet.getString("instruction")
+        );
     }
 }

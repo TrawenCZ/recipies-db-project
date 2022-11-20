@@ -55,8 +55,11 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
+            ingredientDao.customConnection(transaction::connection);
             uncomitted(entity, this::createUncommited, transaction::connection);
             transaction.commit();
+        } finally {
+            ingredientDao.defaultConnection();
         }
     }
 
@@ -73,8 +76,11 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
+            ingredientDao.customConnection(transaction::connection);
             uncomitted(entity, this::updateUncommited, transaction::connection);
             transaction.commit();
+        } finally {
+            ingredientDao.defaultConnection();
         }
     }
 

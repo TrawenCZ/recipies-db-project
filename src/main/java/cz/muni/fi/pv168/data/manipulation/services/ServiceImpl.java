@@ -10,8 +10,10 @@ import cz.muni.fi.pv168.data.storage.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.swing.JOptionPane;
@@ -44,49 +46,59 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
 
     @Override
     public int saveRecords(Collection<M> records) {
-        Collection<M> duplicates = getDuplicates(records);
+        Collection<M> duplicates = getDuplicates(records, repository);
         boolean replace = (duplicates.size() > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
-            for (var record : records) {
-                var found = getDuplicate(record, duplicates);
-                if (found == null) {
-                    create(record, transaction::connection);
-                } else if (replace) {
-                    record.setId(found.getId());
-                    update(record, transaction::connection);
-                }
-            }
+            doImport(records, duplicates,  replace, repository, transaction::connection);
             transaction.commit();
         }
         return duplicates.size();
     }
 
-    protected void create(M entity, Supplier<ConnectionHandler> connection) {
+    protected static <NI extends Nameable & Identifiable> void doImport(
+        Collection<NI> records,
+        Collection<NI> duplicates,
+        boolean doReplace,
+        Repository<NI> repository,
+        Supplier<ConnectionHandler> connection
+    ) {
+        for (var record : records) {
+            var found = getDuplicate(record, duplicates);
+            if (found == null) {
+                create(record, repository, connection);
+            } else if (doReplace) {
+                record.setId(found.getId());
+                update(record, repository, connection);
+            }
+        }
+    }
+
+    protected static <N extends Nameable> void create(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {
         repository.uncomitted(entity, repository::create, connection);
     }
 
-    protected void update(M entity, Supplier<ConnectionHandler> connection) {
+    protected static <N extends Nameable> void update(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {
         repository.uncomitted(entity, repository::update, connection);
     }
 
-    private Collection<M> getDuplicates(Collection<M> records) {
-        List<M> duplicate = new ArrayList<>();
-        for (var record : records) {
-            var found = repository.findByName(record.getName()).orElse(null);
-            if (found != null) duplicate.add(record);
+    protected static <N extends Nameable> Collection<N> getDuplicates(Collection<N> records, Repository<N> repository) {
+        Set<N> duplicate = new HashSet<>();
+        for (var r : records) {
+            var found = repository.findByName(r.getName()).orElse(null);
+            if (found != null) duplicate.add(found);
         }
         return duplicate;
     }
 
-    private M getDuplicate(M entity, Collection<M> duplicates) {
+    protected static <N extends Nameable> N getDuplicate(N entity, Collection<N> duplicates) {
         return duplicates.stream()
                          .dropWhile(e -> !e.getName().equals(entity.getName()))
                          .findFirst()
                          .orElse(null);
     }
 
-    private boolean getDecision() {
+    protected static boolean getDecision() {
         String[] options = {"Replace all", "Skip all", "Cancel"};
         int n = JOptionPane.showOptionDialog(
             MainWindow.getContentPane(),
