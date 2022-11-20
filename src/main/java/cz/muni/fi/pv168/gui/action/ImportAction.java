@@ -39,23 +39,19 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         var fileChooser = new JsonFileChooser(false, true);
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
-                int firstRow = table.getRowCount() - 1;
                 var records = JSONImporter.loadEntities(
                     fileChooser.getSelectedFile().getAbsolutePath(),
                     aClass
                 );
                 int count = service.saveRecords(records);
-                int lastRow = table.getRowCount() - 1;
-                if (lastRow >= firstRow) {
-                    table.getRowSorter().rowsInserted(firstRow, lastRow);
-                    showSuccessfulImportMessage(count, records.size());
-                } else if (count < 0) {
-                    table.getRowSorter().rowsUpdated(firstRow, lastRow);
+                if (count != 0) {
+                    table.getRowSorter().allRowsChanged();
                     showSuccessfulImportMessage(count, records.size());
                 } else {
                     showNoRowsImportedMessage(records.size());
                 }
                 table.revalidate();
+                table.repaint();
             } catch (NullPointerException e) {
                 // TODO log
                 e.printStackTrace();

@@ -50,13 +50,7 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
 
     @Override
     public Collection<IngredientEntity> findAll() {
-        var sql = """
-                SELECT id,
-                       name,
-                       kcalPerUnit,
-                       baseUnitId
-                    FROM Ingredient
-                """;
+        var sql = "SELECT * FROM Ingredient";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -77,14 +71,7 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
 
     @Override
     public Optional<IngredientEntity> findByName(String name) {
-        var sql = """
-               SELECT id,
-                      name,
-                      kcalPerUnit,
-                      baseUnitId
-                   FROM Ingredient
-                   WHERE name = ?
-                """;
+        var sql = "SELECT * FROM Ingredient WHERE name = ?";
 
         try (
                 var connection = connections.get();
@@ -107,14 +94,7 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
 
     @Override
     public Optional<IngredientEntity> findById(long id) {
-        var sql = """
-               SELECT id,
-                      name,
-                      kcalPerUnit,
-                      baseUnitId
-                   FROM Ingredient
-                   WHERE id = ?
-                """;
+        var sql = "SELECT * FROM Ingredient WHERE id = ?";
 
         try (
                 var connection = connections.get();
@@ -139,7 +119,7 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
         Objects.requireNonNull(entity.id(), "Entity id cannot be null");
 
         final var sql = """
-                UPDATE INGREDIENT
+                UPDATE Ingredient
                     SET
                     name = ?,
                     kcalPerUnit = ?,
