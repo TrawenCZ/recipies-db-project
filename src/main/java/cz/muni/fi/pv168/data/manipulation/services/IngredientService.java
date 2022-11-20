@@ -29,13 +29,14 @@ public class IngredientService extends ServiceImpl<Ingredient> {
         Collection<Ingredient> exIngredients = getDuplicates(records, repository);
         Collection<Unit> exUnits = getDuplicates(unitRecords, units);
 
-        boolean replace = (exUnits.size() > 0 || exIngredients.size() > 0) ? getDecision() : false;
+        int total = exUnits.size() + exIngredients.size();
+        boolean replace = (total > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
             doImport(unitRecords, exUnits, replace, units, transaction::connection);
             doImport(records, exIngredients, replace, repository, transaction::connection);
             transaction.commit();
         }
-        return exUnits.size();
+        return (replace) ? -total : total;
     }
 }

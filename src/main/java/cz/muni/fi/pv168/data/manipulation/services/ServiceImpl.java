@@ -53,7 +53,7 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
             doImport(records, duplicates,  replace, repository, transaction::connection);
             transaction.commit();
         }
-        return duplicates.size();
+        return (replace) ? -duplicates.size() : duplicates.size();
     }
 
     protected static <NI extends Nameable & Identifiable> void doImport(

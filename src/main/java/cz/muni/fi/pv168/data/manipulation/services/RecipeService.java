@@ -45,11 +45,8 @@ public class RecipeService extends ServiceImpl<Recipe> {
         Collection<Unit> exBaseUnits = getDuplicates(baseUnitRecords, units);
         Collection<Unit> exUnits = getDuplicates(unitRecords, units);
 
-        boolean replace = (
-            exRecipes.size() > 0 || exCategories.size() > 0 ||
-            exUnits.size() > 0 || exBaseUnits.size() > 0 ||
-            exIngredients.size() > 0
-        ) ? getDecision() : false;
+        int total = exRecipes.size() + exCategories.size() + exUnits.size() + exBaseUnits.size() + exIngredients.size();
+        boolean replace = (total > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
             doImport(categoryRecords, exCategories, replace, categories, transaction::connection);
@@ -59,7 +56,7 @@ public class RecipeService extends ServiceImpl<Recipe> {
             doImport(records, exRecipes, replace, repository, transaction::connection);
             transaction.commit();
         }
-        return exRecipes.size();
+        return (replace) ? -total : total;
     }
 
     protected static void create(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {

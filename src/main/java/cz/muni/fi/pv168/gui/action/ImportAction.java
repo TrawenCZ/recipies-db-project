@@ -39,16 +39,19 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         var fileChooser = new JsonFileChooser(false, true);
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
-                int firstRow = table.getRowCount();
+                int firstRow = table.getRowCount() - 1;
                 var records = JSONImporter.loadEntities(
                     fileChooser.getSelectedFile().getAbsolutePath(),
                     aClass
                 );
-                int ignored = service.saveRecords(records);
+                int count = service.saveRecords(records);
                 int lastRow = table.getRowCount() - 1;
                 if (lastRow >= firstRow) {
                     table.getRowSorter().rowsInserted(firstRow, lastRow);
-                    showSuccessfulImportMessage(ignored, records.size());
+                    showSuccessfulImportMessage(count, records.size());
+                } else if (count < 0) {
+                    table.getRowSorter().rowsUpdated(firstRow, lastRow);
+                    showSuccessfulImportMessage(count, records.size());
                 } else {
                     showNoRowsImportedMessage(records.size());
                 }
@@ -78,20 +81,18 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
     private void showNoRowsImportedMessage(int discardedCount) {
         JOptionPane.showMessageDialog(
             MainWindow.getContentPane(),
-            "!! Nothing was imported !!" + getDiscarded(discardedCount),
+            "!! Nothing was imported !!" + getAction(discardedCount, "Discarded"),
             "Import success",
             JOptionPane.WARNING_MESSAGE
         );
     }
 
-    private void showSuccessfulImportMessage(int savedCount, int originalCount) {
-        String message;
-        if (savedCount == 0) {
-            message =  "The file contains no new records.";
-        } else {
-            message = "Successfully imported " + savedCount + " record" + ((savedCount > 1) ? "s." : ".");
-        }
-        message += getDiscarded(originalCount - savedCount);
+    private void showSuccessfulImportMessage(int count, int originalCount) {
+        String message = "Successfully imported " + originalCount +
+            " row" + ((originalCount > 1) ? "s" : "") +
+            " in current tab.";
+        message += getAction(-count, "Total replaced");
+        message += getAction(count, "Total discarded");
         JOptionPane.showMessageDialog(
             MainWindow.getContentPane(),
             message,
@@ -100,7 +101,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         );
     }
 
-    private String getDiscarded(int count) {
-        return (count > 0) ? "\nDiscarded " + count + " record" + ((count > 1) ? "s!" : "!") : "";
+    private String getAction(int count, String action) {
+        return (count > 0) ? "\n" + action + ": " + count + " object" + ((count > 1) ? "s!" : "!") : "";
     }
 }
