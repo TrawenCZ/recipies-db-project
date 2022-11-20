@@ -10,11 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class UnitDao implements DataAccessObject<UnitEntity> {
+public class UnitDao extends AbstractDao<UnitEntity> {
 
-    private final Supplier<ConnectionHandler> connections;
     public UnitDao(Supplier<ConnectionHandler> connections) {
-        this.connections = connections;
+        super(connections);
     }
 
     @Override
@@ -68,6 +67,27 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
             return units;
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to load all units", ex);
+        }
+    }
+
+    @Override
+    public Optional<UnitEntity> findByName(String name) {
+        var sql = "SELECT * FROM Unit WHERE name = ?";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(unitFromResultSet(resultSet));
+            } else {
+                // unit not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load unit by id: " + name, ex);
         }
     }
 
@@ -132,7 +152,11 @@ public class UnitDao implements DataAccessObject<UnitEntity> {
         ) {
             statement.setString(1, entity.name());
             statement.setDouble(2, entity.amount());
-            statement.setLong(3, entity.baseUnitId());
+            if (entity.baseUnitId() == 0) {
+                statement.setNull(3, java.sql.Types.NULL);
+            } else {
+                statement.setLong(3, entity.baseUnitId());
+            }
             statement.setLong(4, entity.id());
 
             if (statement.executeUpdate() == 0) {

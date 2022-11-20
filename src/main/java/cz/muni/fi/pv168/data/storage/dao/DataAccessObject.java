@@ -1,9 +1,11 @@
 package cz.muni.fi.pv168.data.storage.dao;
 
 import cz.muni.fi.pv168.data.storage.DataStorageException;
+import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Generic interface for CRUD operations on entities.
@@ -12,6 +14,17 @@ import java.util.Optional;
  */
 public interface DataAccessObject<E> {
 
+    /**
+     * Resets the connection to the one it was constructed with.
+     */
+    void defaultConnection();
+
+    /**
+     * Changes the connection to a given one.
+     */
+    void customConnection(Supplier<ConnectionHandler> connection);
+
+    Optional<E> findByName(String name);
     /**
      * Creates a new entity using the underlying data source.
      *

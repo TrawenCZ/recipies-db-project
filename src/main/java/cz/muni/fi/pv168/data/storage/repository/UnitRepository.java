@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.data.storage.mapper.UnitMapper;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
 import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.wiring.Supported;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class UnitRepository extends AbstractRepository<UnitDao, UnitEntity, Unit
 
     @Override
     public String toString() {
-        return "Unit";
+        return Supported.UNIT;
     }
 
     private void loadBaseUnits(UnitDao dao) {

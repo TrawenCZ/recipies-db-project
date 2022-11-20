@@ -10,20 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class RecipeDao implements DataAccessObject<RecipeEntity>{
-
-    private Supplier<ConnectionHandler> connections;
+public class RecipeDao extends AbstractDao<RecipeEntity>{
 
     public RecipeDao(Supplier<ConnectionHandler> connections) {
-        changeConnection(connections);
-    }
-
-    /**
-     * Allows for integration inside of transaction WITHOUT creating new
-     * instantiating new dao.
-     */
-    public void changeConnection(Supplier<ConnectionHandler> connections) {
-        this.connections = Objects.requireNonNull(connections);
+        super(connections);
     }
 
     @Override
@@ -70,16 +60,7 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
 
     @Override
     public Collection<RecipeEntity> findAll() {
-        var sql = """
-            SELECT id,
-                   name,
-                   description,
-                   categoryId,
-                   portions,
-                   duration,
-                   instruction
-                FROM Recipe
-                """;
+        var sql = "SELECT * FROM Recipe";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -98,19 +79,29 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
     }
 
     @Override
-    public Optional<RecipeEntity> findById(long id) {
-        var sql = """
-            SELECT id,
-                   name,
-                   description,
-                   categoryId,
-                   portions,
-                   duration,
-                   instruction
-                FROM Recipe
-                WHERE id = ?
-                """;
+    public Optional<RecipeEntity> findByName(String name) {
+        var sql = "SELECT * FROM Recipe WHERE name = ?";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(recipeFromResultSet(resultSet));
+            } else {
+                // recipe not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load recipe by id: " + name, ex);
+        }
+    }
 
+    @Override
+    public Optional<RecipeEntity> findById(long id) {
+        var sql = "SELECT * FROM Recipe WHERE id = ?";
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -188,16 +179,16 @@ public class RecipeDao implements DataAccessObject<RecipeEntity>{
         }
 
     }
+
     private static RecipeEntity recipeFromResultSet(ResultSet resultSet) throws SQLException {
-        return new RecipeEntity
-                (
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getLong("categoryId"),
-                        resultSet.getLong("portions"),
-                        resultSet.getLong("duration"),
-                        resultSet.getString("instruction")
-                );
+        return new RecipeEntity (
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getLong("categoryId"),
+            resultSet.getLong("portions"),
+            resultSet.getLong("duration"),
+            resultSet.getString("instruction")
+        );
     }
 }

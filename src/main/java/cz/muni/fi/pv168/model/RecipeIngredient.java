@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -21,6 +22,8 @@ public class RecipeIngredient implements Identifiable {
                             @JsonProperty("unit") Unit unit) {
         this(null, null, ingredient, amount, unit);
     }
+
+    @JsonIgnore
     public RecipeIngredient(Long id,
                             Long recipeId,
                             Ingredient ingredient,
@@ -33,10 +36,12 @@ public class RecipeIngredient implements Identifiable {
         this.unit = Objects.requireNonNull(unit, "unit must not be null");
     }
 
+    @JsonIgnore
     public Long getId() {
         return id;
     }
 
+    @JsonIgnore
     public Long getRecipeId() {
         return recipeId;
     }

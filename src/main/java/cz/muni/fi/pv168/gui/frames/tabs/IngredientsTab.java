@@ -7,6 +7,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import cz.muni.fi.pv168.data.generators.IngredientDataGenerator;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.IngredientForm;
 import cz.muni.fi.pv168.model.Ingredient;
@@ -17,21 +19,29 @@ public final class IngredientsTab extends AbstractTab {
 
     public IngredientsTab() {
         super(MainWindow.getIngredientModel());
-
-        // service = new IngredientService(
-        //     ingredientModel,
-        //     new UnitsService(unitModel)
-        // );
-
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (IngredientService) service, Ingredient.class);
-        // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (IngredientService) service);
-
     }
 
     @Override
     public void addSampleData(int sampleSize) {
         var model = MainWindow.getIngredientModel();
         IngredientDataGenerator.getAll().stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getIngredientService(),
+            Ingredient.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getIngredientService()
+        );
     }
 
     @Override

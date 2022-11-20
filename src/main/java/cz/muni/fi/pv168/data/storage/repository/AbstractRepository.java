@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.data.storage.repository;
 
 import cz.muni.fi.pv168.data.storage.dao.DataAccessObject;
+import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Identifiable;
 
@@ -9,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,13 +32,20 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
+    public Optional<E> findByName(String name) {
+        Optional<EE> record = dao.findByName(name);
+        return record.map(mapper::mapToModel);
+    }
+
+    @Override
     public int getSize() {
         return entities.size();
     }
 
     @Override
     public Optional<E> findById(long id) {
-        return entities.stream().filter(e -> e.getId() == id).findFirst();
+        Optional<EE> record = dao.findById(id);
+        return record.map(mapper::mapToModel);
     }
 
     @Override
@@ -56,22 +66,32 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
-    public void create(E newEntity) {
-        Stream.of(newEntity)
-                .map(mapper::mapToEntity)
-                .map(dao::create)
-                .map(mapper::mapToModel)
-                .forEach(e -> entities.add(e));
+    public void uncomitted(E entity, Consumer<E> action, Supplier<ConnectionHandler> connection) {
+        try {
+            dao.customConnection(connection);
+            action.accept(entity);
+        } finally {
+            dao.defaultConnection();
+        }
+    }
+
+    @Override
+    public void create(E entity) {
+        Stream.of(entity)
+              .map(mapper::mapToEntity)
+              .map(dao::create)
+              .map(mapper::mapToModel)
+              .forEach(e -> entities.add(e));
     }
 
     @Override
     public void update(E entity) {
         int index = entities.indexOf(entity);
         Stream.of(entity)
-                .map(mapper::mapToEntity)
-                .map(dao::update)
-                .map(mapper::mapToModel)
-                .forEach(e -> entities.set(index, e));
+              .map(mapper::mapToEntity)
+              .map(dao::update)
+              .map(mapper::mapToModel)
+              .forEach(e -> entities.set(index, e));
     }
 
     @Override

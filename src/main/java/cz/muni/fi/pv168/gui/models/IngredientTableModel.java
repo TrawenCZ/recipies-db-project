@@ -5,6 +5,7 @@ import java.util.List;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of ingredient data class in a tabular representation
@@ -41,6 +42,6 @@ public class IngredientTableModel extends AbstractModel<Ingredient> {
 
     @Override
     public String toString() {
-        return "Ingredients";
+        return Supported.INGREDIENT;
     }
 }

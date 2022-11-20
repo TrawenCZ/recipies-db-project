@@ -4,6 +4,7 @@ import java.util.List;
 
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of category data class in a tabular representation
@@ -28,6 +29,6 @@ public class CategoryTableModel extends AbstractModel<Category> {
 
     @Override
     public String toString() {
-        return "Categories";
+        return Supported.CATEGORY;
     }
 }

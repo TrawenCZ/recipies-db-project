@@ -5,6 +5,7 @@ import java.util.List;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Recipe;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of recipe data class in a tabular representation
@@ -32,9 +33,8 @@ public class RecipeTableModel extends AbstractModel<Recipe> {
         return recipes;
     }
 
-
     @Override
     public String toString() {
-        return "Recipes";
+        return Supported.RECIPE;
     }
 }

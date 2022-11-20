@@ -16,6 +16,8 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.data.generators.RecipeDataGenerator;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
 import cz.muni.fi.pv168.gui.elements.text.RangeTextField;
@@ -25,6 +27,7 @@ import cz.muni.fi.pv168.gui.frames.forms.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
+import cz.muni.fi.pv168.model.Recipe;
 
 public final class RecipeTab extends AbstractTab {
 
@@ -53,16 +56,6 @@ public final class RecipeTab extends AbstractTab {
                 }
             }
         });
-
-        // var unitsService = new UnitsService(unitModel);
-        // service = new RecipeService(
-        //     recipeModel, unitsService,
-        //     new CategoryService(categoryModel),
-        //     new IngredientService(ingredientModel,
-        //     unitsService)
-        // );
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (RecipeService) service, Recipe.class);
-        // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (RecipeService) service);
     }
 
     @Override
@@ -70,6 +63,23 @@ public final class RecipeTab extends AbstractTab {
         var recipeGenerator = new RecipeDataGenerator();
         var model = MainWindow.getRecipeModel();
         recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getRecipeService(),
+            Recipe.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getRecipeService()
+        );
     }
 
     @Override

@@ -29,6 +29,15 @@ class TransactionHandlerImpl implements TransactionHandler {
     }
 
     @Override
+    public void rollback() {
+        try {
+            connectionHandler.use().rollback();
+        } catch (SQLException e) {
+            throw new DataStorageException("Unable to rollback transaction", e);
+        }
+    }
+
+    @Override
     public void commit() {
         try {
             connectionHandler.use().commit();

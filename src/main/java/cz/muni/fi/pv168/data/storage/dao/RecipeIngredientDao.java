@@ -10,20 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class RecipeIngredientDao implements DataAccessObject<RecipeIngredientEntity> {
-
-    private Supplier<ConnectionHandler> connections;
+public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
     public RecipeIngredientDao(Supplier<ConnectionHandler> connections) {
-        changeConnection(connections);
-    }
-
-    /**
-     * Allows for integration inside of transaction WITHOUT creating new
-     * instantiating new dao.
-     */
-    public void changeConnection(Supplier<ConnectionHandler> connections) {
-        this.connections = Objects.requireNonNull(connections);
+        super(connections);
     }
 
     @Override
@@ -87,16 +77,29 @@ public class RecipeIngredientDao implements DataAccessObject<RecipeIngredientEnt
     }
 
     @Override
+    public Optional<RecipeIngredientEntity> findByName(String name) {
+        var sql = "SELECT * FROM IngredientList WHERE name = ?";
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(ingredientListFromResultSet(resultSet));
+            } else {
+                // ingredient list not found
+                return Optional.empty();
+            }
+        } catch (SQLException ex) {
+            throw new DataStorageException("Failed to load ingredient list by id: " + name, ex);
+        }
+    }
+
+    @Override
     public Optional<RecipeIngredientEntity> findById(long id) {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                    WHERE id = ?
-                """;
+        var sql = "SELECT * FROM IngredientList WHERE id = ?";
 
         try (
                 var connection = connections.get();

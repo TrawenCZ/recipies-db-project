@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class Ingredient implements Nameable, Identifiable {
         this(null, name, kcal, unit);
     }
 
+    @JsonIgnore
     public Ingredient(Long id,
                       String name,
                       double kcal,
@@ -32,6 +34,7 @@ public class Ingredient implements Nameable, Identifiable {
         setUnit(unit);
     }
 
+    @JsonIgnore
     public Long getId() {
         return id;
     }

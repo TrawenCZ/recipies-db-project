@@ -21,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 
-import cz.muni.fi.pv168.data.service.AbstractService;
 import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.action.*;
 import cz.muni.fi.pv168.gui.coloring.ColoredTable;
@@ -51,9 +50,8 @@ public abstract class AbstractTab extends JPanel {
     protected final SearchBar searchBar;
     protected final JLabel entries;
 
-    protected AbstractService<?> service;
-    protected ImportAction<?> importAction;
-    protected ExportAction<?> exportAction;
+    protected final ImportAction<?> importAction;
+    protected final ExportAction<?> exportAction;
 
     protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
@@ -66,6 +64,9 @@ public abstract class AbstractTab extends JPanel {
 
         this.table = new ColoredTable(model);
         searchBar = new SearchBar(searchBarSize);
+
+        this.importAction = createImportAction();
+        this.exportAction = createExportAction();
 
         var sorter = createSorter();
         searchButton = createSearchButton(searchBarSize, sorter);
@@ -90,6 +91,14 @@ public abstract class AbstractTab extends JPanel {
     }
 
     public abstract void addSampleData(int sampleSize);
+
+    protected abstract ImportAction<?> createImportAction();
+
+    protected abstract ExportAction<?> createExportAction();
+
+    protected abstract void addRow(ActionEvent event);
+
+    protected abstract void editSelectedRow(ActionEvent actionEvent);
 
     public void deleteRows() {
         var model = (AbstractModel<?>) table.getModel();
@@ -156,10 +165,6 @@ public abstract class AbstractTab extends JPanel {
 
         return tools;
     }
-
-    protected abstract void addRow(ActionEvent event);
-
-    protected abstract void editSelectedRow(ActionEvent actionEvent);
 
     protected void deleteSelectedRows(ActionEvent actionEvent) {
         if (showConfirmDialog() != JOptionPane.YES_OPTION) return;

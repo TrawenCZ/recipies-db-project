@@ -26,6 +26,8 @@ public class MainWindow {
 
     // we expect only one such object during runtime
     private static JFrame frame;
+
+    private static DependencyProvider dependencies;
     private static UnitsTableModel unitModel;
     private static CategoryTableModel categoryModel;
     private static IngredientTableModel ingredientModel;
@@ -38,15 +40,16 @@ public class MainWindow {
         if (frame != null) frame.dispose();
         frame = new JFrame();
 
+        dependencies = dependencyProvider;
         unitModel = new UnitsTableModel(dependencyProvider.getUnitRepository());
         categoryModel = new CategoryTableModel(dependencyProvider.getCategoryRepository());
         ingredientModel = new IngredientTableModel(dependencyProvider.getIngredientRepository());
         recipeModel = new RecipeTableModel(dependencyProvider.getRecipeRepository());
 
-        setLayout();
+        setLayout(dependencyProvider);
     }
 
-    private void setLayout() {
+    private void setLayout(DependencyProvider dependencyProvider) {
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
@@ -54,7 +57,7 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
         frame.setMinimumSize(MINIMUM_SIZE);
 
-        addTabs();
+        addTabs(dependencyProvider);
         addMenus();
 
         frame.setVisible(true);
@@ -97,7 +100,7 @@ public class MainWindow {
         menuBar.add(helpMenu);
     }
 
-    public void addTabs() {
+    public void addTabs(DependencyProvider dependencyProvider) {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Recipes", new RecipeTab());
         tabbedPane.addTab("Categories", new CategoriesTab());
@@ -120,5 +123,9 @@ public class MainWindow {
 
     public static RecipeTableModel getRecipeModel() {
         return recipeModel;
+    }
+
+    public static DependencyProvider getDependencies() {
+        return dependencies;
     }
 }

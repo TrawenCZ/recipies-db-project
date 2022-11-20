@@ -10,12 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class CategoryDao implements DataAccessObject<CategoryEntity> {
-
-    private final Supplier<ConnectionHandler> connections;
+public class CategoryDao extends AbstractDao<CategoryEntity> {
 
     public CategoryDao(Supplier<ConnectionHandler> connections) {
-        this.connections = connections;
+        super(connections);
     }
 
     @Override
@@ -47,6 +45,34 @@ public class CategoryDao implements DataAccessObject<CategoryEntity> {
             throw new DataStorageException("Failed to store: " + entity, ex);
         }
 
+    }
+
+    @Override
+    public Optional<CategoryEntity> findByName(String name) {
+        var sql = """
+                SELECT id,
+                       name,
+                       color
+                    FROM Category
+                    WHERE name = ?
+                """;
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            statement.setString(1, name);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(categoryFromResultSet(resultSet));
+            } else {
+                // category not found
+                return Optional.empty();
+            }
+        } catch (
+                SQLException ex) {
+            throw new DataStorageException("Failed to load category by name: " + name, ex);
+        }
     }
 
     @Override

@@ -25,17 +25,20 @@ public final class DatabaseManager {
     private DatabaseManager(String jdbcUri) {
         // connection pool with empty credentials
         this.dataSource = JdbcConnectionPool.create(jdbcUri, "", "");
-
         this.sqlFileExecutor = new SqlFileExecutor(this::getTransactionHandler, DatabaseManager.class);
     }
 
-    public static DatabaseManager createProductionInstance() {
-        String removeLater = "tcp://localhost/";
-        String connectionString = "jdbc:h2:%s;%s".formatted(removeLater + createDbFileSystemPath(), DB_PROPERTIES_STRING);
-
+    public static DatabaseManager createServerInstance() {
+        String connectionString = "jdbc:h2:%s;%s".formatted("tcp://localhost/" + createDbFileSystemPath(), DB_PROPERTIES_STRING);
         // We need this for debugging purposes
         System.out.println("JDBC connection URI: " + connectionString);
+        return new DatabaseManager(connectionString);
+    }
 
+    public static DatabaseManager createProductionInstance() {
+        String connectionString = "jdbc:h2:%s;%s".formatted(createDbFileSystemPath(), DB_PROPERTIES_STRING);
+        // We need this for debugging purposes
+        System.out.println("JDBC connection URI: " + connectionString);
         return new DatabaseManager(connectionString);
     }
 

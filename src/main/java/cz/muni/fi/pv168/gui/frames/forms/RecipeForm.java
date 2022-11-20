@@ -284,8 +284,7 @@ public class RecipeForm extends AbstractForm {
     }
 
     private void addRecipe(RecipeTableModel model, List<RecipeIngredient> ingredients) {
-        // DATABASE...
-        model.addRow(new Recipe(
+        Recipe recipe = new Recipe(
             nameInput.getText(),
             descriptionInput.getText(),
             instructionsInput.getText(),
@@ -293,6 +292,7 @@ public class RecipeForm extends AbstractForm {
             durationInput.parse(),
             portionInput.parse(),
             ingredients
-        ));
+        );
+        model.addRow(recipe);
     }
 }

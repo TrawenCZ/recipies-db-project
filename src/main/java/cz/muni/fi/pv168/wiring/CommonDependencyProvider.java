@@ -2,7 +2,14 @@ package cz.muni.fi.pv168.wiring;
 
 import java.util.Objects;
 
-import cz.muni.fi.pv168.data.service.*;
+import cz.muni.fi.pv168.data.manipulation.JsonExporter;
+import cz.muni.fi.pv168.data.manipulation.JsonExporterImpl;
+import cz.muni.fi.pv168.data.manipulation.JsonImporter;
+import cz.muni.fi.pv168.data.manipulation.JsonImporterImpl;
+import cz.muni.fi.pv168.data.manipulation.services.IngredientService;
+import cz.muni.fi.pv168.data.manipulation.services.RecipeService;
+import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.services.ServiceImpl;
 import cz.muni.fi.pv168.data.storage.dao.*;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.data.storage.mapper.*;
@@ -23,11 +30,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     private final Repository<Ingredient> ingredients;
     private final Repository<Unit> units;
 
-    // TODO: uncomment
-    // private final Service<Recipe> recipeService;
-    // private final Service<Category> categoryService;
-    // private final Service<Ingredient> ingredientService;
-    // private final Service<Unit> unitService;
+    private final Service<Recipe> recipeService;
+    private final Service<Ingredient> ingredientService;
+    private final Service<Category> categoryService;
+    private final Service<Unit> unitService;
 
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
         this.databaseManager = Objects.requireNonNull(databaseManager);
@@ -66,12 +72,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             databaseManager::getTransactionHandler
         );
 
-        // TODO: finish it, currently not taking transactions (idk if we even want to do it like that)
-        // operational services
-        // categoryService = new CategoryService(categories);
-        // unitService = new UnitsService(units);
-        // ingredientService = new IngredientService(ingredients, unitService);
-        // recipeService = new RecipeService(recipes, unitService, categoryService, ingredientService);
+        categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
+        unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
+        ingredientService = new IngredientService(ingredients, units, databaseManager::getTransactionHandler);
+        recipeService = new RecipeService(recipes, categories, ingredients, units, databaseManager::getTransactionHandler);
     }
 
     @Override
@@ -101,25 +105,40 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
     @Override
     public Service<Recipe> getRecipeService() {
-        // TODO: uncomment
-        return null; //recipeService;
+        return recipeService;
     }
 
     @Override
     public Service<Category> getCategoryService() {
-        // TODO: uncomment
-        return null; //categoryService;
+        return categoryService;
     }
 
     @Override
     public Service<Ingredient> getIngredientService() {
-        // TODO: uncomment
-        return null; //ingredientService;
+        return ingredientService;
     }
 
     @Override
     public Service<Unit> getUnitService() {
-        // TODO: uncomment
-        return null; //unitService;
+        return unitService;
+    }
+
+    @Override
+    public Service<?> getService(String name) {
+        return switch (name) {
+            case Supported.CATEGORY -> categoryService;
+            case Supported.UNIT -> unitService;
+            case Supported.INGREDIENT -> ingredientService;
+            case Supported.RECIPE -> recipeService;
+            default -> recipeService;
+        };
+    }
+
+    public static JsonExporter getJsonExporter() {
+        return new JsonExporterImpl();
+    }
+
+    public static JsonImporter getJsonImporter() {
+        return new JsonImporterImpl();
     }
 }

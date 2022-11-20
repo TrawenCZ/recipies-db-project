@@ -5,6 +5,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import cz.muni.fi.pv168.data.generators.UnitDataGenerator;
+import cz.muni.fi.pv168.gui.action.ExportAction;
+import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.UnitForm;
 import cz.muni.fi.pv168.model.RecipeIngredient;
@@ -17,9 +19,6 @@ public final class UnitsTab extends AbstractTab {
 
     public UnitsTab() {
         super(MainWindow.getUnitsModel());
-
-        // service = new UnitsService(unitModel);
-        // importAction = new ImportAction<>(table, new JsonImporterImpl(), (UnitsService) service, Unit.class);
         // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (UnitsService) service);
     }
 
@@ -27,6 +26,23 @@ public final class UnitsTab extends AbstractTab {
     public void addSampleData(int sampleSize) {
         var model = MainWindow.getUnitsModel();
         UnitDataGenerator.getAll().stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getUnitService(),
+            Unit.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getUnitService()
+        );
     }
 
     @Override

@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.data.storage.dao.IngredientDao;
 import cz.muni.fi.pv168.data.storage.entity.IngredientEntity;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Ingredient;
+import cz.muni.fi.pv168.wiring.Supported;
 
 public class IngredientRepository extends AbstractRepository<IngredientDao, IngredientEntity, Ingredient> {
 
@@ -13,6 +14,6 @@ public class IngredientRepository extends AbstractRepository<IngredientDao, Ingr
 
     @Override
     public String toString() {
-        return "Ingredient";
+        return Supported.INGREDIENT;
     }
 }
