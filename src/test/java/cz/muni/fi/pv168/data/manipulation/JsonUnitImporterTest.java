@@ -12,7 +12,7 @@ import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.*;
 
-final class JsonUnitImporterTest extends AbstractJsonImporterTest<Unit> {
+public final class JsonUnitImporterTest extends AbstractJsonImporterTest<Unit> {
 
     public JsonUnitImporterTest() {
         super(Unit.class);

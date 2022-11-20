@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JsonRecipeImporterTest extends AbstractJsonImporterTest<Recipe> {
+public final class JsonRecipeImporterTest extends AbstractJsonImporterTest<Recipe> {
     public JsonRecipeImporterTest() {
         super(Recipe.class);
     }

@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JsonCategoryImporterTest extends AbstractJsonImporterTest<Category> {
+public final class JsonCategoryImporterTest extends AbstractJsonImporterTest<Category> {
     public JsonCategoryImporterTest() {
         super(Category.class);
     }

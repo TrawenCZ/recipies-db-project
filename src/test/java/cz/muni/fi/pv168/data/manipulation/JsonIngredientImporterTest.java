@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JsonIngredientImporterTest extends AbstractJsonImporterTest<Ingredient> {
+public final class JsonIngredientImporterTest extends AbstractJsonImporterTest<Ingredient> {
     public JsonIngredientImporterTest() {
         super(Ingredient.class);
     }
