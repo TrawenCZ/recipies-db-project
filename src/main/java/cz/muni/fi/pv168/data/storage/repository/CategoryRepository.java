@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.data.storage.dao.CategoryDao;
 import cz.muni.fi.pv168.data.storage.entity.CategoryEntity;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.wiring.Supported;
 
 
 public class CategoryRepository extends AbstractRepository<CategoryDao, CategoryEntity, Category> {
@@ -14,6 +15,6 @@ public class CategoryRepository extends AbstractRepository<CategoryDao, Category
 
     @Override
     public String toString() {
-        return "Category";
+        return Supported.CATEGORY;
     }
 }

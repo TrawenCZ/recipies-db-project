@@ -17,13 +17,13 @@ import cz.muni.fi.pv168.data.storage.entity.RecipeIngredientEntity;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Recipe;
 import cz.muni.fi.pv168.model.RecipeIngredient;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * @author Jan Martinek
  */
 public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity, Recipe> {
 
-    private final Supplier<ConnectionHandler> connections;
     private final Supplier<TransactionHandler> transactions;
     private final RecipeIngredientDao ingredientDao;
     private final EntityMapper<RecipeIngredientEntity, RecipeIngredient> ingredientMapper;
@@ -38,77 +38,87 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         super(dao, mapper, false);
         this.ingredientDao = Objects.requireNonNull(ingredientDao);
         this.ingredientMapper = Objects.requireNonNull(ingredientMapper);
-        this.connections = Objects.requireNonNull(connections);
         this.transactions = Objects.requireNonNull(transactions);
         refresh();
     }
 
+    public void defaultConnection() {
+        dao.defaultConnection();
+        ingredientDao.defaultConnection();
+    }
+
+    public void customConnection(Supplier<ConnectionHandler> connection) {
+        dao.customConnection(connection);
+        ingredientDao.customConnection(connection);
+    }
+
     @Override
-    public void create(Recipe newEntity) {
+    public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
-            dao.changeConnection(transaction::connection);
-            ingredientDao.changeConnection(transaction::connection);
-
-            Stream.of(newEntity)
-                  .map(mapper::mapToEntity)
-                  .map(dao::create)
-                  .map(mapper::mapToModel)
-                  .map(e -> storeIngredients(newEntity.getIngredients(), e, ingredientDao::create))
-                  .map(e -> fetchIngredients(e))
-                  .forEach(entities::add);
-
+            uncomitted(entity, this::createUncommited, transaction::connection);
             transaction.commit();
-        } finally {
-            dao.changeConnection(connections);
-            ingredientDao.changeConnection(connections);
         }
+    }
+
+    public void createUncommited(Recipe newEntity) {
+        Stream.of(newEntity)
+            .map(mapper::mapToEntity)
+            .map(dao::create)
+            .map(mapper::mapToModel)
+            .map(e -> storeIngredients(newEntity.getIngredients(), e, ingredientDao::create))
+            .map(e -> fetchIngredients(e))
+            .forEach(entities::add);
     }
 
     @Override
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
-            dao.changeConnection(transaction::connection);
-            ingredientDao.changeConnection(transaction::connection);
-
-            List<RecipeIngredient> existing = ingredientDao.findByRecipeId(entity.getId()).get().stream().map(ingredientMapper::mapToModel).toList();
-            var toCreate = entity.getIngredients().stream().filter(e -> e.getId() == null || !containsIngredient(e.getId(), existing)).toList();
-            var toUpdate = existing.stream().filter(e -> containsIngredient(e.getId(), entity.getIngredients())).toList();
-
-            // delete removed ingredients
-            existing.stream()
-                    .filter(e -> !containsIngredient(e.getId(), existing))
-                    .forEach(e -> ingredientDao.deleteById(e.getId()));
-
-            Stream.of(entity)
-                  .map(mapper::mapToEntity)
-                  .map(dao::update)
-                  .map(mapper::mapToModel)
-                  .map(e -> storeIngredients(toUpdate, e, ingredientDao::update))
-                  .map(e -> storeIngredients(toCreate, e, ingredientDao::create));
-
+            uncomitted(entity, this::updateUncommited, transaction::connection);
             transaction.commit();
-        } finally {
-            dao.changeConnection(connections);
-            ingredientDao.changeConnection(connections);
         }
     }
 
+    public void updateUncommited(Recipe entity) {
+        List<RecipeIngredient> existing = ingredientDao.findByRecipeId(entity.getId()).get().stream()
+            .map(ingredientMapper::mapToModel)
+            .toList();
+        var toCreate = entity.getIngredients().stream()
+            .filter(e -> e.getId() == null || !containsIngredient(e.getId(), existing))
+            .toList();
+        var toUpdate = existing.stream()
+            .filter(e -> containsIngredient(e.getId(), entity.getIngredients()))
+            .toList();
+
+        // delete removed ingredients
+        existing.stream()
+            .filter(e -> !containsIngredient(e.getId(), existing))
+            .forEach(e -> ingredientDao.deleteById(e.getId()));
+
+        Stream.of(entity)
+            .map(mapper::mapToEntity)
+            .map(dao::update)
+            .map(mapper::mapToModel)
+            .map(e -> storeIngredients(toUpdate, e, ingredientDao::update))
+            .map(e -> storeIngredients(toCreate, e, ingredientDao::create));
+    }
+
     @Override
-    public void deleteEntityByIndex(int index) {
+    protected void deleteEntityByIndex(int index) {
         var id = entities.get(index).getId();
-
         try (var transaction = transactions.get()) {
-            dao.changeConnection(transaction::connection);
-            ingredientDao.changeConnection(transaction::connection);
-
+            customConnection(transaction::connection);
             ingredientDao.findAll().forEach(e -> ingredientDao.deleteById(e.id()));
             dao.deleteById(id);
-
             transaction.commit();
         } finally {
-            dao.changeConnection(connections);
-            ingredientDao.changeConnection(connections);
+            defaultConnection();
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return Supported.RECIPE;
     }
 
     @Override
@@ -143,10 +153,5 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
             .map(ingredientMapper::mapToEntity)
             .forEach(function::apply);
         return recipe;
-    }
-
-    @Override
-    public String toString() {
-        return "Recipe";
     }
 }

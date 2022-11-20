@@ -10,11 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class UnitDao implements DataAccessObject<UnitEntity> {
+public class UnitDao extends AbstractDao<UnitEntity> {
 
-    private final Supplier<ConnectionHandler> connections;
     public UnitDao(Supplier<ConnectionHandler> connections) {
-        this.connections = connections;
+        super(connections);
     }
 
     @Override

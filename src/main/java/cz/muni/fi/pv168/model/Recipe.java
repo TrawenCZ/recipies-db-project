@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class Recipe implements Nameable, Identifiable {
                   @JsonProperty("ingredients") List<RecipeIngredient> ingredients) {
         this(null, name, description, instructions, category, requiredTime, portions, ingredients);
     }
+
+    @JsonIgnore
     public Recipe(Long id,
                   String name,
                   String description,
@@ -52,7 +55,7 @@ public class Recipe implements Nameable, Identifiable {
         setIngredients(ingredients);
     }
 
-
+    @JsonIgnore
     public Long getId() {
         return id;
     }

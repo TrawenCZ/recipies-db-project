@@ -12,15 +12,31 @@ import cz.muni.fi.pv168.model.Category;
 
 public final class CategoriesTab extends AbstractTab {
 
-    public CategoriesTab(ImportAction<Category> importAction, ExportAction<Category> exportAction) {
-        super(MainWindow.getCategoryModel(), importAction, exportAction);
-        // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (CategoryService) service);
+    public CategoriesTab() {
+        super(MainWindow.getCategoryModel());
     }
 
     @Override
     public void addSampleData(int sampleSize) {
         var model = MainWindow.getCategoryModel();
         CategoryDataGenerator.getAll().stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getCategoryService(),
+            Category.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getCategoryService()
+        );
     }
 
     @Override

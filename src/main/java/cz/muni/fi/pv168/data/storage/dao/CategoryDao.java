@@ -10,12 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class CategoryDao implements DataAccessObject<CategoryEntity> {
-
-    private final Supplier<ConnectionHandler> connections;
+public class CategoryDao extends AbstractDao<CategoryEntity> {
 
     public CategoryDao(Supplier<ConnectionHandler> connections) {
-        this.connections = connections;
+        super(connections);
     }
 
     @Override

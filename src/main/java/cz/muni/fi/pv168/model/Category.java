@@ -36,13 +36,14 @@ public class Category implements Colorable, Nameable, Identifiable {
      * @param name  non-null string, used as identifier of the category
      * @param color non-null color object
      */
-
+    @JsonIgnore
     public Category(Long id, String name, Color color) {
         setId(id);
         setName(name);
         setColor(color);
     }
 
+    @JsonIgnore
     public Category(Long id, String name, String color) {
         this(id, name, new Color(
                 Integer.valueOf(color.substring(2, 4), 16),
@@ -56,6 +57,7 @@ public class Category implements Colorable, Nameable, Identifiable {
         this(null, name, color);
     }
 
+    @JsonIgnore
     public Long getId() {
         return id;
     }

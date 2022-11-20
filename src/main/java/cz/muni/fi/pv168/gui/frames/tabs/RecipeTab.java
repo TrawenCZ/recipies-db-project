@@ -42,8 +42,8 @@ public final class RecipeTab extends AbstractTab {
     private RangeTextField portionsField;
     private GridBagConstraints c;
 
-    public RecipeTab(ImportAction<Recipe> importAction, ExportAction<Recipe> exportAction) {
-        super(MainWindow.getRecipeModel(),importAction, exportAction, ICON_SIZE);
+    public RecipeTab() {
+        super(MainWindow.getRecipeModel(), ICON_SIZE);
 
         // hide ingredients column from user
         table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
@@ -63,6 +63,23 @@ public final class RecipeTab extends AbstractTab {
         var recipeGenerator = new RecipeDataGenerator();
         var model = MainWindow.getRecipeModel();
         recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getRecipeService(),
+            Recipe.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getRecipeService()
+        );
     }
 
     @Override

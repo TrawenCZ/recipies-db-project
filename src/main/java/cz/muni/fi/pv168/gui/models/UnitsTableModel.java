@@ -4,6 +4,7 @@ import java.util.List;
 
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of units data class in a tabular representation
@@ -30,6 +31,6 @@ public class UnitsTableModel extends AbstractModel<Unit> {
 
     @Override
     public String toString() {
-        return "Units";
+        return Supported.UNIT;
     }
 }

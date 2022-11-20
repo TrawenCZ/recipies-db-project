@@ -17,8 +17,8 @@ import static cz.muni.fi.pv168.gui.resources.Messages.*;
 
 public final class UnitsTab extends AbstractTab {
 
-    public UnitsTab(ImportAction<Unit> importAction, ExportAction<Unit> exportAction) {
-        super(MainWindow.getUnitsModel(), importAction, exportAction);
+    public UnitsTab() {
+        super(MainWindow.getUnitsModel());
         // exportAction = new ExportAction<>(table, new JsonExporterImpl(), (UnitsService) service);
     }
 
@@ -26,6 +26,23 @@ public final class UnitsTab extends AbstractTab {
     public void addSampleData(int sampleSize) {
         var model = MainWindow.getUnitsModel();
         UnitDataGenerator.getAll().stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getUnitService(),
+            Unit.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getUnitService()
+        );
     }
 
     @Override

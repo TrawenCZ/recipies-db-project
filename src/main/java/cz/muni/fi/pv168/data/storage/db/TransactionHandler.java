@@ -13,6 +13,11 @@ public interface TransactionHandler extends Closeable {
     ConnectionHandler connection();
 
     /**
+     * Discards active transaction
+     */
+    public void rollback();
+
+    /**
      * Commits active transaction
      */
     void commit();

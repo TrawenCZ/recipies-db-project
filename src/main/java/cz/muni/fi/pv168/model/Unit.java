@@ -25,6 +25,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
         this(null, name, valueInBaseUnit, baseUnit);
     }
 
+    @JsonIgnore
     public Unit(Long id, String name, double valueInBaseUnit, BaseUnitsEnum baseUnit) {
         this.id = id;
         this.name = name;
@@ -32,6 +33,7 @@ public class Unit implements Colorable, Nameable, Identifiable {
         this.baseUnit = baseUnit;
     }
 
+    @JsonIgnore
     public Long getId() {
         return id;
     }

@@ -10,11 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class IngredientDao implements DataAccessObject<IngredientEntity> {
+public class IngredientDao extends AbstractDao<IngredientEntity> {
 
-    private final Supplier<ConnectionHandler> connections;
     public IngredientDao(Supplier<ConnectionHandler> connections) {
-        this.connections = connections;
+        super(connections);
     }
 
     @Override

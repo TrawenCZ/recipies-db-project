@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class JsonExporterImpl implements JsonExporter {
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public <T> void saveEntities(String filePath, List<T> values) throws IOException {

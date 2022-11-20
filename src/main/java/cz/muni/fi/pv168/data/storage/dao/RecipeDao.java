@@ -10,20 +10,10 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class RecipeDao implements DataAccessObject<RecipeEntity>{
-
-    private Supplier<ConnectionHandler> connections;
+public class RecipeDao extends AbstractDao<RecipeEntity>{
 
     public RecipeDao(Supplier<ConnectionHandler> connections) {
-        changeConnection(connections);
-    }
-
-    /**
-     * Allows for integration inside of transaction WITHOUT creating new
-     * instantiating new dao.
-     */
-    public void changeConnection(Supplier<ConnectionHandler> connections) {
-        this.connections = Objects.requireNonNull(connections);
+        super(connections);
     }
 
     @Override

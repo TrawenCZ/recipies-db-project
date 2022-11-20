@@ -1,21 +1,19 @@
 package cz.muni.fi.pv168.wiring;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporterImpl;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
 import cz.muni.fi.pv168.data.manipulation.JsonImporterImpl;
-import cz.muni.fi.pv168.data.service.*;
+import cz.muni.fi.pv168.data.manipulation.services.RecipeService;
+import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.services.ServiceImpl;
 import cz.muni.fi.pv168.data.storage.dao.*;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.data.storage.mapper.*;
 import cz.muni.fi.pv168.data.storage.repository.*;
 import cz.muni.fi.pv168.data.validation.*;
-import cz.muni.fi.pv168.gui.action.ExportAction;
-import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.model.*;
 
 /**
@@ -30,14 +28,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     private final Repository<Category> categories;
     private final Repository<Ingredient> ingredients;
     private final Repository<Unit> units;
-    private final JsonImporter jsonImporter;
-    private final JsonExporter jsonExporter;
-    private final Map<String, ImportAction<?>> importActionMap;
-    private Map<String, ExportAction<?>> exportActionMap;
 
     private final Service<Recipe> recipeService;
-    private final Service<Category> categoryService;
     private final Service<Ingredient> ingredientService;
+    private final Service<Category> categoryService;
     private final Service<Unit> unitService;
 
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
@@ -47,8 +41,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         Validator<Category> categoryValidator = new CategoryValidator();
         Validator<Ingredient> ingredientValidator = new IngredientValidator();
         Validator<Unit> unitValidator = new UnitValidator();
-        jsonImporter = new JsonImporterImpl();
-        jsonExporter = new JsonExporterImpl();
 
         // repositories
         categories = new CategoryRepository(
@@ -79,50 +71,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             databaseManager::getTransactionHandler
         );
 
-        categoryService = new CategoryService(categories, databaseManager::getTransactionHandler);
-        unitService = new UnitsService(units, databaseManager::getTransactionHandler);
-        ingredientService = new IngredientService(ingredients, unitService, databaseManager::getTransactionHandler);
-        recipeService = new RecipeService(recipes, unitService, categoryService, ingredientService, databaseManager::getTransactionHandler);
-        importActionMap = initImportsMap();
-        // exportActionMap = initExportMap();
-    }
-
-    private Map<String, ImportAction<?>> initImportsMap() {
-        Map<String, ImportAction<?>> imports = new HashMap<>();
-        imports.put(TabNamesEnum.RECIPES.getName(), new ImportAction<>(this.getJsonImporter(),
-                (RecipeService) this.getRecipeService(),
-                Recipe.class));
-        imports.put(TabNamesEnum.CATEGORIES.getName(), new ImportAction<>(this.getJsonImporter(),
-                (CategoryService) this.getCategoryService(), Category.class));
-        imports.put(TabNamesEnum.UNITS.getName(), new ImportAction<>(this.getJsonImporter(),
-                (UnitsService) this.getUnitService(), Unit.class));
-        imports.put(TabNamesEnum.INGREDIENTS.getName(), new ImportAction<>(this.getJsonImporter(),
-                (IngredientService) this.getIngredientService(), Ingredient.class));
-        return imports;
-    }
-
-    //TODO: inject tables
-    private Map<String, ExportAction<?>> initExportMap() {
-        Map<String, ExportAction<?>> exports = new HashMap<>();
-        exports.put(TabNamesEnum.RECIPES.getName(), new ExportAction<>(null, this.getJsonExporter(),
-                (RecipeService) this.getRecipeService()));
-        exports.put(TabNamesEnum.CATEGORIES.getName(), new ExportAction<>(null, this.getJsonExporter(),
-                (CategoryService) this.getCategoryService()));
-        exports.put(TabNamesEnum.UNITS.getName(), new ExportAction<>(null, this.getJsonExporter(),
-                (UnitsService) this.getUnitService()));
-        exports.put(TabNamesEnum.INGREDIENTS.getName(), new ExportAction<>(null, this.getJsonExporter(),
-                (IngredientService) this.getIngredientService()));
-        return exports;
-    }
-
-    @Override
-    public ImportAction<?> getImportAction(String name) {
-        return importActionMap.get(name);
-    }
-
-    @Override
-    public ExportAction<?> getExportAction(String name) {
-        return exportActionMap.get(name);
+        categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
+        unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
+        ingredientService = new ServiceImpl<>(ingredients, databaseManager::getTransactionHandler);
+        recipeService = new RecipeService(recipes, databaseManager::getTransactionHandler);
     }
 
     @Override
@@ -151,16 +103,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     }
 
     @Override
-    public JsonImporter getJsonImporter() {
-        return jsonImporter;
-    }
-
-    @Override
-    public JsonExporter getJsonExporter() {
-        return jsonExporter;
-    }
-
-    @Override
     public Service<Recipe> getRecipeService() {
         return recipeService;
     }
@@ -178,5 +120,24 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     @Override
     public Service<Unit> getUnitService() {
         return unitService;
+    }
+
+    @Override
+    public Service<?> getService(String name) {
+        return switch (name) {
+            case Supported.CATEGORY -> categoryService;
+            case Supported.UNIT -> unitService;
+            case Supported.INGREDIENT -> ingredientService;
+            case Supported.RECIPE -> recipeService;
+            default -> recipeService;
+        };
+    }
+
+    public static JsonExporter getJsonExporter() {
+        return new JsonExporterImpl();
+    }
+
+    public static JsonImporter getJsonImporter() {
+        return new JsonImporterImpl();
     }
 }

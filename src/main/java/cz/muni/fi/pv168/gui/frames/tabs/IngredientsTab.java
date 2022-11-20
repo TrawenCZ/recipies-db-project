@@ -17,14 +17,31 @@ import cz.muni.fi.pv168.model.Recipe;
 
 public final class IngredientsTab extends AbstractTab {
 
-    public IngredientsTab(ImportAction<Ingredient> importAction, ExportAction<Ingredient> exportAction) {
-        super(MainWindow.getIngredientModel(), importAction, exportAction);
+    public IngredientsTab() {
+        super(MainWindow.getIngredientModel());
     }
 
     @Override
     public void addSampleData(int sampleSize) {
         var model = MainWindow.getIngredientModel();
         IngredientDataGenerator.getAll().stream().forEach(model::addRow);
+    }
+
+    @Override
+    protected ImportAction<?> createImportAction() {
+        return new ImportAction<>(
+            table,
+            MainWindow.getDependencies().getIngredientService(),
+            Ingredient.class
+        );
+    }
+
+    @Override
+    protected ExportAction<?> createExportAction() {
+        return new ExportAction<>(
+            table,
+            MainWindow.getDependencies().getIngredientService()
+        );
     }
 
     @Override

@@ -21,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Jan Martinek
  */
-public abstract class AbstractModel<T extends Nameable & Identifiable> extends AbstractTableModel {
+public abstract class AbstractModel<T extends Identifiable & Nameable> extends AbstractTableModel {
 
     protected static final int UNDEFINED = -1;
     private Integer colorIndex = UNDEFINED;
