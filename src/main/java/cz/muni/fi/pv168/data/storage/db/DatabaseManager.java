@@ -4,6 +4,8 @@ import cz.muni.fi.pv168.data.storage.DataStorageException;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import javax.sql.DataSource;
+import javax.swing.JOptionPane;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,6 +48,31 @@ public final class DatabaseManager {
 
     public void load() {
         this.initSchema();
+        try {
+            sqlFileExecutor.executeSelect("verify_columns.sql");
+        } catch (Exception e) {
+            int n = JOptionPane.showOptionDialog(
+                null,
+                """
+                    CRITICAL ERROR:
+                    Incompatible database model!
+
+                    Purge of current databse is required, do you want to proceed?
+                """,
+                "Database error",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.ERROR_MESSAGE,
+                null,
+                null,
+                null
+            );
+            if (n == JOptionPane.OK_OPTION) {
+                this.destroySchema();
+                this.initSchema();
+            } else {
+                System.exit(-1);
+            }
+        }
     }
 
     public ConnectionHandler getConnectionHandler() {
