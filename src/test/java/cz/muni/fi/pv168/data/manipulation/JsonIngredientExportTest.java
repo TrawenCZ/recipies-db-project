@@ -25,7 +25,7 @@ final class JsonIngredientExportTest extends AbstractJsonExporterTest<Ingredient
                 """);
     }
     @Test
-    void multipleCategories() throws  IOException {
+    void multipleIngredients() throws  IOException {
         var ingredients = List.of(
                 new Ingredient("Soda", 1.0, new Unit("g", 1.0, null)),
                 new Ingredient("Cukr", 200.0, new Unit("pc(s)", 1.0, null)),
