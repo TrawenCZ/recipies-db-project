@@ -42,10 +42,12 @@ public final class DatabaseManager {
         return new DatabaseManager(connectionString);
     }
 
-    public static DatabaseManager createTestInstance() {
+    public static DatabaseManager createTestInstance(boolean testing) {
         String connectionString = "jdbc:h2:mem:%s;%s".formatted(PROJECT_NAME, DB_PROPERTIES_STRING);
         var databaseManager = new DatabaseManager(connectionString);
         databaseManager.load();
+        if (testing) // TODO: make DML (sql) file
+            databaseManager.initData("test");
         return databaseManager;
     }
 
@@ -60,7 +62,7 @@ public final class DatabaseManager {
                     CRITICAL ERROR:
                     Incompatible database model!
 
-                    Purge of current databse is required, do you want to proceed?
+                    Purge of current database is required, do you want to proceed?
                 """,
                 "Database error",
                 JOptionPane.OK_CANCEL_OPTION,
