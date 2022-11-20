@@ -27,7 +27,7 @@ public class IngredientMapper implements EntityMapper<IngredientEntity, Ingredie
                 source.getId(),
                 source.getName(),
                 source.getKcal(),
-                (source.getUnit() != null || source.getUnit().getId() == null) ? source.getUnit().getId() : 0
+                source.getUnit().getId()
         );
     }
 
