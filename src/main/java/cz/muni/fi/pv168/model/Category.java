@@ -25,7 +25,7 @@ public class Category implements Colorable, Nameable, Identifiable {
      * @param color string parsable to hex-int, non-null
      */
     @JsonCreator
-    private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
+    public Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
         this(null, name, color);
     }
 

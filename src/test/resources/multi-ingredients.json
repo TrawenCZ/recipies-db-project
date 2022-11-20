@@ -1,28 +1,25 @@
-[{
-  "name": "brokolice",
-  "kcal": 510.0,
-  "unit": {
-    "name": "g",
-    "valueInBaseUnit": 1000.0,
-    "baseUnit": "GRAM"
+[ {
+  "name" : "Soda",
+  "kcal" : 1.0,
+  "unit" : {
+    "name" : "g",
+    "valueInBaseUnit" : 1.0,
+    "baseUnit" : null
   }
-},
-  {
-    "name": "mrkev",
-    "kcal": 510.0,
-    "unit": {
-      "name": "g",
-      "valueInBaseUnit": 4000.0,
-      "baseUnit": "GRAM"
-    }
-  },
-  {
-    "name": "kukurice",
-    "kcal": 113.0,
-    "unit": {
-      "name": "g",
-      "valueInBaseUnit": 130.0,
-      "baseUnit": "GRAM"
-    }
+}, {
+  "name" : "Cukr",
+  "kcal" : 200.0,
+  "unit" : {
+    "name" : "pc(s)",
+    "valueInBaseUnit" : 1.0,
+    "baseUnit" : null
   }
-]
+}, {
+  "name" : "Mléko",
+  "kcal" : 0.5555555555555556,
+  "unit" : {
+    "name" : "ml",
+    "valueInBaseUnit" : 1.0,
+    "baseUnit" : null
+  }
+} ]

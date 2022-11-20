@@ -1,0 +1,9 @@
+[ {
+  "name" : "Soda",
+  "kcal" : 1.0,
+  "unit" : {
+    "name" : "g",
+    "valueInBaseUnit" : 1.0,
+    "baseUnit" : null
+  }
+} ]
