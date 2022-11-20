@@ -23,7 +23,7 @@ final class SqlFileExecutor {
     private final Class<?> resourceRoot;
     private final Supplier<TransactionHandler> transactions;
 
-    SqlFileExecutor(
+    public SqlFileExecutor(
             Supplier<TransactionHandler> transactions,
             Class<?> resourceRoot
     ) {
@@ -31,21 +31,29 @@ final class SqlFileExecutor {
         this.resourceRoot = resourceRoot;
     }
 
-    void execute(String... fileNames) {
+    public void execute(String... fileNames) {
         execute(List.of(fileNames));
     }
 
-    void execute(Collection<String> fileNames) {
+    public void execute(Collection<String> fileNames) {
         try (var transaction = transactions.get()) {
             var connection = transaction.connection().use();
             for (var fileName : fileNames) {
-                executeSQLFile(connection, fileName);
+                executeSQLFile(connection, fileName, false);
             }
             transaction.commit();
         }
     }
 
-    private void executeSQLFile(Connection connection, String fileName) {
+    public void executeSelect(String fileName) {
+        try (var transaction = transactions.get()) {
+            var connection = transaction.connection().use();
+            executeSQLFile(connection, fileName, true);
+            transaction.commit();
+        }
+    }
+
+    private void executeSQLFile(Connection connection, String fileName, boolean isSelect) {
         final String initSchemaSql = loadSQLFromResources(fileName);
 
         try (Statement statement = connection.createStatement()) {
@@ -57,7 +65,11 @@ final class SqlFileExecutor {
             // in MySQL you need to add property `allowMultiQueries=true` to the connection string
             // There is a security risk to use multiple SQL statements in single statement,
             // due to the SQL Injection
-            statement.executeUpdate(initSchemaSql);
+            if (isSelect) {
+                statement.execute(initSchemaSql);
+            } else {
+                statement.executeUpdate(initSchemaSql);
+            }
 
         } catch (SQLException e) {
             throw new DataStorageException("Unable to execute the SQL statements in the file: " + fileName, e);
