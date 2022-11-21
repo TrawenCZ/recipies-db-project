@@ -25,7 +25,7 @@ public interface Service<M> {
      * application errors.
      *
      * @param records list of records we want to save
-     * @return number of discarded rows
+     * @return int[2] array: [0] => imported, [1] => (-)replaced/(+)discarded
      */
-    public int saveRecords(Collection<M> records);
+    public int[] saveRecords(Collection<M> records);
 }

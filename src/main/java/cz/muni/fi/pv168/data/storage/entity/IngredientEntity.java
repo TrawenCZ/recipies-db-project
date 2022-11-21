@@ -13,7 +13,7 @@ public record IngredientEntity (
         Long id,
         String name,
         double kcalPerUnit,
-        long baseUnitId // foreign key
+        Long baseUnitId // foreign key
 ) {
     /**
      *
@@ -21,7 +21,7 @@ public record IngredientEntity (
     public IngredientEntity(
             String name,
             double kcalPerUnit,
-            long baseUnitId
+            Long baseUnitId
     ) {
         this(null, name, kcalPerUnit, baseUnitId);
     }

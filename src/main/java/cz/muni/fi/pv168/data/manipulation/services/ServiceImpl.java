@@ -45,33 +45,40 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
     }
 
     @Override
-    public int saveRecords(Collection<M> records) {
+    public int[] saveRecords(Collection<M> records) {
         Collection<M> duplicates = getDuplicates(records, repository);
+
+        int imported = 0;
         boolean replace = (duplicates.size() > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
-            doImport(records, duplicates,  replace, repository, transaction::connection);
+            imported += doImport(records, duplicates,  replace, repository, transaction::connection);
             transaction.commit();
         }
-        return (replace) ? -duplicates.size() : duplicates.size();
+        return (replace)
+            ? new int[]{imported, -duplicates.size()}
+            : new int[]{imported, duplicates.size()};
     }
 
-    protected static <NI extends Nameable & Identifiable> void doImport(
+    protected static <NI extends Nameable & Identifiable> int doImport(
         Collection<NI> records,
         Collection<NI> duplicates,
         boolean doReplace,
         Repository<NI> repository,
         Supplier<ConnectionHandler> connection
     ) {
+        int imported = 0;
         for (var record : records) {
             var found = getDuplicate(record, duplicates);
             if (found == null) {
                 create(record, repository, connection);
+                imported++;
             } else if (doReplace) {
                 record.setId(found.getId());
                 update(record, repository, connection);
             }
         }
+        return imported;
     }
 
     protected static <N extends Nameable> void create(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {

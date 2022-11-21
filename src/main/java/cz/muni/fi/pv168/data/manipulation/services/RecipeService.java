@@ -32,7 +32,7 @@ public class RecipeService extends ServiceImpl<Recipe> {
     }
 
     @Override
-    public int saveRecords(Collection<Recipe> records) {
+    public int[] saveRecords(Collection<Recipe> records) {
         var rIngredient = records.stream().map(Recipe::getIngredients).flatMap(List::stream).toList();
         Collection<Category> categoryRecords = records.stream().map(Recipe::getCategory).toList();
         Collection<Ingredient> ingredientRecords = rIngredient.stream().map(RecipeIngredient::getIngredient).toList();
@@ -45,18 +45,21 @@ public class RecipeService extends ServiceImpl<Recipe> {
         Collection<Unit> exBaseUnits = getDuplicates(baseUnitRecords, units);
         Collection<Unit> exUnits = getDuplicates(unitRecords, units);
 
+        int imported = 0;
         int total = exRecipes.size() + exCategories.size() + exUnits.size() + exBaseUnits.size() + exIngredients.size();
         boolean replace = (total > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
-            doImport(categoryRecords, exCategories, replace, categories, transaction::connection);
-            doImport(baseUnitRecords, exBaseUnits, replace, units, transaction::connection);
-            doImport(unitRecords, exUnits, replace, units, transaction::connection);
-            doImport(ingredientRecords, exIngredients, replace, ingredients, transaction::connection);
-            doImport(records, exRecipes, replace, repository, transaction::connection);
+            imported += doImport(categoryRecords, exCategories, replace, categories, transaction::connection);
+            imported += doImport(baseUnitRecords, exBaseUnits, replace, units, transaction::connection);
+            imported += doImport(unitRecords, exUnits, replace, units, transaction::connection);
+            imported += doImport(ingredientRecords, exIngredients, replace, ingredients, transaction::connection);
+            imported += doImport(records, exRecipes, replace, repository, transaction::connection);
             transaction.commit();
         }
-        return (replace) ? -total : total;
+        return (replace)
+            ? new int[]{imported, -total}
+            : new int[]{imported, total};
     }
 
     protected static void create(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {

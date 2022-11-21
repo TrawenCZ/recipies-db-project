@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import javax.swing.*;
 
+import cz.muni.fi.pv168.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
 import cz.muni.fi.pv168.data.manipulation.services.Service;
 import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
@@ -43,18 +44,18 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
                     fileChooser.getSelectedFile().getAbsolutePath(),
                     aClass
                 );
-                int count = service.saveRecords(records);
-                if (count != 0) {
+                int[] count = service.saveRecords(records);
+                if (count[0] > 0 || count[1] < 0) {
                     table.getRowSorter().allRowsChanged();
-                    showSuccessfulImportMessage(count, records.size());
+                    showSuccessfulImportMessage(count[1], count[0]);
                 } else {
-                    showNoRowsImportedMessage(records.size());
+                    showNoRowsImportedMessage(count[1]);
                 }
                 table.revalidate();
                 table.repaint();
+            } catch (DataManipulationException e) {
+                showInvalidFormatMessage(e.getMessage());
             } catch (NullPointerException e) {
-                // TODO log
-                e.printStackTrace();
                 showInvalidFormatMessage();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -62,16 +63,21 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         }
     }
 
-    private void showInvalidFormatMessage() {
+    private void showInvalidFormatMessage(String msg) {
         JOptionPane.showMessageDialog(
             MainWindow.getContentPane(),
             """
-                Please check that you are trying to import records of the same
-                type as the current tab and that the JSON file fits the format.
-            """,
+            Please check that you are trying to import records of the same
+            type as the current tab and that the JSON file fits the format.
+            """
+            + "\n" + msg,
             "Import failure",
             JOptionPane.ERROR_MESSAGE
         );
+    }
+
+    private void showInvalidFormatMessage() {
+        showInvalidFormatMessage("");
     }
 
     private void showNoRowsImportedMessage(int discardedCount) {
@@ -83,12 +89,11 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         );
     }
 
-    private void showSuccessfulImportMessage(int count, int originalCount) {
-        String message = "Successfully imported " + originalCount +
-            " row" + ((originalCount > 1) ? "s" : "") +
-            " in current tab.";
-        message += getAction(-count, "Total replaced");
-        message += getAction(count, "Total discarded");
+    private void showSuccessfulImportMessage(int actionCount, int createdCount) {
+        String message = "Import successful.";
+        message += getAction(createdCount, "Created");
+        message += getAction(-actionCount, "Replaced");
+        message += getAction(actionCount, "Discarded");
         JOptionPane.showMessageDialog(
             MainWindow.getContentPane(),
             message,
@@ -98,6 +103,6 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
     }
 
     private String getAction(int count, String action) {
-        return (count > 0) ? "\n" + action + ": " + count + " object" + ((count > 1) ? "s!" : "!") : "";
+        return (count > 0) ? "\n" + action + ": " + count : "";
     }
 }
