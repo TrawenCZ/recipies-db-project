@@ -63,10 +63,10 @@ public class RecipeService extends ServiceImpl<Recipe> {
     }
 
     protected static void create(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncomitted(entity, ((RecipeRepository) repository)::createUncommited, connection);
+        repository.uncommitted(entity, ((RecipeRepository) repository)::createUncommitted, connection);
     }
 
     protected static void update(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncomitted(entity, ((RecipeRepository) repository)::updateUncommited, connection);
+        repository.uncommitted(entity, ((RecipeRepository) repository)::updateUncommitted, connection);
     }
 }

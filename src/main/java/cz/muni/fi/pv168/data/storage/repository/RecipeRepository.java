@@ -56,14 +56,14 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
             ingredientDao.customConnection(transaction::connection);
-            uncomitted(entity, this::createUncommited, transaction::connection);
+            uncommitted(entity, this::createUncommitted, transaction::connection);
             transaction.commit();
         } finally {
             ingredientDao.defaultConnection();
         }
     }
 
-    public void createUncommited(Recipe newEntity) {
+    public void createUncommitted(Recipe newEntity) {
         Stream.of(newEntity)
             .map(mapper::mapToEntity)
             .map(dao::create)
@@ -77,14 +77,14 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
             ingredientDao.customConnection(transaction::connection);
-            uncomitted(entity, this::updateUncommited, transaction::connection);
+            uncommitted(entity, this::updateUncommitted, transaction::connection);
             transaction.commit();
         } finally {
             ingredientDao.defaultConnection();
         }
     }
 
-    public void updateUncommited(Recipe entity) {
+    public void updateUncommitted(Recipe entity) {
         List<RecipeIngredient> existing = ingredientDao.findByRecipeId(entity.getId()).get().stream()
             .map(ingredientMapper::mapToModel)
             .toList();

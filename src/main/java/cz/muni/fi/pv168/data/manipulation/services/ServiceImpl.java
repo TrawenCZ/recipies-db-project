@@ -82,11 +82,11 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
     }
 
     protected static <N extends Nameable> void create(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncomitted(entity, repository::create, connection);
+        repository.uncommitted(entity, repository::create, connection);
     }
 
     protected static <N extends Nameable> void update(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncomitted(entity, repository::update, connection);
+        repository.uncommitted(entity, repository::update, connection);
     }
 
     protected static <N extends Nameable> Collection<N> getDuplicates(Collection<N> records, Repository<N> repository) {

@@ -27,7 +27,7 @@ public interface Repository<M> {
 
     public void refresh();
 
-    public void uncomitted(M entity, Consumer<M> action, Supplier<ConnectionHandler> connection);
+    public void uncommitted(M entity, Consumer<M> action, Supplier<ConnectionHandler> connection);
 
     public void create(M newEntity);
 
