@@ -41,7 +41,8 @@ public final class UnitsTab extends AbstractTab {
     protected ExportAction<?> createExportAction() {
         return new ExportAction<>(
             table,
-            MainWindow.getDependencies().getUnitService()
+            MainWindow.getDependencies().getUnitService(),
+                "units"
         );
     }
 

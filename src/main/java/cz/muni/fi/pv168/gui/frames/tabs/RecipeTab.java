@@ -78,7 +78,8 @@ public final class RecipeTab extends AbstractTab {
     protected ExportAction<?> createExportAction() {
         return new ExportAction<>(
             table,
-            MainWindow.getDependencies().getRecipeService()
+            MainWindow.getDependencies().getRecipeService(),
+                "recipes"
         );
     }
 

@@ -40,7 +40,8 @@ public final class IngredientsTab extends AbstractTab {
     protected ExportAction<?> createExportAction() {
         return new ExportAction<>(
             table,
-            MainWindow.getDependencies().getIngredientService()
+            MainWindow.getDependencies().getIngredientService(),
+                "ingredients"
         );
     }
 

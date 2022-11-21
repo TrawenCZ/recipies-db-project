@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.gui.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -24,11 +25,13 @@ public class ExportAction<T extends Nameable & Identifiable> extends AbstractAct
     private final JsonExporter exporter = CommonDependencyProvider.getJsonExporter();
     private final Service<T> service;
     private final JTable table;
+    private final String tabName;
 
-    public ExportAction(JTable table, Service<T> service) {
+    public ExportAction(JTable table, Service<T> service, String tabName) {
         super("Export", Icons.EXPORT_S);
         this.service = Objects.requireNonNull(service);
         this.table = Objects.requireNonNull(table);
+        this.tabName = tabName;
         putValue(SHORT_DESCRIPTION, "Exports records from current tab to a file");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));
@@ -37,8 +40,9 @@ public class ExportAction<T extends Nameable & Identifiable> extends AbstractAct
     @Override
     public void actionPerformed(ActionEvent e) {
         var fileChooser = new JsonFileChooser(false, true);
+        fileChooser.setSelectedFile(new File(tabName));
 
-        if (fileChooser.showOpenDialog(table) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showDialog(table, "Save") == JFileChooser.APPROVE_OPTION) {
             try {
                 List<T> exportedEntities = service.getRecords(getSelectedRows());
                 exporter.saveEntities(fileChooser.getJsonPath(), exportedEntities);
