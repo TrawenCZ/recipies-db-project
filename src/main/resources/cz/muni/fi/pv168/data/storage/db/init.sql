@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS Recipe
 (
     `id`           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     `name`         VARCHAR(100) NOT NULL UNIQUE,
-    `description`  VARCHAR(256) NOT NULL UNIQUE,
+    `description`  VARCHAR(256) NOT NULL,
     `categoryId`   BIGINT, -- can be null !
     `portions`     BIGINT NOT NULL,
     `duration`     BIGINT NOT NULL,

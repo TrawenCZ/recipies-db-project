@@ -35,7 +35,8 @@ public final class CategoriesTab extends AbstractTab {
     protected ExportAction<?> createExportAction() {
         return new ExportAction<>(
             table,
-            MainWindow.getDependencies().getCategoryService()
+            MainWindow.getDependencies().getCategoryService(),
+                "categories"
         );
     }
 

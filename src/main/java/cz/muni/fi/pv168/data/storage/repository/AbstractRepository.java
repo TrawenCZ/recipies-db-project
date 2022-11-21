@@ -66,7 +66,7 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
-    public void uncomitted(E entity, Consumer<E> action, Supplier<ConnectionHandler> connection) {
+    public void uncommitted(E entity, Consumer<E> action, Supplier<ConnectionHandler> connection) {
         try {
             dao.customConnection(connection);
             action.accept(entity);
