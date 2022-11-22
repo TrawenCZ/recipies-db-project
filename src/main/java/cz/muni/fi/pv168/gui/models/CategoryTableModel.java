@@ -1,9 +1,10 @@
 package cz.muni.fi.pv168.gui.models;
 
-import cz.muni.fi.pv168.model.Category;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import cz.muni.fi.pv168.data.storage.repository.Repository;
+import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of category data class in a tabular representation
@@ -12,33 +13,22 @@ import java.util.List;
  */
 public class CategoryTableModel extends AbstractModel<Category> {
 
-    private final List<Category> categories;
+    private final Repository<Category> categories;
 
-    private final List<Column<Category, ?>> columns = List.of(
-        Column.readonly("Name", Category.class, self -> self)
-    );
-
-    public CategoryTableModel() {
-        this(new ArrayList<Category>());
-    }
-
-    public CategoryTableModel(List<Category> categories) {
-        this.categories = new ArrayList<>(categories);
+    public CategoryTableModel(Repository<Category> categories) {
+        super(List.of(
+            Column.readonly("Name", Category.class, self -> self, null)
+        ));
+        this.categories = categories;
     }
 
     @Override
-    public List<Category> getEntities() {
+    public Repository<Category> getRepository() {
         return categories;
     }
 
     @Override
-    protected List<Column<Category, ?>> getColumns() {
-        return columns;
-    }
-
-    @Override
     public String toString() {
-        return "Categories";
+        return Supported.CATEGORY;
     }
-
 }

@@ -14,46 +14,68 @@ class Column<E, T> {
     private final Function<E, T> valueGetter;
     private final BiConsumer<E, T> valueSetter;
     private final Class<T> columnType;
+    private final Integer columnWidth;
 
-    private Column(String name, Class<T> columnClass, Function<E, T> valueGetter, BiConsumer<E, T> valueSetter) {
+    private Column(String name,
+                   Class<T> columnClass,
+                   Function<E, T> valueGetter,
+                   BiConsumer<E, T> valueSetter,
+                   Integer columnWidth
+    ) {
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.columnType = Objects.requireNonNull(columnClass, "column class cannot be null");
         this.valueGetter = Objects.requireNonNull(valueGetter, "value getter cannot be null");
         this.valueSetter = valueSetter;
+        this.columnWidth = columnWidth; // may be null (not set)
     }
 
-    // see Item 1: Consider static factory methods instead of constructors
-    public static <E, T> Column<E, T> editable(String name, Class<T> columnClass, Function<E, T> valueGetter,
-                                               BiConsumer<E, T> valueSetter) {
-        return new Column<>(name, columnClass, valueGetter,
-                Objects.requireNonNull(valueSetter, "value setter cannot be null"));
+    public static <E, T> Column<E, T> editable(String name,
+                                               Class<T> columnClass,
+                                               Function<E, T> valueGetter,
+                                               BiConsumer<E, T> valueSetter,
+                                               Integer width
+    ) {
+        return new Column<>(
+            name,
+            columnClass,
+            valueGetter,
+            Objects.requireNonNull(valueSetter, "value setter cannot be null"),
+            width
+        );
     }
 
-    // see Item 1: Consider static factory methods instead of constructors
-    public static <E, T> Column<E, T> readonly(String name, Class<T> columnClass, Function<E, T> valueGetter) {
-        return new Column<>(name, columnClass, valueGetter, null);
+    public static <E, T> Column<E, T> readonly(String name,
+                                               Class<T> columnClass,
+                                               Function<E, T> valueGetter,
+                                               Integer width
+    ) {
+        return new Column<>(name, columnClass, valueGetter, null, width);
     }
 
-    void setValue(Object value, E entity) {
+    public void setValue(Object value, E entity) {
         if (valueSetter == null) {
             throw new UnsupportedOperationException("Cannot set value in readonly column: '" + name + "'");
         }
-        valueSetter.accept(entity, columnType.cast(value)); // see Item 33: Consider type-safe heterogeneous containers
+        valueSetter.accept(entity, columnType.cast(value));
     }
 
-    T getValue(E entity) {
+    public T getValue(E entity) {
         return valueGetter.apply(entity);
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    Class<?> getColumnType() {
+    public Class<?> getColumnType() {
         return columnType;
     }
 
-    boolean isEditable() {
+    public Integer getColumnWidth() {
+        return columnWidth;
+    }
+
+    public boolean isEditable() {
         return valueSetter != null;
     }
 }

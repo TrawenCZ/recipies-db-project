@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -8,8 +9,9 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Ingredient implements Nameable {
+public class Ingredient implements Nameable, Identifiable {
 
+    private Long id;
     private String name;
     private double kcal;
     private Unit unit;
@@ -18,9 +20,23 @@ public class Ingredient implements Nameable {
     public Ingredient(@JsonProperty("name") String name,
                       @JsonProperty("kcal") double kcal,
                       @JsonProperty("unit") Unit unit) {
+        this(null, name, kcal, unit);
+    }
+
+    @JsonIgnore
+    public Ingredient(Long id,
+                      String name,
+                      double kcal,
+                      Unit unit) {
+        setId(id);
         setName(name);
         setKcal(kcal);
         setUnit(unit);
+    }
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -36,6 +52,10 @@ public class Ingredient implements Nameable {
     @JsonProperty("unit")
     public Unit getUnit() {
         return unit;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

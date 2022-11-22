@@ -1,10 +1,11 @@
 package cz.muni.fi.pv168.gui.models;
 
+import java.util.List;
+
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.Unit;
-
-import java.util.ArrayList;
-import java.util.List;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of ingredient data class in a tabular representation
@@ -13,30 +14,20 @@ import java.util.List;
  */
 public class IngredientTableModel extends AbstractModel<Ingredient> {
 
-    private final List<Ingredient> ingredients;
+    private final Repository<Ingredient> ingredients;
 
-    private final List<Column<Ingredient, ?>> columns = List.of(
-        Column.readonly("Name", String.class, Ingredient::getName),
-        Column.readonly("Kcal in 1U", double.class, Ingredient::getKcal),
-        Column.readonly("Unit", Unit.class, Ingredient::getUnit)
-    );
-
-    public IngredientTableModel() {
-        this(new ArrayList<Ingredient>());
-    }
-
-    public IngredientTableModel(List<Ingredient> ingredients) {
-        this.ingredients = new ArrayList<>(ingredients);
+    public IngredientTableModel(Repository<Ingredient> ingredients) {
+        super(List.of(
+            Column.readonly("Name", String.class, Ingredient::getName, 4),
+            Column.readonly("Kcal in 1U", Double.class, Ingredient::getKcal, 2),
+            Column.readonly("Unit", Unit.class, Ingredient::getUnit, 4)
+        ));
+        this.ingredients = ingredients;
     }
 
     @Override
-    public List<Ingredient> getEntities() {
+    public Repository<Ingredient> getRepository() {
         return ingredients;
-    }
-
-    @Override
-    protected List<Column<Ingredient, ?>> getColumns() {
-        return columns;
     }
 
     /**
@@ -51,6 +42,6 @@ public class IngredientTableModel extends AbstractModel<Ingredient> {
 
     @Override
     public String toString() {
-        return "Ingredients";
+        return Supported.INGREDIENT;
     }
 }

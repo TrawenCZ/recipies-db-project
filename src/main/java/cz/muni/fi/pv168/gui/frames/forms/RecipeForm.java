@@ -4,24 +4,17 @@ import cz.muni.fi.pv168.gui.TextValidator;
 import cz.muni.fi.pv168.gui.elements.ScrollPane;
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
 import cz.muni.fi.pv168.gui.elements.text.IntegerTextField;
-import cz.muni.fi.pv168.gui.frames.TabLayout;
-import cz.muni.fi.pv168.gui.models.CategoryTableModel;
-import cz.muni.fi.pv168.gui.models.IngredientTableModel;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.models.RecipeTableModel;
-import cz.muni.fi.pv168.gui.models.UnitsTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.*;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.*;
-
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
 
 public class RecipeForm extends AbstractForm {
 
@@ -41,25 +34,23 @@ public class RecipeForm extends AbstractForm {
 
     private class SingleIngredient extends JPanel {
 
+        private Long id = null;
         private JComboBox<Ingredient> ingredientComboBox = new JComboBox<>(getAllIngredients());
         private JComboBox<Unit> unitComboBox;
 
         private DoubleTextField ingredientAmount = new DoubleTextField(0.01d, 4);
         private JButton removeIngredient         = new JButton(Icons.getScaledIcon((ImageIcon)Icons.DELETE_S, 16));
 
-        public SingleIngredient(IngredientAmount ingredient) {
+        public SingleIngredient(RecipeIngredient ingredient) {
             super(new GridBagLayout());
 
             if (ingredient != null) {
+                id = ingredient.getId();
                 ingredientComboBox.setSelectedItem(ingredient.getIngredient());
-                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
-                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
                 ingredientAmount.setText(String.valueOf(ingredient.getAmount()));
-                unitComboBox.setSelectedItem(ingredient.getUnit());
-            } else {
-                Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
-                unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit()));
             }
+
+            unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(safeBaseComboboxSelect()));
             ingredientComboBox.setToolTipText("Enter an ingredient");
             ingredientAmount.setToolTipText("Enter an amount");
             unitComboBox.setToolTipText("Enter an unit");
@@ -77,8 +68,10 @@ public class RecipeForm extends AbstractForm {
             this(null);
         }
 
-        public IngredientAmount getIngredientAmount() {
-            return new IngredientAmount(
+        public RecipeIngredient getIngredientAmount() {
+            return new RecipeIngredient(
+                id,
+                (recipe == null) ? null : recipe.getId(),
                 (Ingredient) ingredientComboBox.getSelectedItem(),
                 (double) ingredientAmount.parse(),
                 (Unit) unitComboBox.getSelectedItem()
@@ -111,34 +104,38 @@ public class RecipeForm extends AbstractForm {
         }
 
         private Ingredient[] getAllIngredients() {
-            List<Ingredient> ingredients = new ArrayList<>();
-            var ingredientsModel = (IngredientTableModel) TabLayout.getIngredientsModel();
-            for (int i = 0; i < ingredientsModel.getRowCount(); i++) {
-                ingredients.add(ingredientsModel.getEntity(i));
-            }
-            return ingredients.toArray(new Ingredient[0]);
+            return MainWindow.getIngredientModel().getRepository().findAll().stream()
+                .toArray(size -> new Ingredient[size]);
+        }
+
+        private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
+            return MainWindow.getUnitsModel().getRepository().findAll().stream()
+                .filter(e ->
+                    (e.getBaseUnit() == null && baseUnit.getValue().equals(e.getName())) ||
+                    (e.getBaseUnit() != null && baseUnit.equals(e.getBaseUnit()))
+                ).toArray(size -> new Unit[size]);
         }
 
         private void ingredientListener(ItemEvent e) {
-            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(safeBaseComboboxSelect());
             unitComboBox.removeAllItems();
-            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(selectedIngredient.getUnit().getBaseUnit());
+
             for (Unit unit : allUnitsByBaseUnit) {
                 unitComboBox.addItem(unit);
             }
             unitComboBox.setSelectedItem(allUnitsByBaseUnit[0]);
         }
 
-        private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
-            List<Unit> units = new ArrayList<>();
-            var unitsTableModel = (UnitsTableModel) TabLayout.getUnitsModel();
-            for (int i = 0; i < unitsTableModel.getRowCount(); i++) {
-                Unit selectedUnit = unitsTableModel.getEntity(i);
-                if (selectedUnit.getBaseUnit().equals(baseUnit)) {
-                    units.add(selectedUnit);
-                }
+        private BaseUnitsEnum safeBaseComboboxSelect() {
+            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
+            var selected = BaseUnitsEnum.GRAM;
+
+            if (selectedIngredient != null) {
+                selected = selectedIngredient.getUnit().getBaseUnit();
+                if (selected == null) selected = BaseUnitsEnum.stringToEnum(selectedIngredient.getUnit().getName());
             }
-            return units.toArray(new Unit[0]);
+
+            return selected;
         }
     }
 
@@ -171,7 +168,7 @@ public class RecipeForm extends AbstractForm {
      * Recipe details
      */
     public RecipeForm(String header) {
-        super("Details", header, null, "Go Back");
+        super("Details", header, null, "Close");
     }
 
     @Override
@@ -183,20 +180,30 @@ public class RecipeForm extends AbstractForm {
         instructionsInput.setWrapStyleWord(true);
 
         ingredients.setPreferredSize(new Dimension(410, 500));
-        ingredientButton.addActionListener(e -> new SingleIngredient());
+        ingredientButton.addActionListener(e -> {
+            if (MainWindow.getIngredientModel().getRowCount() == 0) {
+                showErrorDialog("No ingredients available", "Missing ingredients");
+            } else {
+                new SingleIngredient();
+            }
+        });
 
         gridExtensions(GridBagConstraints.HORIZONTAL, 0, 5);
 
         // labels
         gridInsets(10, 10, 10, 10);
-        gridAdd(new JLabel(" Name"), 0, 0);
-        gridAdd(new JLabel(" Description"), 0, 2);
+        gridAdd(new JLabel(" Name (*)"), 0, 0);
+        gridAdd(new JLabel(" Description (*)"), 0, 2);
         gridAdd(new JLabel(" Category"), 0, 4);
-        gridAdd(new JLabel(" Portions"), 2, 4);
-        gridAdd(new JLabel(" Duration (min)"), 3, 4);
-        gridAdd(new JLabel(" Instructions"), 0, 9);
-        gridAdd(new JLabel(" Ingredients"), 4, 0);
+        gridAdd(new JLabel(" Portions (*)"), 2, 4);
+        gridAdd(new JLabel(" Preparation time (*)"), 3, 4);
+        gridAdd(new JLabel(" Instructions (*)"), 0, 9);
+        gridAdd(new JLabel(" Ingredients (* at least one)"), 4, 0);
         gridAdd(ingredientButton, 5, 0);
+
+        // preparation time minute label
+        gridInsets(-10, -40, 10, 10);
+        gridAdd(new JLabel("min"), 4, 5);
 
         // input fields
         gridInsets(-10, 10, 10, 10);
@@ -214,26 +221,26 @@ public class RecipeForm extends AbstractForm {
 
     @Override
     protected boolean onAction() {
-        var tableModel = (RecipeTableModel) TabLayout.getRecipesModel();
+        var tableModel = MainWindow.getRecipeModel();
         if (!verifyName(tableModel, recipe, nameInput.getText())) {
             return false;
         }
 
         if (TextValidator.empty(descriptionInput.getText())) {
-            // TODO: description empty
+            showErrorDialog("Description is required and cannot be empty!", "Missing description");
             return false;
         }
         if (TextValidator.empty(instructionsInput.getText())) {
-            // TODO: instructions empty
+            showErrorDialog("Instructions are required and cannot be empty!", "Missing instructions");
             return false;
         }
 
-        List<IngredientAmount> ingredientsList = ingredients.getAll().stream()
+        List<RecipeIngredient> ingredientsList = ingredients.getAll().stream()
             .map(SingleIngredient::getIngredientAmount)
             .toList();
 
         if (ingredientsList == null || ingredientsList.size() == 0) {
-            // TODO: at least one ingredient
+            showErrorDialog("Recipe must have at least ONE ingredient!", "Missing ingredients");
             return false;
         }
 
@@ -255,22 +262,17 @@ public class RecipeForm extends AbstractForm {
     }
 
     private Category[] getAllCategories() {
-        List<Category> categories = new ArrayList<>();
-        categories.add(Category.UNCATEGORIZED);
-        var categoryModel = (CategoryTableModel) TabLayout.getCategoriesModel();
-        for (int i = 0; i < categoryModel.getRowCount(); i++) {
-            categories.add(TabLayout.getCategoriesModel().getEntity(i));
-        }
+        List<Category> categories = MainWindow.getCategoryModel().getRepository().findAll();
         return categories.toArray(new Category[0]);
     }
 
-    protected void setIngredients(Recipe recipe, Function<IngredientAmount, ?> constructor) {
+    protected void setIngredients(Recipe recipe, Function<RecipeIngredient, ?> constructor) {
         for (var i : recipe.getIngredients()) {
             constructor.apply(i);
         }
     }
 
-    private void editRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
+    private void editRecipe(RecipeTableModel model, List<RecipeIngredient> ingredients) {
         recipe.setName(nameInput.getText());
         recipe.setDescription(descriptionInput.getText());
         recipe.setCategory((Category) categoriesInput.getSelectedItem());
@@ -281,8 +283,8 @@ public class RecipeForm extends AbstractForm {
         model.updateRow(recipe);
     }
 
-    private void addRecipe(RecipeTableModel model, List<IngredientAmount> ingredients) {
-        model.addRow(new Recipe(
+    private void addRecipe(RecipeTableModel model, List<RecipeIngredient> ingredients) {
+        Recipe recipe = new Recipe(
             nameInput.getText(),
             descriptionInput.getText(),
             instructionsInput.getText(),
@@ -290,6 +292,7 @@ public class RecipeForm extends AbstractForm {
             durationInput.parse(),
             portionInput.parse(),
             ingredients
-        ));
+        );
+        model.addRow(recipe);
     }
 }

@@ -1,18 +1,20 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
-import cz.muni.fi.pv168.gui.coloring.DisplayableColor;
-import cz.muni.fi.pv168.gui.frames.TabLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+
+import javax.swing.JColorChooser;
+import javax.swing.JLabel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.Category;
-
-import java.awt.*;
-import javax.swing.*;
-
-import static cz.muni.fi.pv168.gui.resources.Messages.ADDING_ERR_TITLE;
-import static cz.muni.fi.pv168.gui.resources.Messages.EDITING_ERR_TITLE;
 
 public class CategoryForm extends AbstractForm {
 
-    private final JLabel nameLabel = new JLabel("Enter name");
+    private final JLabel nameLabel = new JLabel("Enter name (*)");
     private final JLabel colorLabel = new JLabel("Select any color");
 
     private final JTextField nameInput = new JTextField(12);
@@ -54,12 +56,12 @@ public class CategoryForm extends AbstractForm {
 
     @Override
     protected boolean onAction() {
-        var tableModel = TabLayout.getCategoriesModel();
+        var tableModel = MainWindow.getCategoryModel();
         if (!verifyName(tableModel, category, nameInput.getText())) {
             return false;
         }
 
-        DisplayableColor newColor = new DisplayableColor(colorInput.getColor().getRGB());
+        var newColor = new Color(colorInput.getColor().getRGB());
 
         if (isEdit()) {
             category.setName(nameInput.getText());

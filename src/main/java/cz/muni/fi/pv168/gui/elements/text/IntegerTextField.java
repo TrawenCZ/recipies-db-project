@@ -17,6 +17,7 @@ public final class IntegerTextField extends JFormattedTextField {
         super(new IntegerFormatter(lowerLimit, upperLimit));
         this.setColumns(columns);
         this.setToolTipText("Accepts only integers");
+        this.setValue(lowerLimit);
     }
 
     public int parse() {

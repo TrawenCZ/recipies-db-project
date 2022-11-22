@@ -2,12 +2,15 @@ package cz.muni.fi.pv168.gui.frames.tabs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,8 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 
-import cz.muni.fi.pv168.data.Validator;
-import cz.muni.fi.pv168.data.service.AbstractService;
+import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.action.*;
 import cz.muni.fi.pv168.gui.coloring.ColoredTable;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
@@ -28,8 +30,8 @@ import cz.muni.fi.pv168.gui.elements.Toolbar;
 import cz.muni.fi.pv168.gui.filters.Sorter;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
-import net.miginfocom.swing.MigLayout;
 
 import static cz.muni.fi.pv168.gui.resources.Messages.DELETING_ERR_TITLE;
 
@@ -48,9 +50,8 @@ public abstract class AbstractTab extends JPanel {
     protected final SearchBar searchBar;
     protected final JLabel entries;
 
-    protected AbstractService<?> service;
-    protected ImportAction<?> importAction;
-    protected ExportAction<?> exportAction;
+    protected final ImportAction<?> importAction;
+    protected final ExportAction<?> exportAction;
 
     protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
@@ -63,6 +64,9 @@ public abstract class AbstractTab extends JPanel {
 
         this.table = new ColoredTable(model);
         searchBar = new SearchBar(searchBarSize);
+
+        this.importAction = createImportAction();
+        this.exportAction = createExportAction();
 
         var sorter = createSorter();
         searchButton = createSearchButton(searchBarSize, sorter);
@@ -78,7 +82,7 @@ public abstract class AbstractTab extends JPanel {
         this.table.setRowSorter(sorter);
         this.table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
 
-        addSampleData(100);
+        // addSampleData(100);
 
         entries = new JLabel();
         updateEntries();
@@ -87,6 +91,14 @@ public abstract class AbstractTab extends JPanel {
     }
 
     public abstract void addSampleData(int sampleSize);
+
+    protected abstract ImportAction<?> createImportAction();
+
+    protected abstract ExportAction<?> createExportAction();
+
+    protected abstract void addRow(ActionEvent event);
+
+    protected abstract void editSelectedRow(ActionEvent actionEvent);
 
     public void deleteRows() {
         var model = (AbstractModel<?>) table.getModel();
@@ -101,11 +113,6 @@ public abstract class AbstractTab extends JPanel {
         updateEntries();
     }
 
-
-    public AbstractModel<?> getModel() {
-        return table.getAbstractModel();
-    }
-
     public ColoredTable getTable() {
         return table;
     }
@@ -115,12 +122,22 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected JPanel createFilterPanel() {
-        JPanel panel = new JPanel();
+        var panel = new JPanel(new GridBagLayout());
+        var c = new GridBagConstraints();
 
-        panel.setLayout(new MigLayout("align 0% 50%"));
-        panel.add(searchButton);
-        panel.add(resetButton);
-        panel.add(searchBar, "span, grow");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(4, 4, 2, 2);
+        c.ipady = 10;
+
+        c.weightx = 1;
+        panel.add(searchBar, c);
+
+        c.weightx = 0;
+        panel.add(searchButton, c);
+        panel.add(resetButton, c);
+
+        c.weightx = 2;
+        panel.add(Box.createHorizontalStrut(200), c);
 
         return panel;
     }
@@ -149,10 +166,6 @@ public abstract class AbstractTab extends JPanel {
         return tools;
     }
 
-    protected abstract void addRow(ActionEvent event);
-
-    protected abstract void editSelectedRow(ActionEvent actionEvent);
-
     protected void deleteSelectedRows(ActionEvent actionEvent) {
         if (showConfirmDialog() != JOptionPane.YES_OPTION) return;
         deleteRows();
@@ -164,12 +177,7 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected void exportEntities(ActionEvent event) {
-        var selectedRows = IntStream.of(table.getSelectedRows()).map(table::convertRowIndexToModel).boxed().toList();
-        if (selectedRows.size() == 0) {
-            exportAction.actionPerformed(event);
-        } else {
-            exportAction.actionPerformed(event, selectedRows);
-        }
+        exportAction.actionPerformed(event);
     }
 
     protected void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
@@ -197,7 +205,7 @@ public abstract class AbstractTab extends JPanel {
                 this, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    protected <K extends Nameable, V> boolean deleteSafeSearch(AbstractModel<K> model, Function<K, String> nameGetter) {
+    protected <K extends Nameable & Identifiable, V> boolean deleteSafeSearch(AbstractModel<K> model, Function<K, String> nameGetter) {
         for (int selectedRow : table.getSelectedRows()) {
             String selectedName = table.getAbstractModel().getEntity(selectedRow).getName();
             if (!Validator.isUnique(model, nameGetter, selectedName)) {
@@ -215,7 +223,7 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected Sorter createSorter() {
-        return new Sorter(table, getModel(), searchBar);
+        return new Sorter(table, table.getAbstractModel(), searchBar);
     }
 
     private void setLayout() {

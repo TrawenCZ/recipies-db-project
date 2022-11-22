@@ -69,7 +69,7 @@ public final class MultiChoiceWindow extends AutoHideWindow implements Filterabl
         super();
 
         // for debug
-        if (choices.length < 1) throw new NullPointerException("missing choices");
+        // if (choices.length < 1) throw new NullPointerException("missing choices");
 
         scrollpane = new JScrollPane();
         var panel = new JPanel();

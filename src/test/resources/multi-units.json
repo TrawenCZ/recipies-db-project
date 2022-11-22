@@ -1,0 +1,13 @@
+[ {
+  "name" : "vetsiGram",
+  "valueInBaseUnit" : 10.0,
+  "baseUnit" : "GRAM"
+}, {
+  "name" : "jeste vetsi gram s mezerama",
+  "valueInBaseUnit" : 10.1,
+  "baseUnit" : "GRAM"
+}, {
+  "name" : "jeste vetsi vetsi gram s mezerama ale neni to gram",
+  "valueInBaseUnit" : 10.3,
+  "baseUnit" : "MILLILITER"
+} ]

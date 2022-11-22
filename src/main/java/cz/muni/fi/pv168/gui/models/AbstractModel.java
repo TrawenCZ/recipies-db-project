@@ -1,11 +1,11 @@
 package cz.muni.fi.pv168.gui.models;
 
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.gui.coloring.Colorable;
 import cz.muni.fi.pv168.model.Nameable;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.Optional;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -23,44 +23,58 @@ import javax.swing.table.AbstractTableModel;
 public abstract class AbstractModel<T extends Nameable> extends AbstractTableModel {
 
     protected static final int UNDEFINED = -1;
-
     private Integer colorIndex = UNDEFINED;
+
+    protected final List<Column<T, ?>> columns;
+
+    protected AbstractModel(List<Column<T, ?>> columns) {
+        this.columns = columns;
+    }
+
+    public Integer getColumnWidth(int columnIndex) {
+        return columns.get(columnIndex).getColumnWidth();
+    }
+
+    public Integer getTotalColumnWidth() {
+        return columns.stream()
+                      .map(c -> (c.getColumnWidth() != null) ? c.getColumnWidth() : 0)
+                      .reduce(0, Integer::sum);
+    }
 
     @Override
     public int getRowCount() {
-        return getEntities().size();
+        return getRepository().getSize();
     }
 
     @Override
     public int getColumnCount() {
-        return getColumns().size();
+        return columns.size();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         T entity = getEntity(rowIndex);
-        return getColumns().get(columnIndex).getValue(entity);
+        return columns.get(columnIndex).getValue(entity);
     }
 
     @Override
     public String getColumnName(int columnIndex) {
-        return getColumns().get(columnIndex).getName();
+        return columns.get(columnIndex).getName();
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return getColumns().get(columnIndex).getColumnType();
+        return columns.get(columnIndex).getColumnType();
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return getColumns().get(columnIndex).isEditable();
+        return columns.get(columnIndex).isEditable();
     }
 
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        T entity = getEntity(rowIndex);
-        getColumns().get(columnIndex).setValue(value, entity);
+        columns.get(columnIndex).setValue(value, getEntity(rowIndex));
     }
 
     /**
@@ -69,8 +83,9 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param entity row we want to add
      */
     public void addRow(T entity) {
-        int newRowIndex = getEntities().size();
-        getEntities().add(entity);
+        var repository = getRepository();
+        int newRowIndex = repository.getSize();
+        repository.create(entity);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
@@ -79,9 +94,24 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      *
      * @param entity row we want to update
      */
-    public void updateRow(T entity) {
-        int rowIndex = getEntities().indexOf(entity);
+    public void updateRow(int rowIndex, T entity) {
+        getRepository().update(entity);
         fireTableRowsUpdated(rowIndex, rowIndex);
+    }
+
+    /**
+     * Fires the update event on the position of updated row.
+     * Slower than {@link AbstractModel#updateRow(int, T)}.
+     *
+     * @param entity row we want to update
+     */
+    public void updateRow(T entity) {
+        var rowIndex = 0;
+        for (var e : getRepository().findAll()) {
+            if (e.getName().equals(entity.getName())) break;
+            rowIndex++;
+        }
+        updateRow(rowIndex, entity);
     }
 
     /**
@@ -90,7 +120,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param rowIndex index of row we want to delete
      */
     public void deleteRow(int rowIndex) {
-        getEntities().remove(rowIndex);
+        getRepository().deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
@@ -101,20 +131,20 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @return          single row entity OR null (if out of bounds)
      */
     public T getEntity(int rowIndex) {
-        if (rowIndex < 0 || rowIndex >= getRowCount()) return null;
-        return getEntities().get(rowIndex);
+        return getRepository().findByIndex(rowIndex).orElse(null);
     }
 
     /**
-     * Returns a single entity of a given name
+     * Returns a single row that corresponds to a given name.
      *
-     * @param name  name of the entity we want to get
-     * @return      single row entity OR null (if not found)
+     * @param rowIndex  of row we want
+     * @return          single row entity OR null (if out of bounds)
      */
-    public Optional<T> getEntity(String name) {
-        return getEntities().stream()
-                            .dropWhile(entity -> !entity.getName().equals(name))
-                            .findFirst();
+    public T getEntity(String name) {
+        return getRepository().findAll().stream()
+            .dropWhile(e -> !e.getName().equals(name))
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -131,20 +161,11 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
     }
 
     /**
-     * Gets the list of all table entries. This list should be
-     * modifiable to support adding/removing rows.
+     * Returns the repository of the given model.
      *
-     * @return all entities of the table
+     * @return model's repository of type T
      */
-    public abstract List<T> getEntities();
-
-    /**
-     * Gets the list of all table columns with their methods. This
-     * list does not have to be modifiable.
-     *
-     * @return all columns of the table
-     */
-    protected abstract List<Column<T, ?>> getColumns();
+    public abstract Repository<T> getRepository();
 
     /**
      * If it gets the position, it means there is a column that implements

@@ -11,19 +11,31 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Unit implements Colorable, Nameable {
+public class Unit implements Colorable, Nameable, Identifiable {
 
+    private Long id;
     private String name;
     private double valueInBaseUnit;
     private BaseUnitsEnum baseUnit;
 
     @JsonCreator
     public Unit(@JsonProperty("name") String name,
-                @JsonProperty("valueInBaseUnit") double value,
+                @JsonProperty("valueInBaseUnit") double valueInBaseUnit,
                 @JsonProperty("baseUnit") BaseUnitsEnum baseUnit) {
+        this(null, name, valueInBaseUnit, baseUnit);
+    }
+
+    @JsonIgnore
+    public Unit(Long id, String name, double valueInBaseUnit, BaseUnitsEnum baseUnit) {
+        this.id = id;
         this.name = name;
-        this.valueInBaseUnit = value;
+        this.valueInBaseUnit = valueInBaseUnit;
         this.baseUnit = baseUnit;
+    }
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -33,7 +45,7 @@ public class Unit implements Colorable, Nameable {
 
     @JsonProperty("valueInBaseUnit")
     public double getValueInBaseUnit() {
-            return valueInBaseUnit;
+        return valueInBaseUnit;
     }
 
     @JsonProperty("baseUnit")
@@ -43,19 +55,22 @@ public class Unit implements Colorable, Nameable {
 
     @JsonIgnore
     public String getBaseUnitValue() {
-        return baseUnit.getValue();
+        return (baseUnit == null) ? "" : baseUnit.getValue();
     }
 
     @JsonIgnore
-    public String getPrettyValue() {
-        DecimalFormat format = new DecimalFormat("0.#");
-        return format.format(valueInBaseUnit);
+    public Double getPrettyValue() {
+        DecimalFormat format = new DecimalFormat("0.##");
+        return Double.valueOf(format.format(valueInBaseUnit));
     }
 
     @Override @JsonIgnore
     public Color getColor() {
-        // TODO: REVIEW after base units are finished, may need some changes
-        return (name.equals(baseUnit.getValue())) ? Color.GRAY : null;
+        return (baseUnit == null) ? Color.GRAY : null;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name){
@@ -67,7 +82,7 @@ public class Unit implements Colorable, Nameable {
     }
 
     public void setBaseUnit(BaseUnitsEnum baseUnit) {
-        this.baseUnit = baseUnit; // no need for null check
+        this.baseUnit = baseUnit;
     }
 
     @Override

@@ -1,0 +1,44 @@
+[ {
+  "name" : "Dřevo s chlebem",
+  "description" : "Velmi chutné jídlo.",
+  "category" : {
+    "name" : "Dřevěné jídla",
+    "color" : "FF996600"
+  },
+  "preparationTime" : 15,
+  "portions" : 3,
+  "ingredients" : [ {
+    "ingredient" : {
+      "name" : "Cukr",
+      "kcal" : 200.0,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : null
+      }
+    },
+    "amount" : 5.0,
+    "unit" : {
+      "name" : "pc(s)",
+      "valueInBaseUnit" : 1.0,
+      "baseUnit" : null
+    }
+  }, {
+    "ingredient" : {
+      "name" : "Soda",
+      "kcal" : 1.0,
+      "unit" : {
+        "name" : "g",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : null
+      }
+    },
+    "amount" : 4.0,
+    "unit" : {
+      "name" : "g",
+      "valueInBaseUnit" : 1.0,
+      "baseUnit" : null
+    }
+  } ],
+  "instructions" : "Do vody přidáme dřevo a pak chleba."
+} ]

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -10,9 +11,10 @@ import java.util.Objects;
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Recipe implements Nameable {
+public class Recipe implements Nameable, Identifiable {
 
     // shown in table
+    private Long id;
     private String name;
     private String description;
     private String instructions;
@@ -21,7 +23,7 @@ public class Recipe implements Nameable {
     private int portions;
 
     // shown only in details window
-    private List<IngredientAmount> ingredients;
+    private List<RecipeIngredient> ingredients;
 
     @JsonCreator
     public Recipe(@JsonProperty("name") String name,
@@ -30,7 +32,20 @@ public class Recipe implements Nameable {
                   @JsonProperty("category") Category category,
                   @JsonProperty("preparationTime") int requiredTime,
                   @JsonProperty("portions") int portions,
-                  @JsonProperty("ingredients") List<IngredientAmount> ingredients) {
+                  @JsonProperty("ingredients") List<RecipeIngredient> ingredients) {
+        this(null, name, description, instructions, category, requiredTime, portions, ingredients);
+    }
+
+    @JsonIgnore
+    public Recipe(Long id,
+                  String name,
+                  String description,
+                  String instructions,
+                  Category category,
+                  int requiredTime,
+                  int portions,
+                  List<RecipeIngredient> ingredients) {
+        setId(id);
         setName(name);
         setDescription(description);
         setInstructions(instructions);
@@ -38,6 +53,11 @@ public class Recipe implements Nameable {
         setRequiredTime(requiredTime);
         setPortions(portions);
         setIngredients(ingredients);
+    }
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -66,13 +86,17 @@ public class Recipe implements Nameable {
     }
 
     @JsonProperty("ingredients")
-    public List<IngredientAmount> getIngredients() {
+    public List<RecipeIngredient> getIngredients() {
         return ingredients;
     }
 
     @JsonProperty("instructions")
     public String getInstructions() {
         return instructions;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -97,7 +121,7 @@ public class Recipe implements Nameable {
         this.portions = portions;
     }
 
-    public void setIngredients(List<IngredientAmount> ingredients) {
+    public void setIngredients(List<RecipeIngredient> ingredients) {
         this.ingredients = new ArrayList<>(Objects.requireNonNull(ingredients));
     }
 

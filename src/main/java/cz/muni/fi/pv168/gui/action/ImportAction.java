@@ -1,85 +1,108 @@
 package cz.muni.fi.pv168.gui.action;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import javax.swing.*;
 
-import cz.muni.fi.pv168.data.Validator;
+import cz.muni.fi.pv168.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
-import cz.muni.fi.pv168.data.service.AbstractService;
-import cz.muni.fi.pv168.exceptions.InconsistentRecordException;
+import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
+import cz.muni.fi.pv168.wiring.CommonDependencyProvider;
 
+/**
+ * @author Jan Martinek, Radim Stejskal
+ */
 public class ImportAction<T extends Nameable> extends AbstractAction {
 
+    private final JsonImporter JSONImporter = CommonDependencyProvider.getJsonImporter();
     private final JTable table;
-    private final JsonImporter JSONImporter;
     private final Class<T> aClass;
-    private final AbstractService<T> service;
+    private final Service<T> service;
 
-    public ImportAction(JTable table, JsonImporter JSONImporter, AbstractService<T> service, Class<T> aClass) {
+    public ImportAction(JTable table, Service<T> service, Class<T> aClass) {
         super("Import", Icons.IMPORT_S);
         this.table = Objects.requireNonNull(table);
-        this.JSONImporter = Objects.requireNonNull(JSONImporter);
-        this.aClass = aClass;
-        this.service = service;
+        this.service = Objects.requireNonNull(service);
+        this.aClass = Objects.requireNonNull(aClass);
         putValue(SHORT_DESCRIPTION, "Imports records to current tab from a file");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        var fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-
-        int dialogResult = fileChooser.showOpenDialog(table);
-        if (dialogResult == JFileChooser.APPROVE_OPTION) {
-            File importFile = fileChooser.getSelectedFile();
+    public void actionPerformed(ActionEvent event) {
+        var fileChooser = new JsonFileChooser(false, true);
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
-                List<T> importedEntities = JSONImporter.loadEntities(importFile.getAbsolutePath(), aClass);
-                if (Validator.containsNonEqualDuplicates(importedEntities)) {
-                    JOptionPane.showMessageDialog(new JFrame(), "The file contains multiple records " +
-                                    "of the same name but with different attributes. Please check the import " +
-                                    "file for inconsistencies.", "Import error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
+                var records = JSONImporter.loadEntities(
+                    fileChooser.getSelectedFile().getAbsolutePath(),
+                    aClass
+                );
+                int[] count = service.saveRecords(records);
+                if (count[0] > 0 || count[1] < 0) {
+                    table.getRowSorter().allRowsChanged();
+                    showSuccessfulImportMessage(count[1], count[0]);
+                } else {
+                    showNoRowsImportedMessage(count[1]);
                 }
-                try {
-                    int savedRecordsCount = service.saveRecords(importedEntities);
-                    showSuccessfulImportMessage(savedRecordsCount);
-                } catch (InconsistentRecordException ex) {
-                    JOptionPane.showMessageDialog(new JFrame(), "The file contains some records of the same name " +
-                                    "as the records that are already saved but with different attributes. Please " +
-                                    "resolve the inconsistencies first.", "Import error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(new JFrame(), "Please check that you are trying to import records of the " +
-                                "same type as the current tab and that the JSON file is in the" +
-                                " correct format.", "Import error",
-                        JOptionPane.ERROR_MESSAGE);
+                table.revalidate();
+                table.repaint();
+            } catch (DataManipulationException e) {
+                showInvalidFormatMessage(e.getMessage());
+            } catch (NullPointerException e) {
+                showInvalidFormatMessage();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    private void showSuccessfulImportMessage(int succesfullImports) {
-        String message;
-        if (succesfullImports == 0) {
-            message =  "The file contains no new records.";
-        } else if (succesfullImports == 1){
-            message = "Successfully imported 1 record";
-        } else {
-            message = "Successfully imported " + succesfullImports + " records." +
-                    "\nDuplicates were ignored.";
-        }
-        JOptionPane.showMessageDialog(new Frame(), message);
+    private void showInvalidFormatMessage(String msg) {
+        JOptionPane.showMessageDialog(
+            MainWindow.getContentPane(),
+            """
+            Please check that you are trying to import records of the same
+            type as the current tab and that the JSON file fits the format.
+            """
+            + "\n" + msg,
+            "Import failure",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    private void showInvalidFormatMessage() {
+        showInvalidFormatMessage("");
+    }
+
+    private void showNoRowsImportedMessage(int discardedCount) {
+        JOptionPane.showMessageDialog(
+            MainWindow.getContentPane(),
+            "!! Nothing was imported !!" + getAction(discardedCount, "Discarded"),
+            "Import success",
+            JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private void showSuccessfulImportMessage(int actionCount, int createdCount) {
+        String message = "Import successful.";
+        message += getAction(createdCount, "Created");
+        message += getAction(-actionCount, "Replaced");
+        message += getAction(actionCount, "Discarded");
+        JOptionPane.showMessageDialog(
+            MainWindow.getContentPane(),
+            message,
+            "Import success",
+            JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private String getAction(int count, String action) {
+        return (count > 0) ? "\n" + action + ": " + count : "";
     }
 }

@@ -2,7 +2,10 @@ package cz.muni.fi.pv168;
 
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import com.formdev.flatlaf.*;
+import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
 
+import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -12,9 +15,13 @@ import javax.swing.UIManager;
 public class Main {
 
     public static final String THEME = "intellij";
+    public static final Font defaultFont = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+
     public static void main(String[] args) {
-        initFlatlafLookAndFeel(THEME); // can be reworked to load preconfigured
-        SwingUtilities.invokeLater(MainWindow::new);
+        final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
+        initFlatlafLookAndFeel(THEME);
+        UIManager.getLookAndFeelDefaults().put("defaultFont", defaultFont);
+        SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
     }
 
     /**

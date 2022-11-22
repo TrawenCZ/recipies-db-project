@@ -1,9 +1,10 @@
 package cz.muni.fi.pv168.gui.models;
 
-import cz.muni.fi.pv168.model.Unit;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import cz.muni.fi.pv168.data.storage.repository.Repository;
+import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.wiring.Supported;
 
 /**
  * Model of units data class in a tabular representation
@@ -12,34 +13,24 @@ import java.util.List;
  */
 public class UnitsTableModel extends AbstractModel<Unit> {
 
-    private final List<Unit> units;
+    private final Repository<Unit> units;
 
-    private final List<Column<Unit, ?>> columns = List.of(
-        Column.readonly("Name", Unit.class, self -> self),
-        Column.readonly("Value", String.class, Unit::getPrettyValue),
-        Column.readonly("Base unit", String.class, Unit::getBaseUnitValue)
-    );
-
-    public UnitsTableModel() {
-        this(new ArrayList<Unit>());
-    }
-
-    public UnitsTableModel(List<Unit> units) {
-        this.units = new ArrayList<>(units);
+    public UnitsTableModel(Repository<Unit> units) {
+        super(List.of(
+            Column.readonly("Name", Unit.class, self -> self, 4),
+            Column.readonly("Value", Double.class, Unit::getValueInBaseUnit, 2),
+            Column.readonly("Base unit", String.class, Unit::getBaseUnitValue, 4)
+        ));
+        this.units = units;
     }
 
     @Override
-    public List<Unit> getEntities() {
+    public Repository<Unit> getRepository() {
         return units;
     }
 
     @Override
-    public List<Column<Unit, ?>> getColumns() {
-        return columns;
-    }
-
-    @Override
     public String toString() {
-        return "Units";
+        return Supported.UNIT;
     }
 }

@@ -4,19 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.muni.fi.pv168.gui.coloring.Colorable;
+
 import java.awt.Color;
 import java.util.Objects;
-import cz.muni.fi.pv168.gui.coloring.DisplayableColor;
 
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class Category implements Colorable, Nameable {
+public class Category implements Colorable, Nameable, Identifiable {
 
-    public final static Category UNCATEGORIZED = new Category("", new DisplayableColor(0x000000));
-
+    private Long id;
     private String name;
-    private DisplayableColor color;
+    private Color color;
 
     /**
      * Serialized constructor, accessible to mapper via reflection. Takes color as an rgb-hex
@@ -26,20 +25,41 @@ public class Category implements Colorable, Nameable {
      * @param color string parsable to hex-int, non-null
      */
     @JsonCreator
-    private Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
-        this(name, new DisplayableColor(Integer.parseInt(color,16)));
+    public Category(@JsonProperty("name") String name, @JsonProperty("color") String color) {
+        this(null, name, color);
     }
 
     /**
      * Public constructor. Creates a new category with a given name and color
      *
+     * @param id    identifier
      * @param name  non-null string, used as identifier of the category
      * @param color non-null color object
      */
-
-    public Category(String name, DisplayableColor color) {
+    @JsonIgnore
+    public Category(Long id, String name, Color color) {
+        setId(id);
         setName(name);
         setColor(color);
+    }
+
+    @JsonIgnore
+    public Category(Long id, String name, String color) {
+        this(id, name, new Color(
+                Integer.valueOf(color.substring(2, 4), 16),
+                Integer.valueOf(color.substring(4, 6), 16),
+                Integer.valueOf(color.substring(6, 8), 16),
+                Integer.valueOf(color.substring(0, 2), 16)
+        ));
+    }
+
+    public Category(String name, Color color) {
+        this(null, name, color);
+    }
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("name")
@@ -49,20 +69,24 @@ public class Category implements Colorable, Nameable {
 
     @JsonProperty("color")
     public String getSerializedColor() {
-        return color.getRGB() + "";
+        return String.format("%08X", color.getRGB());
     }
 
     @Override
     @JsonIgnore
     public Color getColor() {
-        return (this == Category.UNCATEGORIZED) ? null : color;
+        return color;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name);
     }
 
-    public void setColor(DisplayableColor color) {
+    public void setColor(Color color) {
         this.color = Objects.requireNonNull(color);
     }
 

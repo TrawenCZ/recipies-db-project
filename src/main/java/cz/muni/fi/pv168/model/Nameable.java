@@ -10,6 +10,6 @@ public interface Nameable {
     /**
      * Returns the name attribute
      */
-    public String getName();
+    String getName();
 
 }
