@@ -56,6 +56,7 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             new UnitMapper(unitValidator, unitDao::findById)
         );
 
+
         ingredients = new IngredientRepository(
             new IngredientDao(databaseManager::getConnectionHandler),
             new IngredientMapper(ingredientValidator, units::findById)
@@ -71,6 +72,7 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             databaseManager::getConnectionHandler,
             databaseManager::getTransactionHandler
         );
+        // databaseManager.initData("test");
 
         categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
         unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
