@@ -42,12 +42,13 @@ public final class DatabaseManager {
         return new DatabaseManager(connectionString);
     }
 
-    public static DatabaseManager createTestInstance(boolean testing) {
+    public static DatabaseManager createTestInstance(boolean baseUnitGenerate) {
         String connectionString = "jdbc:h2:mem:%s;%s".formatted(PROJECT_NAME, DB_PROPERTIES_STRING);
         var databaseManager = new DatabaseManager(connectionString);
         databaseManager.load();
-        if (testing) // TODO: make DML (sql) file
-            databaseManager.initData("test");
+        if (baseUnitGenerate)
+            databaseManager.initData("base_units");
+        databaseManager.initData("test");
         return databaseManager;
     }
 

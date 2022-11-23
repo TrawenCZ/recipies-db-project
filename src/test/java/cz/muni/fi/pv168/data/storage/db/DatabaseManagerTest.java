@@ -11,7 +11,7 @@ public final class DatabaseManagerTest {
 
     @BeforeEach
     void setUp() {
-        this.manager = DatabaseManager.createTestInstance(false);
+        this.manager = DatabaseManager.createTestInstance(true);
     }
 
     @AfterEach
@@ -20,7 +20,7 @@ public final class DatabaseManagerTest {
     }
 
     /**
-     * The {@link DatabaseManager#initSchema()} is called inside {@link DatabaseManager#createTestInstance(boolean testing)}
+     * The {@link DatabaseManager#initSchema()} is called inside {@link DatabaseManager#createTestInstance(boolean baseUnitGenerate)}
      * this is the second time it is called
      */
     @Test
