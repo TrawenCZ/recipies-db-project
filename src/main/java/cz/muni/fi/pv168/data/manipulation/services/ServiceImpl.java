@@ -10,21 +10,25 @@ import cz.muni.fi.pv168.data.storage.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.swing.JOptionPane;
 
 /**
- * Database manipulation service. Takes care of database transactions.
+ * Database manipulation service. Handles bulk save and get.
  *
  * @param <M> the type of the model
  * @author Jan Martinek, Radim Stejskal
  */
 public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M> {
+
+    protected class Counter {
+        public int imported = 0;
+        public int actioned = 0;
+        public boolean doReplace = false;
+    }
 
     protected final Supplier<TransactionHandler> transactions;
     protected final Repository<M> repository;
@@ -46,39 +50,37 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
 
     @Override
     public int[] saveRecords(Collection<M> records) {
-        Collection<M> duplicates = getDuplicates(records, repository);
-
-        int imported = 0;
-        boolean replace = (duplicates.size() > 0) ? getDecision() : false;
+        Counter counter = new Counter();
 
         try (var transaction = transactions.get()) {
-            imported += doImport(records, duplicates,  replace, repository, transaction::connection);
+            doImport(records, counter, repository, transaction::connection);
             transaction.commit();
         }
-        return (replace)
-            ? new int[]{imported, -duplicates.size()}
-            : new int[]{imported, duplicates.size()};
+        return (counter.doReplace)
+            ? new int[]{counter.imported, -counter.actioned}
+            : new int[]{counter.imported, counter.actioned};
     }
 
-    protected static <NI extends Nameable & Identifiable> int doImport(
+    protected <NI extends Nameable & Identifiable> void doImport(
         Collection<NI> records,
-        Collection<NI> duplicates,
-        boolean doReplace,
+        Counter counter,
         Repository<NI> repository,
         Supplier<ConnectionHandler> connection
     ) {
-        int imported = 0;
         for (var record : records) {
-            var found = getDuplicate(record, duplicates);
-            if (found == null) {
+            var found = repository.findUncommitted(record.getName(), connection);
+            if (found.isEmpty()) {
                 create(record, repository, connection);
-                imported++;
-            } else if (doReplace) {
-                record.setId(found.getId());
-                update(record, repository, connection);
+                counter.imported++;
+            } else {
+                if (counter.actioned == 0) counter.doReplace = getDecision();
+                if (counter.doReplace) {
+                    record.setId(found.get().getId());
+                    update(record, repository, connection);
+                }
+                counter.actioned++;
             }
         }
-        return imported;
     }
 
     protected static <N extends Nameable> void create(N entity, Repository<N> repository, Supplier<ConnectionHandler> connection) {
@@ -89,26 +91,10 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
         repository.uncommitted(entity, repository::update, connection);
     }
 
-    protected static <N extends Nameable> Collection<N> getDuplicates(Collection<N> records, Repository<N> repository) {
-        Set<N> duplicate = new HashSet<>();
-        for (var r : records) {
-            var found = repository.findByName(r.getName()).orElse(null);
-            if (found != null) duplicate.add(found);
-        }
-        return duplicate;
-    }
-
-    protected static <N extends Nameable> N getDuplicate(N entity, Collection<N> duplicates) {
-        return duplicates.stream()
-                         .dropWhile(e -> !e.getName().equals(entity.getName()))
-                         .findFirst()
-                         .orElse(null);
-    }
-
     protected static boolean getDecision() {
         String[] options = {"Replace all", "Skip all", "Cancel"};
         int n = JOptionPane.showOptionDialog(
-            MainWindow.getContentPane(),
+            MainWindow.getGlassPane(),
             "Duplicates were found during import! Please select an action:",
             "Import error",
             JOptionPane.YES_NO_CANCEL_OPTION,

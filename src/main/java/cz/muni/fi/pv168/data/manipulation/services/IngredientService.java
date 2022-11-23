@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.data.manipulation.services;
 
+import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.*;
@@ -25,21 +26,25 @@ public class IngredientService extends ServiceImpl<Ingredient> {
 
     @Override
     public int[] saveRecords(Collection<Ingredient> records) {
+        Counter counter = new Counter();
         Collection<Unit> unitRecords = records.stream().map(Ingredient::getUnit).toList();
-        Collection<Ingredient> exIngredients = getDuplicates(records, repository);
-        Collection<Unit> exUnits = getDuplicates(unitRecords, units);
-
-        int imported = 0;
-        int total = exUnits.size() + exIngredients.size();
-        boolean replace = (total > 0) ? getDecision() : false;
 
         try (var transaction = transactions.get()) {
-            imported += doImport(unitRecords, exUnits, replace, units, transaction::connection);
-            imported += doImport(records, exIngredients, replace, repository, transaction::connection);
+            doImport(unitRecords, counter, units, transaction::connection);
+            ingrImport(records, counter, transaction::connection);
             transaction.commit();
         }
-        return (replace)
-            ? new int[]{imported, -total}
-            : new int[]{imported, total};
+        return (counter.doReplace)
+            ? new int[]{counter.imported, -counter.actioned}
+            : new int[]{counter.imported, counter.actioned};
+    }
+
+    private void ingrImport(Collection<Ingredient> records, Counter counter, Supplier<ConnectionHandler> connection) {
+        records.forEach(e -> setId(e.getUnit(), connection));
+        super.doImport(records, counter, repository, connection);
+    }
+
+    private void setId(Unit newEntity, Supplier<ConnectionHandler> connection) {
+        newEntity.setId(units.findUncommitted(newEntity.getName(), connection).get().getId());
     }
 }

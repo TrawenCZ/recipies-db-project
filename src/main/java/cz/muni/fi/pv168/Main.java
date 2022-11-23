@@ -1,13 +1,19 @@
 package cz.muni.fi.pv168;
 
+import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
+import cz.muni.fi.pv168.gui.resources.Icons;
+
 import com.formdev.flatlaf.*;
 import cz.muni.fi.pv168.wiring.DependencyProvider;
 import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
 
 import java.awt.Font;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -18,10 +24,15 @@ public class Main {
     public static final Font defaultFont = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
 
     public static void main(String[] args) {
-        final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
         initFlatlafLookAndFeel(THEME);
         UIManager.getLookAndFeelDefaults().put("defaultFont", defaultFont);
-        SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
+        try {
+            final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
+            SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            goNuclear();
+        }
     }
 
     /**
@@ -60,5 +71,20 @@ public class Main {
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Nimbus layout initialization failed", ex);
         }
+    }
+
+    private static void goNuclear() {
+        int n = JOptionPane.showOptionDialog(
+            null,
+            "CRITICAL ERROR:\nDatabase is corrupted!\n\nYou can resolve this issue by deleting all data.\nDo you want to delete them?",
+            "Nuclear quit",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.ERROR_MESSAGE,
+            Icons.DELETE_L,
+            null, null);
+        if (n == JOptionPane.OK_OPTION) {
+            DatabaseManager.createProductionInstance().destroySchema();
+        }
+        System.exit(n);
     }
 }
