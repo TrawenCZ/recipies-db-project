@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.wiring.DependencyProvider;
 
 import javax.swing.*;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -46,10 +47,10 @@ public class MainWindow {
         ingredientModel = new IngredientTableModel(dependencyProvider.getIngredientRepository());
         recipeModel = new RecipeTableModel(dependencyProvider.getRecipeRepository());
 
-        setLayout(dependencyProvider);
+        setLayout();
     }
 
-    private void setLayout(DependencyProvider dependencyProvider) {
+    private void setLayout() {
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
@@ -57,7 +58,8 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
         frame.setMinimumSize(MINIMUM_SIZE);
 
-        addTabs(dependencyProvider);
+        getContentPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        addTabs();
         addMenus();
 
         frame.setVisible(true);
@@ -67,8 +69,8 @@ public class MainWindow {
         return frame.getGlassPane();
     }
 
-    public static Component getContentPane() {
-        return frame.getContentPane();
+    public static JPanel getContentPane() {
+        return (JPanel) frame.getContentPane();
     }
 
     private void addMenus() {
@@ -108,13 +110,13 @@ public class MainWindow {
         menuBar.add(helpMenu);
     }
 
-    public void addTabs(DependencyProvider dependencyProvider) {
+    public void addTabs() {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Recipes", new RecipeTab());
         tabbedPane.addTab("Categories", new CategoriesTab());
         tabbedPane.addTab("Ingredient", new IngredientsTab());
         tabbedPane.addTab("Units", new UnitsTab());
-        frame.add(tabbedPane, BorderLayout.CENTER);
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
     public static UnitsTableModel getUnitsModel() {

@@ -5,6 +5,8 @@ import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Identifiable;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +39,19 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         return record.map(mapper::mapToModel);
     }
 
+    public Optional<E> findUncommitted(String name, Supplier<ConnectionHandler> connection) {
+        Optional<E> result = Optional.empty();
+        dao.customConnection(connection);
+        try {
+            connection.get().use().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            result = dao.findByName(name).map(mapper::mapToModel);
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
+        dao.defaultConnection();
+        return result;
+    }
+
     @Override
     public int getSize() {
         return entities.size();
@@ -65,7 +80,6 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         entities = fetchAllEntities();
     }
 
-    @Override
     public void uncommitted(E entity, Consumer<E> action, Supplier<ConnectionHandler> connection) {
         try {
             dao.customConnection(connection);

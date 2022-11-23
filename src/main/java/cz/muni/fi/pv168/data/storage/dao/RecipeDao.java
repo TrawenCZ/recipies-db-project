@@ -33,7 +33,11 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         ) {
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
-            statement.setLong(3, entity.categoryId());
+            if (entity.categoryId() == null) {
+                statement.setNull(3, java.sql.Types.NULL);
+            } else {
+                statement.setLong(3, entity.categoryId());
+            }
             statement.setLong(4, entity.portions());
             statement.setLong(5, entity.duration());
             statement.setString(6, entity.instruction());
@@ -142,7 +146,11 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         ) {
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
-            statement.setLong(3, entity.categoryId());
+            if (entity.categoryId() == null) {
+                statement.setNull(3, java.sql.Types.NULL);
+            } else {
+                statement.setLong(3, entity.categoryId());
+            }
             statement.setLong(4, entity.portions());
             statement.setLong(5, entity.duration());
             statement.setString(6, entity.instruction());

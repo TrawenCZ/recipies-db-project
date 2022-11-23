@@ -206,13 +206,7 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
             List<RecipeIngredientEntity> entities = new ArrayList<>();
             while (resultSet.next()) {
-                entities.add(new RecipeIngredientEntity(
-                    resultSet.getLong("id"),
-                    resultSet.getLong("recipeId"),
-                    resultSet.getLong("ingredientId"),
-                    resultSet.getDouble("amount"),
-                    resultSet.getLong("unitId")
-                ));
+                entities.add(ingredientListFromResultSet(resultSet));
             }
             return (entities.size() == 0) ? Optional.empty() : Optional.of(entities);
         } catch (SQLException ex) {

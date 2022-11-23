@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.wiring;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporterImpl;
@@ -11,7 +12,9 @@ import cz.muni.fi.pv168.data.manipulation.services.RecipeService;
 import cz.muni.fi.pv168.data.manipulation.services.Service;
 import cz.muni.fi.pv168.data.manipulation.services.ServiceImpl;
 import cz.muni.fi.pv168.data.storage.dao.*;
+import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
+import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.mapper.*;
 import cz.muni.fi.pv168.data.storage.repository.*;
 import cz.muni.fi.pv168.data.validation.*;
@@ -38,12 +41,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
         this.databaseManager = Objects.requireNonNull(databaseManager);
 
-        Validator<Recipe> recipeValidator = new RecipeValidator();
-        Validator<Category> categoryValidator = new CategoryValidator();
-        Validator<Ingredient> ingredientValidator = new IngredientValidator();
-        Validator<Unit> unitValidator = new UnitValidator();
-
         // repositories
+<<<<<<< src/main/java/cz/muni/fi/pv168/wiring/CommonDependencyProvider.java
         categories = new CategoryRepository(
             new CategoryDao(databaseManager::getConnectionHandler),
             new CategoryMapper(categoryValidator)
@@ -73,6 +72,12 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
             databaseManager::getTransactionHandler
         );
         // databaseManager.initData("test");
+=======
+        categories = newCategoryRepository(null);
+        units = newUnitRepository(null);
+        ingredients = newIngredientRepository(null, units);
+        recipes = newRecipeRepository(null, null, categories, units, ingredients);
+>>>>>>> src/main/java/cz/muni/fi/pv168/wiring/CommonDependencyProvider.java
 
         categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
         unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
@@ -142,5 +147,57 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
     public static JsonImporter getJsonImporter() {
         return new JsonImporterImpl();
+    }
+
+
+    private Supplier<ConnectionHandler> getConnection(Supplier<ConnectionHandler> connection) {
+        return (connection == null) ? databaseManager::getConnectionHandler : connection;
+    }
+
+    private Supplier<TransactionHandler> getTransactions(Supplier<TransactionHandler> transactions) {
+        return (transactions == null) ? databaseManager::getTransactionHandler : transactions;
+    }
+
+    private Repository<Category> newCategoryRepository(Supplier<ConnectionHandler> connection) {
+        return new CategoryRepository(
+            new CategoryDao(getConnection(connection)),
+            new CategoryMapper(new CategoryValidator())
+        );
+    }
+
+    private Repository<Unit> newUnitRepository(Supplier<ConnectionHandler> connection) {
+        var dao = new UnitDao(getConnection(connection));
+        return new UnitRepository(
+            dao,
+            new UnitMapper(new UnitValidator(), dao::findById)
+        );
+    }
+
+
+    private Repository<Ingredient> newIngredientRepository(
+        Supplier<ConnectionHandler> connection,
+        Repository<Unit> unitRepository
+    ) {
+        return new IngredientRepository(
+            new IngredientDao(getConnection(connection)),
+            new IngredientMapper(new IngredientValidator(), unitRepository::findById)
+        );
+    }
+
+    private Repository<Recipe> newRecipeRepository(
+        Supplier<ConnectionHandler> connection,
+        Supplier<TransactionHandler> transactions,
+        Repository<Category> categoryRepository,
+        Repository<Unit> unitRepository,
+        Repository<Ingredient> ingredientRepository
+    ) {
+        var dao = new RecipeDao(getConnection(connection));
+        return new RecipeRepository(
+            dao,
+            new RecipeMapper(new RecipeValidator(), categoryRepository::findById),
+            new RecipeIngredientDao(getConnection(connection)),
+            new RecipeIngredientMapper(unitRepository::findById, ingredientRepository::findById, dao::findById),
+            getTransactions(transactions)
+        );
     }
 }
