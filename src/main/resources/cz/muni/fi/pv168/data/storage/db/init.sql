@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Category
 (
     `id`           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     `name`         VARCHAR(100) NOT NULL UNIQUE,
-    `color`        VARCHAR(20) NOT NULL -- not really sure how to color is saved
+    `color`        CHAR(8) NOT NULL
 );
 
 --
@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS Recipe
 (
     `id`           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     `name`         VARCHAR(100) NOT NULL UNIQUE,
-    `description`  VARCHAR(256) NOT NULL,
+    `description`  VARCHAR(1024) NOT NULL,
     `categoryId`   BIGINT, -- can be null !
     `portions`     BIGINT NOT NULL,
     `duration`     BIGINT NOT NULL,
-    `instruction`  VARCHAR(512) NOT NULL,
+    `instruction`  VARCHAR(2048) NOT NULL,
     FOREIGN KEY (`categoryId`) REFERENCES Category(`id`)
 );
 
