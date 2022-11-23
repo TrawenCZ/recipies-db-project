@@ -111,8 +111,6 @@ final class IngredientDaoTest {
         assertThat(updatedIngredient.name()).isEqualTo(newName);
         assertThat(updatedIngredient.kcalPerUnit()).isEqualTo(newKcalPerUnit);
         assertThat(updatedIngredient.baseUnitId()).isEqualTo(newBaseUnitId);
-
-
     }
 
 }

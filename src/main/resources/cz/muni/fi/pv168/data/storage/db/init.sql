@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS IngredientList
     --
     `amount`       DOUBLE PRECISION NOT NULL,
     `unitId`       BIGINT NOT NULL,
-    FOREIGN KEY (`recipeId`) REFERENCES Recipe(`id`), --ON DELETE CASCADE,
+    FOREIGN KEY (`recipeId`) REFERENCES Recipe(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`ingredientId`) REFERENCES Ingredient(`id`),
     FOREIGN KEY (`unitId`) REFERENCES Unit(`id`)
 );
