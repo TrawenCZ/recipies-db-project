@@ -21,6 +21,8 @@ public interface Repository<M> {
 
     public Optional<M> findByName(String name);
 
+    public Optional<M> findUncommitted(String name, Supplier<ConnectionHandler> connection);
+
     public Optional<M> findByIndex(int index);
 
     public List<M> findAll();

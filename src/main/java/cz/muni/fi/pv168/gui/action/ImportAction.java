@@ -55,8 +55,10 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
                 table.repaint();
             } catch (DataManipulationException e) {
                 showInvalidFormatMessage(e.getMessage());
+                e.printStackTrace();
             } catch (NullPointerException e) {
                 showInvalidFormatMessage();
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -65,7 +67,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
 
     private void showInvalidFormatMessage(String msg) {
         JOptionPane.showMessageDialog(
-            MainWindow.getContentPane(),
+            MainWindow.getGlassPane(),
             """
             Please check that you are trying to import records of the same
             type as the current tab and that the JSON file fits the format.
@@ -82,7 +84,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
 
     private void showNoRowsImportedMessage(int discardedCount) {
         JOptionPane.showMessageDialog(
-            MainWindow.getContentPane(),
+            MainWindow.getGlassPane(),
             "!! Nothing was imported !!" + getAction(discardedCount, "Discarded"),
             "Import success",
             JOptionPane.WARNING_MESSAGE
@@ -95,7 +97,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         message += getAction(-actionCount, "Replaced");
         message += getAction(actionCount, "Discarded");
         JOptionPane.showMessageDialog(
-            MainWindow.getContentPane(),
+            MainWindow.getGlassPane(),
             message,
             "Import success",
             JOptionPane.INFORMATION_MESSAGE

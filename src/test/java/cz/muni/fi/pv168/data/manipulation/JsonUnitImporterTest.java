@@ -7,7 +7,6 @@ import cz.muni.fi.pv168.model.Unit;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.*;

@@ -2,7 +2,6 @@ package cz.muni.fi.pv168.data.manipulation.services;
 
 import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
-import cz.muni.fi.pv168.data.storage.repository.RecipeRepository;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.*;
 
@@ -10,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author Radim Stejskal, Jan Martinek
@@ -29,44 +29,57 @@ public class RecipeService extends ServiceImpl<Recipe> {
         super(recipes, transactions);
         this.categories = Objects.requireNonNull(categories);
         this.ingredients = Objects.requireNonNull(ingredients);
+        this.units = Objects.requireNonNull(units);
     }
 
     @Override
     public int[] saveRecords(Collection<Recipe> records) {
-        var rIngredient = records.stream().map(Recipe::getIngredients).flatMap(List::stream).toList();
-        Collection<Category> categoryRecords = records.stream().map(Recipe::getCategory).toList();
-        Collection<Ingredient> ingredientRecords = rIngredient.stream().map(RecipeIngredient::getIngredient).toList();
-        Collection<Unit> baseUnitRecords = rIngredient.stream().map(RecipeIngredient::getIngredient).map(Ingredient::getUnit).toList();
-        Collection<Unit> unitRecords = rIngredient.stream().map(RecipeIngredient::getUnit).filter(e -> !baseUnitRecords.contains(e)).toList();
+        var rIngredient = records.stream().map(Recipe::getIngredients).flatMap(List::stream).collect(Collectors.toSet());
+        Collection<Category> categoryRecords = records.stream().map(Recipe::getCategory).collect(Collectors.toSet());
+        Collection<Ingredient> ingredientRecords = rIngredient.stream().map(RecipeIngredient::getIngredient).collect(Collectors.toSet());
+        Collection<Unit> baseUnitRecords = rIngredient.stream().map(RecipeIngredient::getIngredient).map(Ingredient::getUnit).collect(Collectors.toSet());
+        Collection<Unit> unitRecords = rIngredient.stream().map(RecipeIngredient::getUnit).filter(e -> !baseUnitRecords.contains(e)).collect(Collectors.toSet());
 
-        Collection<Recipe> exRecipes = getDuplicates(records, repository);
-        Collection<Category> exCategories = getDuplicates(categoryRecords, categories);
-        Collection<Ingredient> exIngredients = getDuplicates(ingredientRecords, ingredients);
-        Collection<Unit> exBaseUnits = getDuplicates(baseUnitRecords, units);
-        Collection<Unit> exUnits = getDuplicates(unitRecords, units);
-
-        int imported = 0;
-        int total = exRecipes.size() + exCategories.size() + exUnits.size() + exBaseUnits.size() + exIngredients.size();
-        boolean replace = (total > 0) ? getDecision() : false;
+        Counter counter = new Counter();
 
         try (var transaction = transactions.get()) {
-            imported += doImport(categoryRecords, exCategories, replace, categories, transaction::connection);
-            imported += doImport(baseUnitRecords, exBaseUnits, replace, units, transaction::connection);
-            imported += doImport(unitRecords, exUnits, replace, units, transaction::connection);
-            imported += doImport(ingredientRecords, exIngredients, replace, ingredients, transaction::connection);
-            imported += doImport(records, exRecipes, replace, repository, transaction::connection);
+            doImport(categoryRecords, counter, categories, transaction::connection);
+            doImport(baseUnitRecords, counter, units, transaction::connection);
+            doImport(unitRecords, counter, units, transaction::connection);
+            ingrImport(ingredientRecords, counter, transaction::connection);
+            recpImport(records, counter, transaction::connection);
             transaction.commit();
         }
-        return (replace)
-            ? new int[]{imported, -total}
-            : new int[]{imported, total};
+        return (counter.doReplace)
+            ? new int[]{counter.imported, -counter.actioned}
+            : new int[]{counter.imported, counter.actioned};
     }
 
-    protected static void create(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncommitted(entity, ((RecipeRepository) repository)::createUncommitted, connection);
+    private void ingrImport(Collection<Ingredient> records, Counter counter, Supplier<ConnectionHandler> connection) {
+        records.forEach(e -> setId(e, connection));
+        super.doImport(records, counter, ingredients, connection);
     }
 
-    protected static void update(Recipe entity, Repository<Recipe> repository, Supplier<ConnectionHandler> connection) {
-        repository.uncommitted(entity, ((RecipeRepository) repository)::updateUncommitted, connection);
+    private void recpImport(Collection<Recipe> records, Counter counter, Supplier<ConnectionHandler> connection) {
+        records.forEach(e -> setId(e, connection));
+        super.doImport(records, counter, repository, connection);
+    }
+
+    private void setId(Unit newEntity, Supplier<ConnectionHandler> connection) {
+        newEntity.setId(units.findUncommitted(newEntity.getName(), connection).get().getId());
+    }
+
+    private void setId(Category newEntity, Supplier<ConnectionHandler> connection) {
+        newEntity.setId(categories.findUncommitted(newEntity.getName(), connection).get().getId());
+    }
+
+    private void setId(Ingredient newEntity, Supplier<ConnectionHandler> connection) {
+        setId(newEntity.getUnit(), connection);
+    }
+
+    private void setId(Recipe newEntity, Supplier<ConnectionHandler> connection) {
+        setId(newEntity.getCategory(), connection);
+        newEntity.getIngredients().forEach(i -> setId(i.getUnit(), connection));
+        newEntity.getIngredients().forEach(i -> setId(i.getIngredient(), connection));
     }
 }

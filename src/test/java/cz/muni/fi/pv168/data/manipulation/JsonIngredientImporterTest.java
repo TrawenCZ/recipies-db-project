@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.data.manipulation;
 
-import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.Unit;
 import org.junit.jupiter.api.Test;

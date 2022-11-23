@@ -49,13 +49,7 @@ public class CategoryDao extends AbstractDao<CategoryEntity> {
 
     @Override
     public Optional<CategoryEntity> findByName(String name) {
-        var sql = """
-                SELECT id,
-                       name,
-                       color
-                    FROM Category
-                    WHERE name = ?
-                """;
+        var sql = "SELECT * FROM Category WHERE name = ?";
 
         try (
                 var connection = connections.get();
@@ -77,12 +71,7 @@ public class CategoryDao extends AbstractDao<CategoryEntity> {
 
     @Override
     public Collection<CategoryEntity> findAll() {
-        var sql = """
-                SELECT id,
-                       name,
-                       color
-                    FROM Category
-                """;
+        var sql = "SELECT * FROM Category";
 
         try (
                 var connection = connections.get();
