@@ -42,42 +42,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         this.databaseManager = Objects.requireNonNull(databaseManager);
 
         // repositories
-<<<<<<< src/main/java/cz/muni/fi/pv168/wiring/CommonDependencyProvider.java
-        categories = new CategoryRepository(
-            new CategoryDao(databaseManager::getConnectionHandler),
-            new CategoryMapper(categoryValidator)
-        );
-
-        var unitDao = new UnitDao(databaseManager::getConnectionHandler);
-
-        units = new UnitRepository(
-            unitDao,
-            new UnitMapper(unitValidator, unitDao::findById)
-        );
-
-
-        ingredients = new IngredientRepository(
-            new IngredientDao(databaseManager::getConnectionHandler),
-            new IngredientMapper(ingredientValidator, units::findById)
-        );
-
-        var recipeDao = new RecipeDao(databaseManager::getConnectionHandler);
-
-        recipes = new RecipeRepository(
-            recipeDao,
-            new RecipeMapper(recipeValidator, categories::findById),
-            new RecipeIngredientDao(databaseManager::getConnectionHandler),
-            new RecipeIngredientMapper(units::findById, ingredients::findById, recipeDao::findById),
-            databaseManager::getConnectionHandler,
-            databaseManager::getTransactionHandler
-        );
-        // databaseManager.initData("test");
-=======
         categories = newCategoryRepository(null);
         units = newUnitRepository(null);
         ingredients = newIngredientRepository(null, units);
         recipes = newRecipeRepository(null, null, categories, units, ingredients);
->>>>>>> src/main/java/cz/muni/fi/pv168/wiring/CommonDependencyProvider.java
 
         categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
         unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
