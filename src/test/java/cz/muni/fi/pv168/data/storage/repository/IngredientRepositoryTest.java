@@ -18,14 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class IngredientRepositoryTest {
     private DatabaseManager databaseManager;
     private Repository<Ingredient> ingredientRepository;
-    private Repository<Unit> unitRepositry;
+    private Repository<Unit> unitRepository;
 
     @BeforeEach
     void setUp() {
         this.databaseManager = DatabaseManager.createTestInstance(true);
         var dependencyProvider = new TestDependencyProvider(databaseManager);
         this.ingredientRepository = dependencyProvider.getIngredientRepository();
-        this.unitRepositry = dependencyProvider.getUnitRepository();
+        this.unitRepository = dependencyProvider.getUnitRepository();
     }
 
     @AfterEach
@@ -37,7 +37,7 @@ final class IngredientRepositoryTest {
     void createNewIngredient() {
         final String name = "new ingredient";
         final double kcal = 150.0;
-        final Unit unit = unitRepositry.findByIndex(unitRepositry.getSize() - 1).orElseThrow();
+        final Unit unit = unitRepository.findByIndex(unitRepository.getSize() - 1).orElseThrow();
         Ingredient ingredientToCreate = new Ingredient(name, kcal, unit);
         ingredientRepository.create(ingredientToCreate);
 
@@ -49,7 +49,6 @@ final class IngredientRepositoryTest {
         assertThat(storedIngredient.getName()).isEqualTo(ingredientToCreate.getName());
         assertThat(storedIngredient.getKcal()).isEqualTo(ingredientToCreate.getKcal());
         assertThat(storedIngredient.getUnit()).isEqualTo(ingredientToCreate.getUnit());
-
     }
 
     @Test
@@ -102,7 +101,7 @@ final class IngredientRepositoryTest {
         assertThat(storedIngredient.getId()).isNotNull();
         assertThat(storedIngredient.getName()).isEqualTo("vejce");
         assertThat(storedIngredient.getKcal()).isEqualTo(151.0);
-        assertThat(storedIngredient.getUnit()).isEqualTo(unitRepositry.findByName("pc(s)").orElseThrow());
+        assertThat(storedIngredient.getUnit()).isEqualTo(unitRepository.findByName("pc(s)").orElseThrow());
 
     }
 
@@ -124,7 +123,7 @@ final class IngredientRepositoryTest {
 
         ingredient.setName("update ingredient name");
         ingredient.setKcal(1333.42);
-        ingredient.setUnit(unitRepositry.findByName("ml").orElseThrow());
+        ingredient.setUnit(unitRepository.findByName("ml").orElseThrow());
         ingredientRepository.update(ingredient);
 
         assertThat(ingredientRepository.findByName("jahody")).isEmpty();
@@ -133,7 +132,7 @@ final class IngredientRepositoryTest {
         assertThat(updatedIngredient.getId()).isEqualTo(ingredient.getId());
         assertThat(updatedIngredient.getName()).isEqualTo("update ingredient name");
         assertThat(updatedIngredient.getKcal()).isEqualTo(1333.42);
-        assertThat(updatedIngredient.getUnit()).isEqualTo(unitRepositry.findByName("ml").orElseThrow());
+        assertThat(updatedIngredient.getUnit()).isEqualTo(unitRepository.findByName("ml").orElseThrow());
     }
 
     @Test
