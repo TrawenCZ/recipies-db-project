@@ -89,10 +89,13 @@ final class CategoryRepositoryTest {
 
     @Test
     void findCategoryByName() {
-        Optional<Category> storedCategory = categoryRepository.
+        Optional<Category> storedCategoryOpt = categoryRepository.
                 findByName("vegan");
 
-        assertThat(storedCategory).isPresent();
+        assertThat(storedCategoryOpt).isPresent();
+        var storedCategory = storedCategoryOpt.orElseThrow();
+        assertThat(storedCategory.getName()).isEqualTo("vegan");
+        assertThat(storedCategory.getColor()).isEqualTo(new Color(0x287800));
     }
 
     @Test
@@ -112,12 +115,15 @@ final class CategoryRepositoryTest {
                 .orElseThrow();
 
         category.setName("Updated Vegan CATEGORY");
+        category.setColor(new Color(0xFFFFFF));
 
         categoryRepository.update(category);
         assertThat(categoryRepository.findByName("vegan")).isEmpty();
         Category updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
 
         assertThat(updatedCategory.getName()).isEqualTo("Updated Vegan CATEGORY");
+        assertThat(updatedCategory.getColor()).isEqualTo(new Color(0xFFFFFF));
+
     }
 
     @Test
