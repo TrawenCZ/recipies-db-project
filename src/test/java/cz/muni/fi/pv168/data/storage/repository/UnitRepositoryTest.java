@@ -129,8 +129,6 @@ final class UnitRepositoryTest {
         assertThat(updatedUnit.getName()).isEqualTo("update unit name");
         assertThat(updatedUnit.getValueInBaseUnit()).isEqualTo(unit.getValueInBaseUnit());
         assertThat(updatedUnit.getBaseUnit()).isEqualTo(unit.getBaseUnit());
-
-
     }
 
     @Test
@@ -160,5 +158,4 @@ final class UnitRepositoryTest {
             }
         }
     }
-
 }
