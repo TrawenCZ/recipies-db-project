@@ -31,7 +31,7 @@ public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
             source.getId(),
             source.getName(),
             source.getDescription(),
-            (source.getCategory() == null) ? null : source.getCategory().getId(),
+            (source.getCategory().equals(Category.UNCATEGORIZED)) ? null : source.getCategory().getId(),
             source.getPortions(),
             source.getRequiredTime(),
             source.getInstructions()
@@ -40,7 +40,10 @@ public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
 
     @Override
     public Recipe mapToModel(RecipeEntity entity) {
-        Category category = categorySupplier.get(entity.categoryId()).orElseThrow();
+        Category category = Category.UNCATEGORIZED;
+        if (entity.categoryId() != 0) {
+            category = categorySupplier.get(entity.categoryId()).orElseThrow();
+        }
 
         return new Recipe(
             entity.id(),
