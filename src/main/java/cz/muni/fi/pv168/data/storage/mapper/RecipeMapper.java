@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.data.storage.mapper;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,7 +42,7 @@ public class RecipeMapper implements EntityMapper<RecipeEntity, Recipe> {
     @Override
     public Recipe mapToModel(RecipeEntity entity) {
         Category category = Category.UNCATEGORIZED;
-        if (entity.categoryId() != 0) {
+        if (entity.categoryId() != Types.NULL) {
             category = categorySupplier.get(entity.categoryId()).orElseThrow();
         }
 
