@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  * Database manipulation service. Handles bulk save and get.
@@ -36,6 +37,11 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
     public ServiceImpl(Repository<M> repository, Supplier<TransactionHandler> transactions) {
         this.transactions = Objects.requireNonNull(transactions);
         this.repository = Objects.requireNonNull(repository);
+    }
+
+    @Override
+    public Collection<M> findAll() {
+        return repository.findAll();
     }
 
     @Override
@@ -61,6 +67,11 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
             : new int[]{counter.imported, counter.actioned};
     }
 
+    @Override
+    public Optional<M> findRecordByName(String name) {
+        return repository.findByName(name);
+    }
+
     protected <NI extends Nameable & Identifiable> void doImport(
         Collection<NI> records,
         Counter counter,
@@ -73,6 +84,9 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
                 create(record, repository, connection);
                 counter.imported++;
             } else {
+                if (found.get().equals(record)) {
+                    continue;
+                }
                 if (counter.actioned == 0) counter.doReplace = getDecision();
                 if (counter.doReplace) {
                     record.setId(found.get().getId());
@@ -94,7 +108,7 @@ public class ServiceImpl<M extends Nameable & Identifiable> implements Service<M
     protected static boolean getDecision() {
         String[] options = {"Replace all", "Skip all", "Cancel"};
         int n = JOptionPane.showOptionDialog(
-            MainWindow.getGlassPane(),
+            new JFrame(),
             "Duplicates were found during import! Please select an action:",
             "Import error",
             JOptionPane.YES_NO_CANCEL_OPTION,

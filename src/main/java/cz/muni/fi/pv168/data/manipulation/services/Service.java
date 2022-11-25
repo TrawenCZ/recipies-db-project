@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.data.manipulation.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a service for any model
@@ -28,4 +29,8 @@ public interface Service<M> {
      * @return int[2] array: [0] => imported, [1] => (-)replaced/(+)discarded
      */
     public int[] saveRecords(Collection<M> records);
+
+    public Optional<M> findRecordByName(String name);
+
+    public Collection<M> findAll();
 }
