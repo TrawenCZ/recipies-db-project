@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.data.storage.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,6 +41,20 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         this.recipeIngredientMapper = Objects.requireNonNull(recipeIngredientMapper);
         this.transactions = Objects.requireNonNull(transactions);
         refresh();
+    }
+
+    @Override
+    public Optional<Recipe> findById(long id) {
+        var record = dao.findById(id).map(mapper::mapToModel);
+        if (record.isEmpty()) return Optional.empty();
+        return Optional.of(fetchIngredients(record.get()));
+    }
+
+    @Override
+    public Optional<Recipe> findByName(String name) {
+        var record = dao.findByName(name).map(mapper::mapToModel);
+        if (record.isEmpty()) return Optional.empty();
+        return Optional.of(fetchIngredients(record.get()));
     }
 
     @Override

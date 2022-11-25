@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.data.manipulation.importers;
 
 import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
+import cz.muni.fi.pv168.data.storage.repository.RecipeRepository;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.*;
 
@@ -75,13 +76,13 @@ public class RecipeImporter extends ObjectImporter<Recipe> {
     private void doRecipeCreate(Recipe recipe) {
         doCategoryImport(recipe.getCategory());
         doIngredientsImport(recipe.getIngredients());
-        repository.create(recipe);
+        ((RecipeRepository) repository).createUncommitted(recipe);
     }
 
     private void doRecipeUpdate(Recipe recipe) {
         doCategoryImport(recipe.getCategory());
         doIngredientsImport(recipe.getIngredients());
-        repository.update(recipe);
+        ((RecipeRepository) repository).updateUncommitted(recipe);
     }
 
     private void doCategoryImport(Category category) {
