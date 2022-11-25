@@ -8,7 +8,9 @@ import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 
+import java.sql.Connection;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -48,7 +50,7 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
         Supplier<TransactionHandler> transactions
     ) {
         this.transactions = Objects.requireNonNull(transactions);
-        this.repositories = Objects.requireNonNull(repositories);
+        this.repositories = repositories;
     }
 
     /**
@@ -61,7 +63,7 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
      */
     public int[] saveRecords(Collection<M> records) {
         counter = new Counter();
-        try (var transaction = transactions.get()) {
+        try (var transaction = setupTransaction()) {
             var repository = repositories.apply(transaction::connection);
             doImport(
                 records,
@@ -74,6 +76,14 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
         return (counter.doReplace)
             ? new int[]{counter.imported, -counter.actioned}
             : new int[]{counter.imported, counter.actioned};
+    }
+
+    protected <N extends Nameable & Identifiable> void doImport(N record, Repository<N> repository) {
+        doImport(List.of(record), repository);
+    }
+
+    protected <N extends Nameable & Identifiable> void doImport(Collection<N> records, Repository<N> repository) {
+        doImport(records, repository::findByName, repository::create, repository::update);
     }
 
     protected <N extends Nameable & Identifiable> void doImport(
@@ -99,7 +109,19 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
         }
     }
 
-    protected static boolean getDecision() {
+    protected TransactionHandler setupTransaction() {
+        TransactionHandler transaction = null;
+        try {
+            transaction = transactions.get();
+            transaction.connection().use().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: log could not setup transaction read
+        }
+        return transaction;
+    }
+
+    private static boolean getDecision() {
         String[] options = {"Replace all", "Skip all", "Cancel"};
         int n = JOptionPane.showOptionDialog(
             MainWindow.getGlassPane(),

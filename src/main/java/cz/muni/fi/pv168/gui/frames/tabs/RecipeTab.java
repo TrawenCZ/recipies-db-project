@@ -75,6 +75,10 @@ public final class RecipeTab extends AbstractTab {
                 MainWindow.getDependencies().getUnitRepository().refresh();
                 MainWindow.getDependencies().getIngredientRepository().refresh();
                 MainWindow.getDependencies().getRecipeRepository().refresh();
+                MainWindow.getCategoryModel().fireTableDataChanged();
+                MainWindow.getUnitsModel().fireTableDataChanged();
+                MainWindow.getIngredientModel().fireTableDataChanged();
+                MainWindow.getRecipeModel().fireTableDataChanged();
             }
         );
     }

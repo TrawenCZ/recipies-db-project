@@ -74,12 +74,17 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
 
     @Override
     public void update(E entity) {
-        int index = entities.indexOf(entity);
+        int index = 0;
+        for (var e : entities) {
+            if (e.getId() == entity.getId()) break;
+            index++;
+        }
+        final int i = index;
         Stream.of(entity)
               .map(mapper::mapToEntity)
               .map(dao::update)
               .map(mapper::mapToModel)
-              .forEach(e -> entities.set(index, e));
+              .forEach(e -> entities.set(i, e));
     }
 
     @Override

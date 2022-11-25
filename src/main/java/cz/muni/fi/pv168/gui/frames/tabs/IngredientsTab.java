@@ -35,6 +35,8 @@ public final class IngredientsTab extends AbstractTab {
             () -> {
                 MainWindow.getDependencies().getUnitRepository().refresh();
                 MainWindow.getDependencies().getIngredientRepository().refresh();
+                MainWindow.getUnitsModel().fireTableDataChanged();
+                MainWindow.getIngredientModel().fireTableDataChanged();
             }
         );
     }

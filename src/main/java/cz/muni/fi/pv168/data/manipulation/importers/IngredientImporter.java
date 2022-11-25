@@ -6,8 +6,9 @@ import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.*;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
  */
 public final class IngredientImporter extends ObjectImporter<Ingredient> {
 
+    private final BiFunction<Supplier<ConnectionHandler>, Repository<Unit>, Repository<Ingredient>> ingredients;
     private final Function<Supplier<ConnectionHandler>, Repository<Unit>> units;
 
     private Repository<Ingredient> ingrRepository;
@@ -30,11 +32,12 @@ public final class IngredientImporter extends ObjectImporter<Ingredient> {
      * @param transactions transaction supplier
      */
     public IngredientImporter(
-        Function<Supplier<ConnectionHandler>, Repository<Ingredient>> ingredients,
         Function<Supplier<ConnectionHandler>, Repository<Unit>> units,
+        BiFunction<Supplier<ConnectionHandler>, Repository<Unit>, Repository<Ingredient>> ingredients,
         Supplier<TransactionHandler> transactions
     ) {
-        super(ingredients, transactions);
+        super(null, transactions);
+        this.ingredients = Objects.requireNonNull(ingredients);
         this.units = Objects.requireNonNull(units);
     }
 
@@ -42,9 +45,9 @@ public final class IngredientImporter extends ObjectImporter<Ingredient> {
     public int[] saveRecords(Collection<Ingredient> records) {
         counter = new Counter();
 
-        try (var transaction = transactions.get()) {
-            ingrRepository = repositories.apply(transaction::connection);
+        try (var transaction = setupTransaction()) {
             unitRepository = units.apply(transaction::connection);
+            ingrRepository = ingredients.apply(transaction::connection, unitRepository);
             doImport(
                 records,
                 ingrRepository::findByName,
@@ -59,30 +62,16 @@ public final class IngredientImporter extends ObjectImporter<Ingredient> {
     }
 
     private void doIngredientCreate(Ingredient ingredient) {
-        doUnitImport(ingredient.getUnit());
-        ingrRepository.create(ingredient);
+        doIngredientAction(ingredient, ingrRepository::create);
     }
 
     private void doIngredientUpdate(Ingredient ingredient) {
-        doUnitImport(ingredient.getUnit());
-        ingrRepository.update(ingredient);
+        doIngredientAction(ingredient, ingrRepository::update);
     }
 
-    private void doUnitImport(Unit unit) {
-        doImport(
-            List.of(unit),
-            unitRepository::findByName,
-            unitRepository::create,
-            unitRepository::update
-        );
+    private void doIngredientAction(Ingredient ingredient, Consumer<Ingredient> action) {
+        doImport(ingredient.getUnit(), unitRepository);
+        ingredient.getUnit().setId(unitRepository.findByName(ingredient.getUnit().getName()).orElseThrow().getId());
+        action.accept(ingredient);
     }
-
-    // private void ingrImport(Collection<Ingredient> records, Counter counter, Supplier<ConnectionHandler> connection) {
-    //     records.forEach(e -> setId(e.getUnit(), connection));
-    //     super.doImport(records, counter, repository, connection);
-    // }
-
-    // private void setId(Unit newEntity, Supplier<ConnectionHandler> connection) {
-    //     newEntity.setId(units.findUncommitted(newEntity.getName(), connection).get().getId());
-    // }
 }

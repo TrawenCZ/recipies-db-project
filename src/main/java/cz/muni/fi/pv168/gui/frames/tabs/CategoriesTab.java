@@ -27,7 +27,10 @@ public final class CategoriesTab extends AbstractTab {
         return new ImportAction<>(
             MainWindow.getDependencies().getCategoryImporter(),
             Category.class,
-            () -> MainWindow.getDependencies().getCategoryRepository().refresh()
+            () -> {
+                MainWindow.getDependencies().getCategoryRepository().refresh();
+                MainWindow.getCategoryModel().fireTableDataChanged();
+            }
         );
     }
 

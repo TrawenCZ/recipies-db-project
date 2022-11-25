@@ -86,8 +86,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     @Override
     public ObjectImporter<Ingredient> getIngredientImporter() {
         return new IngredientImporter(
-            this::newIngredientRepository,
             this::newUnitRepository,
+            this::newIngredientRepository,
             databaseManager::getTransactionHandler
         );
     }
@@ -95,10 +95,10 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     @Override
     public ObjectImporter<Recipe> getRecipeImporter() {
         return new RecipeImporter(
-            this::newRecipeRepository,
             this::newCategoryRepository,
             this::newUnitRepository,
             this::newIngredientRepository,
+            this::newRecipeRepository,
             databaseManager::getTransactionHandler
         );
     }
@@ -126,10 +126,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         );
     }
 
-    private Repository<Ingredient> newIngredientRepository(Supplier<ConnectionHandler> connection) {
-        return newIngredientRepository(connection, newUnitRepository(connection));
-    }
-
     private Repository<Ingredient> newIngredientRepository(
         Supplier<ConnectionHandler> connection,
         Repository<Unit> unitRepository
@@ -140,13 +136,18 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         );
     }
 
-    private Repository<Recipe> newRecipeRepository(Supplier<ConnectionHandler> connection) {
+    private Repository<Recipe> newRecipeRepository(
+        Supplier<ConnectionHandler> connection,
+        Repository<Category> categoryRepository,
+        Repository<Unit> unitRepository,
+        Repository<Ingredient> ingredientRepository
+    ) {
         return newRecipeRepository(
             connection,
             databaseManager::getTransactionHandler,
-            newCategoryRepository(connection),
-            newUnitRepository(connection),
-            newIngredientRepository(connection)
+            categoryRepository,
+            unitRepository,
+            ingredientRepository
         );
     }
 

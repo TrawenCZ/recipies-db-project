@@ -33,7 +33,10 @@ public final class UnitsTab extends AbstractTab {
         return new ImportAction<>(
             MainWindow.getDependencies().getUnitImporter(),
             Unit.class,
-            () -> MainWindow.getDependencies().getUnitRepository().refresh()
+            () -> {
+                MainWindow.getDependencies().getUnitRepository().refresh();
+                MainWindow.getUnitsModel().fireTableDataChanged();
+            }
         );
     }
 
