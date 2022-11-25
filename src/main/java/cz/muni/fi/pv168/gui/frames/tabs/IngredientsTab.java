@@ -30,19 +30,18 @@ public final class IngredientsTab extends AbstractTab {
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getIngredientService(),
-            Ingredient.class
+            MainWindow.getDependencies().getIngredientImporter(),
+            Ingredient.class,
+            () -> {
+                MainWindow.getDependencies().getUnitRepository().refresh();
+                MainWindow.getDependencies().getIngredientRepository().refresh();
+            }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getIngredientService(),
-                "ingredients"
-        );
+        return new ExportAction<>(table, MainWindow.getIngredientModel());
     }
 
     @Override

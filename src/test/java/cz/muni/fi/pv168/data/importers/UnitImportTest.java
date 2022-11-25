@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.data.service;
+package cz.muni.fi.pv168.data.importers;
 
-import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.importers.ObjectImporter;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
@@ -13,15 +13,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 
-public class UnitServiceTest {
+public class UnitImportTest {
     private DatabaseManager databaseManager;
-    private Service<Unit> unitService;
+    private ObjectImporter<Unit> unitService;
 
     @BeforeEach
     void setUp() {
         this.databaseManager = DatabaseManager.createTestInstance(true);
         var dependencyProvider = new TestDependencyProvider(databaseManager);
-        this.unitService = dependencyProvider.getUnitService();
+        this.unitService = dependencyProvider.getUnitImporter();
     }
 
     @AfterEach

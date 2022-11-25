@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.data.service;
+package cz.muni.fi.pv168.data.importers;
 
-import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.importers.ObjectImporter;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
 import cz.muni.fi.pv168.model.Category;
@@ -19,15 +19,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RecipeServiceTest {
+public class RecipeImportTest {
     private DatabaseManager databaseManager;
-    private Service<Recipe> recipeService;
+    private ObjectImporter<Recipe> recipeImporter;
 
     @BeforeEach
     void setUp() {
         this.databaseManager = DatabaseManager.createTestInstance(true);
         var dependencyProvider = new TestDependencyProvider(databaseManager);
-        this.recipeService = dependencyProvider.getRecipeService();
+        this.recipeImporter = dependencyProvider.getRecipeImporter();
     }
 
     @AfterEach

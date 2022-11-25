@@ -209,7 +209,6 @@ public abstract class AbstractTab extends JPanel {
         for (int selectedRow : table.getSelectedRows()) {
             String selectedName = table.getAbstractModel().getEntity(selectedRow).getName();
             if (!Validator.isUnique(model, nameGetter, selectedName)) {
-                // TODO: change text
                 showErrorDialog("Item of name '" + selectedName + "' is in use '" + model + " table'!  You have to delete it first!", DELETING_ERR_TITLE);
                 return false;
             }

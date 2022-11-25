@@ -25,19 +25,15 @@ public final class CategoriesTab extends AbstractTab {
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getCategoryService(),
-            Category.class
+            MainWindow.getDependencies().getCategoryImporter(),
+            Category.class,
+            () -> MainWindow.getDependencies().getCategoryRepository().refresh()
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getCategoryService(),
-                "categories"
-        );
+        return new ExportAction<>(table, MainWindow.getCategoryModel());
     }
 
     @Override

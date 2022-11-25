@@ -43,21 +43,9 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     }
 
     @Override
-    public void uncommitted(Recipe entity, Consumer<Recipe> action, Supplier<ConnectionHandler> connection) {
-        try {
-            recipeIngredientDao.customConnection(connection);
-            dao.customConnection(connection);
-            action.accept(entity);
-        } finally {
-            recipeIngredientDao.defaultConnection();
-            dao.defaultConnection();
-        }
-    }
-
-    @Override
     public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
-            uncommitted(entity, this::createUncommitted, transaction::connection);
+            byConnection(entity, this::createUncommitted, transaction::connection);
             transaction.commit();
         }
     }
@@ -75,7 +63,7 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
-            uncommitted(entity, this::updateUncommitted, transaction::connection);
+            byConnection(entity, this::updateUncommitted, transaction::connection);
             transaction.commit();
         }
     }
@@ -150,5 +138,16 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
             .map(recipeIngredientMapper::mapToEntity)
             .forEach(function::apply);
         return recipe;
+    }
+
+    private void byConnection(Recipe recipe, Consumer<Recipe> consumer, Supplier<ConnectionHandler> connection) {
+        try {
+            dao.customConnection(connection);
+            recipeIngredientDao.customConnection(connection);
+            consumer.accept(recipe);
+        } finally {
+            dao.defaultConnection();
+            recipeIngredientDao.defaultConnection();
+        }
     }
 }
