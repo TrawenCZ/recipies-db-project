@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -34,7 +35,7 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
             if (entity.categoryId() == null) {
-                statement.setNull(3, java.sql.Types.NULL);
+                statement.setNull(3, Types.BIGINT);
             } else {
                 statement.setLong(3, entity.categoryId());
             }

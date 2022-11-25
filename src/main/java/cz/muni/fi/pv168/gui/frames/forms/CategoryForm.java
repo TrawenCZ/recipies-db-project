@@ -60,6 +60,13 @@ public class CategoryForm extends AbstractForm {
         if (!verifyName(tableModel, category, nameInput.getText())) {
             return false;
         }
+        if (nameInput.getText().equalsIgnoreCase("uncategorized")) {
+            showErrorDialog(
+                    "Name cannot be '" + nameInput.getText() + "' because it's reserved for recipes without Category.",
+                    "Invalid name"
+            );
+            return false;
+        }
 
         var newColor = new Color(colorInput.getColor().getRGB());
 

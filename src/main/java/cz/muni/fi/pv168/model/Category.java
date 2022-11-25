@@ -17,6 +17,8 @@ public class Category implements Colorable, Nameable, Identifiable {
     private String name;
     private Color color;
 
+    public static Category UNCATEGORIZED = new Category("Uncategorized", new Color(255,255,255));
+
     /**
      * Serialized constructor, accessible to mapper via reflection. Takes color as an rgb-hex
      * string instead of a standalone color object.

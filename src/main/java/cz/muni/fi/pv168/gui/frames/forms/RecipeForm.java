@@ -11,6 +11,7 @@ import cz.muni.fi.pv168.model.*;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -263,7 +264,9 @@ public class RecipeForm extends AbstractForm {
 
     private Category[] getAllCategories() {
         List<Category> categories = MainWindow.getCategoryModel().getRepository().findAll();
-        return categories.toArray(new Category[0]);
+        List<Category> categoriesWithUncategorized = new ArrayList<>(categories);
+        categoriesWithUncategorized.add(Category.UNCATEGORIZED);
+        return categoriesWithUncategorized.toArray(new Category[0]);
     }
 
     protected void setIngredients(Recipe recipe, Function<RecipeIngredient, ?> constructor) {
