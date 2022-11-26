@@ -29,7 +29,6 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         if (doRefresh) this.refresh();
     }
 
-
     @Override
     public int getSize() {
         return entities.size();

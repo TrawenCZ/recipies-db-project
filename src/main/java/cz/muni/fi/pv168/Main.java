@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168;
 
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
+import cz.muni.fi.pv168.data.validation.ValidationException;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.resources.Icons;
 
@@ -29,7 +30,7 @@ public class Main {
         try {
             final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
             SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
-        } catch (NoSuchElementException e) {
+        } catch (ValidationException|NoSuchElementException e) {
             e.printStackTrace();
             goNuclear();
         }

@@ -158,12 +158,11 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         Repository<Unit> unitRepository,
         Repository<Ingredient> ingredientRepository
     ) {
-        var dao = new RecipeDao(getConnection(connection));
         return new RecipeRepository(
-            dao,
+            new RecipeDao(getConnection(connection)),
             new RecipeMapper(new RecipeValidator(), categoryRepository::findById),
             new RecipeIngredientDao(getConnection(connection)),
-            new RecipeIngredientMapper(unitRepository::findById, ingredientRepository::findById, dao::findById),
+            new RecipeIngredientMapper(unitRepository::findById, ingredientRepository::findById),
             getTransactions(transactions)
         );
     }
