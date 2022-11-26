@@ -39,7 +39,7 @@ public class ImportAction<T extends Nameable & Identifiable> extends AbstractAct
     @Override
     public void actionPerformed(ActionEvent event) {
         var fileChooser = new JsonFileChooser(false, true);
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(MainWindow.getContentPane()) == JFileChooser.APPROVE_OPTION) {
             try {
                 var records = JSONImporter.loadEntities(
                     fileChooser.getSelectedFile().getAbsolutePath(),
