@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.data.storage.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import java.util.stream.Stream;
 
 import cz.muni.fi.pv168.data.storage.dao.RecipeDao;
 import cz.muni.fi.pv168.data.storage.dao.RecipeIngredientDao;
-import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
 import cz.muni.fi.pv168.data.storage.entity.RecipeIngredientEntity;
@@ -45,7 +43,9 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
-            byConnection(entity, this::createUncommitted, transaction::connection);
+            dao.customConnection(transaction::connection);
+            recipeIngredientDao.customConnection(transaction::connection);
+            createUncommitted(entity);
             transaction.commit();
         }
     }
@@ -63,7 +63,9 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
-            byConnection(entity, this::updateUncommitted, transaction::connection);
+            dao.customConnection(transaction::connection);
+            recipeIngredientDao.customConnection(transaction::connection);
+            updateUncommitted(entity);
             transaction.commit();
         }
     }
@@ -89,7 +91,11 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
             .map(dao::update)
             .map(mapper::mapToModel)
             .map(e -> storeIngredients(toUpdate, e, recipeIngredientDao::update))
-            .map(e -> storeIngredients(toCreate, e, recipeIngredientDao::create));
+            .map(e -> storeIngredients(toCreate, e, recipeIngredientDao::create))
+            .forEach(e -> {
+                fetchIngredients(e);
+                entities.set(getIndex(entity), e);
+            });
     }
 
     @Override
@@ -143,16 +149,5 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
             .map(recipeIngredientMapper::mapToEntity)
             .forEach(function::apply);
         return recipe;
-    }
-
-    private void byConnection(Recipe recipe, Consumer<Recipe> consumer, Supplier<ConnectionHandler> connection) {
-        try {
-            dao.customConnection(connection);
-            recipeIngredientDao.customConnection(connection);
-            consumer.accept(recipe);
-        } finally {
-            dao.defaultConnection();
-            recipeIngredientDao.defaultConnection();
-        }
     }
 }
