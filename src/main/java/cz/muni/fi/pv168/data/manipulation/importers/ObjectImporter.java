@@ -65,12 +65,7 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
         counter = new Counter();
         try (var transaction = setupTransaction()) {
             var repository = repositories.apply(transaction::connection);
-            doImport(
-                records,
-                repository::findByName,
-                repository::create,
-                repository::update
-            );
+            doImport(records, repository);
             transaction.commit();
         }
         return (counter.doReplace)
