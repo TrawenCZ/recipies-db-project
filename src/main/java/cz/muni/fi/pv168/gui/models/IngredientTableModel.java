@@ -14,20 +14,13 @@ import cz.muni.fi.pv168.wiring.Supported;
  */
 public class IngredientTableModel extends AbstractModel<Ingredient> {
 
-    private final Repository<Ingredient> ingredients;
-
     public IngredientTableModel(Repository<Ingredient> ingredients) {
         super(List.of(
             Column.readonly("Name", String.class, Ingredient::getName, 4),
             Column.readonly("Kcal in 1U", Double.class, Ingredient::getKcal, 2),
-            Column.readonly("Unit", Unit.class, Ingredient::getUnit, 4)
-        ));
-        this.ingredients = ingredients;
-    }
-
-    @Override
-    public Repository<Ingredient> getRepository() {
-        return ingredients;
+            Column.readonly("Unit", Unit.class, Ingredient::getUnit, 4)),
+            ingredients
+        );
     }
 
     /**

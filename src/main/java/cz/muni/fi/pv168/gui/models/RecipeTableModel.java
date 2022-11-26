@@ -14,8 +14,6 @@ import cz.muni.fi.pv168.wiring.Supported;
  */
 public class RecipeTableModel extends AbstractModel<Recipe> {
 
-    private final Repository<Recipe> recipes;
-
     public RecipeTableModel(Repository<Recipe> recipes) {
         super(List.of(
             Column.readonly("Name", String.class, Recipe::getName, 4),
@@ -23,14 +21,9 @@ public class RecipeTableModel extends AbstractModel<Recipe> {
             Column.readonly("Time required (minutes)", Integer.class, Recipe::getRequiredTime, 2),
             Column.readonly("Portions", Integer.class, Recipe::getPortions, 2),
             Column.readonly("Description", String.class, Recipe::getDescription, 4),
-            Column.readonly("Ingredients", List.class, Recipe::getIngredients, null)
-        ));
-        this.recipes = recipes;
-    }
-
-    @Override
-    public Repository<Recipe> getRepository() {
-        return recipes;
+            Column.readonly("Ingredients", List.class, Recipe::getIngredients, null)),
+            recipes
+        );
     }
 
     @Override

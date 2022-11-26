@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.data.storage.repository;
 import cz.muni.fi.pv168.data.storage.dao.DataAccessObject;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Identifiable;
+import cz.muni.fi.pv168.model.Nameable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E extends Identifiable> implements Repository<E> {
+public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E extends Identifiable & Nameable> implements Repository<E> {
 
     protected final D dao;
     protected final EntityMapper<EE, E> mapper;
@@ -36,14 +37,12 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
 
     @Override
     public Optional<E> findById(long id) {
-        Optional<EE> record = dao.findById(id);
-        return record.map(mapper::mapToModel);
+        return entities.stream().dropWhile(e -> !Objects.equals(e.getId(), id)).findFirst();
     }
 
     @Override
     public Optional<E> findByName(String name) {
-        Optional<EE> record = dao.findByName(name);
-        return record.map(mapper::mapToModel);
+        return entities.stream().dropWhile(e -> !Objects.equals(e.getName(), name)).findFirst();
     }
 
     @Override

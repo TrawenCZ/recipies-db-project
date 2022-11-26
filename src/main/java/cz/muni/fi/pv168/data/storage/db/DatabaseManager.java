@@ -53,7 +53,6 @@ public final class DatabaseManager {
     }
 
     public void load() {
-        this.destroySchema();
         this.initSchema();
         try {
             sqlFileExecutor.executeSelect("verify_columns.sql");

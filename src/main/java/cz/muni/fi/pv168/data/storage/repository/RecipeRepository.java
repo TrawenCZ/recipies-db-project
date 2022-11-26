@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.data.storage.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -41,20 +40,6 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         this.recipeIngredientMapper = Objects.requireNonNull(recipeIngredientMapper);
         this.transactions = Objects.requireNonNull(transactions);
         refresh();
-    }
-
-    @Override
-    public Optional<Recipe> findById(long id) {
-        var record = dao.findById(id).map(mapper::mapToModel);
-        if (record.isEmpty()) return Optional.empty();
-        return Optional.of(fetchIngredients(record.get()));
-    }
-
-    @Override
-    public Optional<Recipe> findByName(String name) {
-        var record = dao.findByName(name).map(mapper::mapToModel);
-        if (record.isEmpty()) return Optional.empty();
-        return Optional.of(fetchIngredients(record.get()));
     }
 
     @Override
@@ -108,17 +93,22 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     }
 
     @Override
-    protected void deleteEntityByIndex(int index) {
-        var id = entities.get(index).getId();
-        try (var transaction = transactions.get()) {
-            dao.deleteById(id);
-            transaction.commit();
-        }
+    public String toString() {
+        return Supported.RECIPE;
     }
 
     @Override
-    public String toString() {
-        return Supported.RECIPE;
+    protected void deleteEntityByIndex(int index) {
+        var id = entities.get(index).getId();
+        try (var transaction = transactions.get()) {
+            recipeIngredientDao.customConnection(transaction::connection);
+            dao.customConnection(transaction::connection);
+            dao.deleteById(id);
+            transaction.commit();
+        } finally {
+            recipeIngredientDao.defaultConnection();
+            dao.defaultConnection();
+        }
     }
 
     @Override
