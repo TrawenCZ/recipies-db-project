@@ -32,22 +32,6 @@ final class CategoryRepositoryTest {
     }
 
     @Test
-    void createNewCategory() {
-        final var name = "Staročeská kuchyně";
-        final var color = new Color(0xEEEE11);
-        Category categoryToCreate = new Category(name, color);
-        categoryRepository.create(categoryToCreate);
-
-        Category storedCategory = categoryRepository
-                .findByIndex(categoryRepository.getSize() - 1)
-                .orElseThrow();
-
-        assertThat(storedCategory.getName()).isEqualTo("Staročeská kuchyně");
-        assertThat(storedCategory.getColor()).isEqualTo(color);
-        assertThat(storedCategory.getId()).isNotNull();
-    }
-
-    @Test
     void listAllTestingCategories() {
         List<Category> categories = categoryRepository
                 .findAll();
@@ -107,6 +91,39 @@ final class CategoryRepositoryTest {
     }
 
     @Test
+    void createCategory() {
+        final var name = "Staročeská kuchyně";
+        final var color = new Color(0xEEEE11);
+        Category categoryToCreate = new Category(name, color);
+        categoryRepository.create(categoryToCreate);
+
+        Category storedCategory = categoryRepository
+                .findByIndex(categoryRepository.getSize() - 1)
+                .orElseThrow();
+
+        assertThat(storedCategory.getId()).isNotNull();
+        assertThat(storedCategory.getName()).isEqualTo("Staročeská kuchyně");
+        assertThat(storedCategory.getColor()).isEqualTo(color);
+    }
+
+    @Test
+    void createExistingCategory() {
+        // test data should contain at least one category
+        assertThat(categoryRepository.findAll()).isNotEmpty();
+        final Category existing = categoryRepository.findAll().get(0);
+
+        // creation should throw error
+        assertThatThrownBy(() -> categoryRepository.create(existing))
+            .isInstanceOf(DataStorageException.class)
+            .hasMessageContaining("Failed to store:");
+
+        // check for no changes
+        assertThat(categoryRepository.findAll()).isNotEmpty();
+        final Category check = categoryRepository.findAll().get(0);
+        assertThat(check).isEqualTo(existing);
+    }
+
+    @Test
     void updateCategory() {
         var category = categoryRepository.findAll()
                 .stream()
@@ -123,7 +140,27 @@ final class CategoryRepositoryTest {
 
         assertThat(updatedCategory.getName()).isEqualTo("Updated Vegan CATEGORY");
         assertThat(updatedCategory.getColor()).isEqualTo(new Color(0xFFFFFF));
+    }
 
+    @Test
+    void updateNullIdCategory() {
+        assertThatThrownBy(() -> categoryRepository.update(
+            new Category(null, "SOME NAME", new Color(0xFFFFFF))
+        )).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void updateNonExistentCategory() {
+        long id = 1;
+        while (categoryRepository.findById(id).isPresent()) {
+            id++;
+        }
+        final Category category = new Category("NON EXISTENT", new Color(0xFFFFFF));
+        category.setId(id);
+
+        assertThatThrownBy(() -> categoryRepository.update(category))
+            .isInstanceOf(DataStorageException.class)
+            .hasMessageContaining("Failed to update non-existing");
     }
 
     @Test

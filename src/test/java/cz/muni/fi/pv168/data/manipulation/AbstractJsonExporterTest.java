@@ -18,7 +18,7 @@ public abstract class  AbstractJsonExporterTest<T>{
 
     protected void assertExportedContent(String expectedContent) throws IOException {
         assertThat(Files.readString(exportFilePath))
-                .isEqualToIgnoringNewLines(expectedContent);
+                .isEqualToIgnoringWhitespace(expectedContent);
     }
 
     protected void testDirSave(List<T> values) throws IOException {

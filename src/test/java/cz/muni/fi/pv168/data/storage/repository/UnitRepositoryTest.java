@@ -32,22 +32,6 @@ final class UnitRepositoryTest {
     }
 
     @Test
-    void createNewUnit() {
-        final String name = "megagram";
-        final double valueInBaseUnit = 150.0;
-        Unit unitToCreate = new Unit(name, valueInBaseUnit, BaseUnitsEnum.GRAM);
-        unitRepository.create(unitToCreate);
-
-        Unit storedUnit = unitRepository
-                .findByIndex(unitRepository.getSize() - 1)
-                .orElseThrow();
-
-        assertThat(storedUnit.getName()).isEqualTo(unitToCreate.getName());
-        assertThat(storedUnit.getValueInBaseUnit()).isEqualTo(unitToCreate.getValueInBaseUnit());
-        assertThat(storedUnit.getId()).isNotNull();
-    }
-
-    @Test
     void listAllTestingUnits() {
         List<Unit> units = unitRepository
                 .findAll();
@@ -110,6 +94,39 @@ final class UnitRepositoryTest {
     }
 
     @Test
+    void createUnit() {
+        final String name = "megagram";
+        final double valueInBaseUnit = 150.0;
+        Unit unitToCreate = new Unit(name, valueInBaseUnit, BaseUnitsEnum.GRAM);
+        unitRepository.create(unitToCreate);
+
+        Unit storedUnit = unitRepository
+                .findByIndex(unitRepository.getSize() - 1)
+                .orElseThrow();
+
+        assertThat(storedUnit.getName()).isEqualTo(unitToCreate.getName());
+        assertThat(storedUnit.getValueInBaseUnit()).isEqualTo(unitToCreate.getValueInBaseUnit());
+        assertThat(storedUnit.getId()).isNotNull();
+    }
+
+    @Test
+    void createExistingUnit() {
+        // test data should contain at least one unit
+        assertThat(unitRepository.findAll()).isNotEmpty();
+        final Unit existing = unitRepository.findAll().get(0);
+
+        // creation should throw error
+        assertThatThrownBy(() -> unitRepository.create(existing))
+            .isInstanceOf(DataStorageException.class)
+            .hasMessageContaining("Failed to store:");
+
+        // check for no changes
+        assertThat(unitRepository.findAll()).isNotEmpty();
+        final Unit check = unitRepository.findAll().get(0);
+        assertThat(check).isEqualTo(existing);
+    }
+
+    @Test
     void updateUnit() {
         var unit = unitRepository.findAll()
                 .stream()
@@ -129,6 +146,26 @@ final class UnitRepositoryTest {
         assertThat(updatedUnit.getName()).isEqualTo("update unit name");
         assertThat(updatedUnit.getValueInBaseUnit()).isEqualTo(unit.getValueInBaseUnit());
         assertThat(updatedUnit.getBaseUnit()).isEqualTo(unit.getBaseUnit());
+    }
+
+    @Test
+    void updateNullIdUnit() {
+        assertThatThrownBy(() -> unitRepository.update(
+            new Unit("some name", 10d, BaseUnitsEnum.GRAM)
+        )).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void updateNonExistentUnit() {
+        long id = 1;
+        while (unitRepository.findById(id).isPresent()) {
+            id++;
+        }
+        final Unit unit = new Unit(id, "some name", 10d, BaseUnitsEnum.GRAM);
+
+        assertThatThrownBy(() -> unitRepository.update(unit))
+            .isInstanceOf(DataStorageException.class)
+            .hasMessageContaining("Failed to update non-existing");
     }
 
     @Test
