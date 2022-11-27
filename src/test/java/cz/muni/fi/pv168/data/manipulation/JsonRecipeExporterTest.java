@@ -32,6 +32,7 @@ final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
                 [ {
                   "name" : "Dřevo s chlebem",
                   "description" : "Velmi chutné jídlo.",
+                  "instructions" : "Do vody přidáme dřevo a pak chleba.",
                   "category" : {
                     "name" : "Dřevěné jídla",
                     "color" : "FF996600"
@@ -70,11 +71,11 @@ final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
                       "valueInBaseUnit" : 1.0,
                       "baseUnit" : null
                     }
-                  } ],
-                  "instructions" : "Do vody přidáme dřevo a pak chleba."
+                  } ]
                 } ]
-                """);
+        """);
     }
+
     @Test
     void multipleRecipes() throws IOException {
         List<RecipeIngredient> ingredientList1 = new ArrayList<>();
@@ -121,109 +122,109 @@ final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
         );
         testDirSave(recipes);
         assertExportedContent("""
-                [ {
-                  "name" : "Dřevo s chlebem",
-                  "description" : "Velmi chutné jídlo.",
-                  "category" : {
-                    "name" : "Dřevěné jídla",
-                    "color" : "FF996600"
-                  },
-                  "preparationTime" : 15,
-                  "portions" : 3,
-                  "ingredients" : [ {
-                    "ingredient" : {
-                      "name" : "Cukr",
-                      "kcal" : 200.0,
-                      "unit" : {
-                        "name" : "pc(s)",
-                        "valueInBaseUnit" : 1.0,
-                        "baseUnit" : null
-                      }
-                    },
-                    "amount" : 5.0,
+            [ {
+                "name" : "Dřevo s chlebem",
+                "description" : "Velmi chutné jídlo.",
+                "instructions" : "Do vody přidáme dřevo a pak chleba.",
+                "category" : {
+                "name" : "Dřevěné jídla",
+                "color" : "FF996600"
+                },
+                "preparationTime" : 15,
+                "portions" : 3,
+                "ingredients" : [ {
+                "ingredient" : {
+                    "name" : "Cukr",
+                    "kcal" : 200.0,
                     "unit" : {
-                      "name" : "pc(s)",
-                      "valueInBaseUnit" : 1.0,
-                      "baseUnit" : null
+                    "name" : "pc(s)",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
                     }
-                  }, {
-                    "ingredient" : {
-                      "name" : "Soda",
-                      "kcal" : 1.0,
-                      "unit" : {
-                        "name" : "g",
-                        "valueInBaseUnit" : 1.0,
-                        "baseUnit" : null
-                      }
-                    },
-                    "amount" : 4.0,
-                    "unit" : {
-                      "name" : "asdasdasd",
-                      "valueInBaseUnit" : 5.0,
-                      "baseUnit" : "GRAM"
-                    }
-                  } ],
-                  "instructions" : "Do vody přidáme dřevo a pak chleba."
+                },
+                "amount" : 5.0,
+                "unit" : {
+                    "name" : "pc(s)",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                }
                 }, {
-                  "name" : "Železo v troubě",
-                  "description" : "Velice chutné železo, které je zdravé.",
-                  "category" : {
-                    "name" : "Železná jídla",
-                    "color" : "FF666666"
-                  },
-                  "preparationTime" : 30,
-                  "portions" : 269,
-                  "ingredients" : [ {
-                    "ingredient" : {
-                      "name" : "Mléko",
-                      "kcal" : 0.5555555555555556,
-                      "unit" : {
-                        "name" : "ml",
-                        "valueInBaseUnit" : 1.0,
-                        "baseUnit" : null
-                      }
-                    },
-                    "amount" : 5.0,
+                "ingredient" : {
+                    "name" : "Soda",
+                    "kcal" : 1.0,
                     "unit" : {
-                      "name" : "ml",
-                      "valueInBaseUnit" : 1.0,
-                      "baseUnit" : null
+                    "name" : "g",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
                     }
-                  }, {
-                    "ingredient" : {
-                      "name" : "Soda",
-                      "kcal" : 1.0,
-                      "unit" : {
-                        "name" : "g",
-                        "valueInBaseUnit" : 1.0,
-                        "baseUnit" : null
-                      }
-                    },
-                    "amount" : 8.0,
-                    "unit" : {
-                      "name" : "g",
-                      "valueInBaseUnit" : 1.0,
-                      "baseUnit" : null
-                    }
-                  }, {
-                    "ingredient" : {
-                      "name" : "Cukr",
-                      "kcal" : 200.0,
-                      "unit" : {
-                        "name" : "pc(s)",
-                        "valueInBaseUnit" : 1.0,
-                        "baseUnit" : null
-                      }
-                    },
-                    "amount" : 65.0,
-                    "unit" : {
-                      "name" : "pc(s)",
-                      "valueInBaseUnit" : 1.0,
-                      "baseUnit" : null
-                    }
-                  } ],
-                  "instructions" : "Ohřejeme troubu na 250 stupňů a dáme železo na horní patro a pečeme než se spálí."
+                },
+                "amount" : 4.0,
+                "unit" : {
+                    "name" : "asdasdasd",
+                    "valueInBaseUnit" : 5.0,
+                    "baseUnit" : "GRAM"
+                }
                 } ]
-                """);
+            }, {
+                "name" : "Železo v troubě",
+                "description" : "Velice chutné železo, které je zdravé.",
+                "instructions" : "Ohřejeme troubu na 250 stupňů a dáme železo na horní patro a pečeme než se spálí.",
+                "category" : {
+                "name" : "Železná jídla",
+                "color" : "FF666666"
+                },
+                "preparationTime" : 30,
+                "portions" : 269,
+                "ingredients" : [ {
+                "ingredient" : {
+                    "name" : "Mléko",
+                    "kcal" : 0.5555555555555556,
+                    "unit" : {
+                    "name" : "ml",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                    }
+                },
+                "amount" : 5.0,
+                "unit" : {
+                    "name" : "ml",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                }
+                }, {
+                "ingredient" : {
+                    "name" : "Soda",
+                    "kcal" : 1.0,
+                    "unit" : {
+                    "name" : "g",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                    }
+                },
+                "amount" : 8.0,
+                "unit" : {
+                    "name" : "g",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                }
+                }, {
+                "ingredient" : {
+                    "name" : "Cukr",
+                    "kcal" : 200.0,
+                    "unit" : {
+                    "name" : "pc(s)",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                    }
+                },
+                "amount" : 65.0,
+                "unit" : {
+                    "name" : "pc(s)",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                }
+                } ]
+            } ]
+        """);
     }
 }
