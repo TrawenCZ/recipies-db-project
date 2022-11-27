@@ -98,7 +98,7 @@ public class MainWindow {
     private void addHelpMenu() {
         JMenuItem info = new JMenuItem(INFO.getLabel(), KeyEvent.VK_I);
         info.addActionListener(e -> JOptionPane.showConfirmDialog(
-                null,
+                MainWindow.getGlassPane(),
                 "Recipes app for storing your favorite recipes made by Jan Martinek (mainly), Radim Stejskal, Marek Skácelík and Adam Slíva.",
                 "Info",
                 JOptionPane.DEFAULT_OPTION,
