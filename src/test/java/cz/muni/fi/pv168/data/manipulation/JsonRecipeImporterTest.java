@@ -95,4 +95,25 @@ public final class JsonRecipeImporterTest extends AbstractJsonImporterTest<Recip
 
         );
     }
+
+    @Test
+    void uncategorizedRecipe() {
+        Path importFilePath = TEST_RESOURCES.resolve("uncategorized-recipe.json");
+        Collection<Recipe> recipes = importer.loadEntities(importFilePath.toString(), Recipe.class);
+
+        var recipe = new Recipe("Dřevo s chlebem",
+                "Velmi chutné jídlo.",
+                "Do vody přidáme dřevo a pak chleba.",
+                Category.UNCATEGORIZED,
+                15,
+                3,
+                List.of(new RecipeIngredient(
+                    new Ingredient("Cukr", 200.0, new Unit("pc(s)", 1.0, null)),
+                    5.0,
+                    new Unit("pc(s)", 1.0, null))
+                )
+        );
+
+        assertThat(recipes).containsExactly(recipe);
+    }
 }

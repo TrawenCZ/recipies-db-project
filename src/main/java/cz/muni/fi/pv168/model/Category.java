@@ -13,11 +13,11 @@ import java.util.Objects;
  */
 public class Category implements Colorable, Nameable, Identifiable {
 
+    public static Category UNCATEGORIZED = new Category("Uncategorized", new Color(255,255,255));
+
     private Long id;
     private String name;
     private Color color;
-
-    public static Category UNCATEGORIZED = new Category("Uncategorized", new Color(255,255,255));
 
     /**
      * Serialized constructor, accessible to mapper via reflection. Takes color as an rgb-hex
@@ -108,5 +108,10 @@ public class Category implements Colorable, Nameable, Identifiable {
     @Override
     public String toString() {
         return name;
+    }
+
+    @JsonIgnore
+    public boolean isUncategorized() {
+        return Category.UNCATEGORIZED.getName().equals(name);
     }
 }

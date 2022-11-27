@@ -124,6 +124,12 @@ final class CategoryRepositoryTest {
     }
 
     @Test
+    void createCategoryUncategorized() {
+        categoryRepository.create(Category.UNCATEGORIZED);
+        assertThat(categoryRepository.findByName(Category.UNCATEGORIZED.getName())).isEmpty();
+    }
+
+    @Test
     void updateCategory() {
         var category = categoryRepository.findAll()
                 .stream()

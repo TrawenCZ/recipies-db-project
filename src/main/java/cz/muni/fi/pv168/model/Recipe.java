@@ -72,9 +72,13 @@ public class Recipe implements Nameable, Identifiable {
         return description;
     }
 
-    @JsonProperty("category")
     public Category getCategory() {
         return category;
+    }
+
+    @JsonProperty("category")
+    private Category getCategoryExport() {
+        return category.isUncategorized() ? null : category;
     }
 
     @JsonProperty("preparationTime")
@@ -111,7 +115,7 @@ public class Recipe implements Nameable, Identifiable {
     }
 
     public void setCategory(Category category) {
-        this.category = Objects.requireNonNull(category);
+        this.category = (category == null || category.isUncategorized()) ? Category.UNCATEGORIZED : category;
     }
 
     public void setRequiredTime(int requiredTime) {

@@ -14,6 +14,12 @@ public class CategoryRepository extends AbstractRepository<CategoryDao, Category
     }
 
     @Override
+    public void create(Category category) {
+        if (category != null && category.isUncategorized()) return;
+        super.create(category);
+    }
+
+    @Override
     public String toString() {
         return Supported.CATEGORY;
     }

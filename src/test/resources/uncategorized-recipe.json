@@ -1,0 +1,25 @@
+[ {
+    "name" : "Dřevo s chlebem",
+    "description" : "Velmi chutné jídlo.",
+    "instructions" : "Do vody přidáme dřevo a pak chleba.",
+    "category" : null,
+    "preparationTime" : 15,
+    "portions" : 3,
+    "ingredients" : [ {
+      "ingredient" : {
+        "name" : "Cukr",
+        "kcal" : 200.0,
+        "unit" : {
+          "name" : "pc(s)",
+          "valueInBaseUnit" : 1.0,
+          "baseUnit" : null
+        }
+      },
+      "amount" : 5.0,
+      "unit" : {
+        "name" : "pc(s)",
+        "valueInBaseUnit" : 1.0,
+        "baseUnit" : null
+      }
+    } ]
+} ]
