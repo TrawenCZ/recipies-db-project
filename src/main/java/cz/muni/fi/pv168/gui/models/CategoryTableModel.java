@@ -13,18 +13,11 @@ import cz.muni.fi.pv168.wiring.Supported;
  */
 public class CategoryTableModel extends AbstractModel<Category> {
 
-    private final Repository<Category> categories;
-
     public CategoryTableModel(Repository<Category> categories) {
         super(List.of(
-            Column.readonly("Name", Category.class, self -> self, null)
-        ));
-        this.categories = categories;
-    }
-
-    @Override
-    public Repository<Category> getRepository() {
-        return categories;
+            Column.readonly("Name", Category.class, self -> self, null)),
+            categories
+        );
     }
 
     @Override

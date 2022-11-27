@@ -17,6 +17,11 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
     }
 
     @Override
+    public String toString() {
+        return "Ingredient";
+    }
+
+    @Override
     public IngredientEntity create(IngredientEntity entity) {
         String sql = "INSERT INTO Ingredient (name, kcalPerUnit, baseUnitId) VALUES (?, ?, ?);";
         try (
@@ -45,79 +50,11 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to store: " + entity, ex);
         }
-
-    }
-
-    @Override
-    public Collection<IngredientEntity> findAll() {
-        var sql = "SELECT * FROM Ingredient";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            List<IngredientEntity> ingredients = new ArrayList<>();
-            try (var resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    var ingredient = ingredientFromResultSet(resultSet);
-                    ingredients.add(ingredient);
-                }
-            }
-
-            return ingredients;
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all ingredients", ex);
-        }
-    }
-
-    @Override
-    public Optional<IngredientEntity> findByName(String name) {
-        var sql = "SELECT * FROM Ingredient WHERE name = ?";
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setString(1, name);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(ingredientFromResultSet(resultSet));
-            } else {
-                // ingredient not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load ingredient by id: " + name, ex);
-        }
-    }
-
-
-    @Override
-    public Optional<IngredientEntity> findById(long id) {
-        var sql = "SELECT * FROM Ingredient WHERE id = ?";
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, id);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(ingredientFromResultSet(resultSet));
-            } else {
-                // ingredient not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load ingredient by id: " + id, ex);
-        }
     }
 
     @Override
     public IngredientEntity update(IngredientEntity entity) {
         Objects.requireNonNull(entity.id(), "Entity id cannot be null");
-
         final var sql = """
                 UPDATE Ingredient
                     SET
@@ -142,15 +79,12 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to update ingredient with id: " + entity.id(), ex);
         }
-
         return findById(entity.id()).orElseThrow(); // returns changed entity
-
     }
 
     @Override
     public void deleteById(long entityId) {
         var sql = "DELETE FROM Ingredient WHERE id = ?";
-
         try (
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql)
@@ -169,13 +103,13 @@ public class IngredientDao extends AbstractDao<IngredientEntity> {
         }
     }
 
-    private static IngredientEntity ingredientFromResultSet(ResultSet resultSet) throws SQLException {
+    protected IngredientEntity fromResultSet(ResultSet resultSet) throws SQLException {
         return new IngredientEntity
-                (
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getDouble("kcalPerUnit"),
-                    resultSet.getLong("baseUnitId")
-                );
+        (
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDouble("kcalPerUnit"),
+            resultSet.getLong("baseUnitId")
+        );
     }
 }

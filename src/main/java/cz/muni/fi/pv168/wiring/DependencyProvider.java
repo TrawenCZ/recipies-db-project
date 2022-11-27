@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.wiring;
 
 import cz.muni.fi.pv168.model.*;
-import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.importers.ObjectImporter;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 
@@ -22,13 +22,11 @@ public interface DependencyProvider {
 
     public Repository<Unit> getUnitRepository();
 
-    public Service<Recipe> getRecipeService();
+    public ObjectImporter<Recipe> getRecipeImporter();
 
-    public Service<Category> getCategoryService();
+    public ObjectImporter<Category> getCategoryImporter();
 
-    public Service<Ingredient> getIngredientService();
+    public ObjectImporter<Ingredient> getIngredientImporter();
 
-    public Service<Unit> getUnitService();
-
-    public Service<?> getService(String name);
+    public ObjectImporter<Unit> getUnitImporter();
 }

@@ -15,9 +15,6 @@ public record IngredientEntity (
         double kcalPerUnit,
         long baseUnitId // foreign key
 ) {
-    /**
-     *
-     */
     public IngredientEntity(
             String name,
             double kcalPerUnit,
@@ -25,5 +22,4 @@ public record IngredientEntity (
     ) {
         this(null, name, kcalPerUnit, baseUnitId);
     }
-
 }

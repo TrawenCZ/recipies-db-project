@@ -1,23 +1,19 @@
 package cz.muni.fi.pv168.data.storage.repository;
 
 import cz.muni.fi.pv168.data.storage.dao.DataAccessObject;
-import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.mapper.EntityMapper;
 import cz.muni.fi.pv168.model.Identifiable;
+import cz.muni.fi.pv168.model.Nameable;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E extends Identifiable> implements Repository<E> {
+public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E extends Identifiable & Nameable> implements Repository<E> {
 
     protected final D dao;
     protected final EntityMapper<EE, E> mapper;
@@ -34,33 +30,18 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
     }
 
     @Override
-    public Optional<E> findByName(String name) {
-        Optional<EE> record = dao.findByName(name);
-        return record.map(mapper::mapToModel);
-    }
-
-    public Optional<E> findUncommitted(String name, Supplier<ConnectionHandler> connection) {
-        Optional<E> result = Optional.empty();
-        dao.customConnection(connection);
-        try {
-            connection.get().use().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            result = dao.findByName(name).map(mapper::mapToModel);
-        } catch (SQLException e) {
-            throw new RuntimeException();
-        }
-        dao.defaultConnection();
-        return result;
-    }
-
-    @Override
     public int getSize() {
         return entities.size();
     }
 
     @Override
     public Optional<E> findById(long id) {
-        Optional<EE> record = dao.findById(id);
-        return record.map(mapper::mapToModel);
+        return entities.stream().dropWhile(e -> !Objects.equals(e.getId(), id)).findFirst();
+    }
+
+    @Override
+    public Optional<E> findByName(String name) {
+        return entities.stream().dropWhile(e -> !Objects.equals(e.getName(), name)).findFirst();
     }
 
     @Override
@@ -80,15 +61,6 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         entities = fetchAllEntities();
     }
 
-    public void uncommitted(E entity, Consumer<E> action, Supplier<ConnectionHandler> connection) {
-        try {
-            dao.customConnection(connection);
-            action.accept(entity);
-        } finally {
-            dao.defaultConnection();
-        }
-    }
-
     @Override
     public void create(E entity) {
         Stream.of(entity)
@@ -100,17 +72,11 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
 
     @Override
     public void update(E entity) {
-        int index = -1;
-        for (var e : entities) { // entities do not have to be exactly the same
-            index++;
-            if (e.getId() == entity.getId()) break;
-        }
-        final int i = index;
         Stream.of(entity)
               .map(mapper::mapToEntity)
               .map(dao::update)
               .map(mapper::mapToModel)
-              .forEach(e -> entities.set(i, e));
+              .forEach(e -> entities.set(getIndex(entity), e));
     }
 
     @Override
@@ -127,5 +93,14 @@ public abstract class AbstractRepository<D extends DataAccessObject<EE>, EE, E e
         return dao.findAll().stream()
                 .map(mapper::mapToModel)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    protected int getIndex(E entity) {
+        int index = 0;
+        for (var e : entities) {
+            if (e.getId() == entity.getId()) break;
+            index++;
+        }
+        return index;
     }
 }

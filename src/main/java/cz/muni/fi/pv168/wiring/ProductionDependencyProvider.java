@@ -12,7 +12,8 @@ public final class ProductionDependencyProvider extends CommonDependencyProvider
     }
 
     private static DatabaseManager createDatabaseManager() {
-        DatabaseManager databaseManager = DatabaseManager.createProductionInstance();
+        // TODO: change to production
+        DatabaseManager databaseManager = DatabaseManager.createServerInstance();
         databaseManager.load();
         return databaseManager;
     }
