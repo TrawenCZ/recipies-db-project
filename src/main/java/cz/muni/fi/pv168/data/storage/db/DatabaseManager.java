@@ -2,9 +2,10 @@ package cz.muni.fi.pv168.data.storage.db;
 
 import cz.muni.fi.pv168.data.storage.DataStorageException;
 import org.h2.jdbcx.JdbcConnectionPool;
-
+import org.tinylog.Logger;
 import javax.sql.DataSource;
 import javax.swing.JOptionPane;
+
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,14 +32,15 @@ public final class DatabaseManager {
     public static DatabaseManager createServerInstance() {
         String connectionString = "jdbc:h2:%s;%s".formatted("tcp://localhost/" + createDbFileSystemPath(), DB_PROPERTIES_STRING);
         // We need this for debugging purposes
-        System.out.println("JDBC connection URI: " + connectionString);
+
+        Logger.info("JDBC connection URI: " + connectionString);
         return new DatabaseManager(connectionString);
     }
 
     public static DatabaseManager createProductionInstance() {
         String connectionString = "jdbc:h2:%s;%s".formatted(createDbFileSystemPath(), DB_PROPERTIES_STRING);
         // We need this for debugging purposes
-        System.out.println("JDBC connection URI: " + connectionString);
+        Logger.info("JDBC connection URI: " + connectionString);
         return new DatabaseManager(connectionString);
     }
 
