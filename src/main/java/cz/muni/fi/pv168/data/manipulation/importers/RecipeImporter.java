@@ -104,7 +104,9 @@ public class RecipeImporter extends ObjectImporter<Recipe> {
 
     private void setIds(Recipe recipe) {
         var category = recipe.getCategory();
-        category.setId(cateRepository.findByName(category.getName()).orElseThrow().getId());
+        if (!category.isUncategorized()) {
+            category.setId(cateRepository.findByName(category.getName()).orElseThrow().getId());
+        }
 
         var ingredients = recipe.getIngredients();
         ingredients.forEach(e -> e.getIngredient().setId(ingrRepository.findByName(e.getIngredient().getName()).orElseThrow().getId()));
