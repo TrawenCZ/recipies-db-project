@@ -22,7 +22,7 @@ public class UnitRepository extends AbstractRepository<UnitDao, UnitEntity, Unit
     }
 
     public Optional<Unit> findByName(String name) {
-        return entities.stream().filter(e -> Objects.equals(e.getName(), name)).findFirst();
+        return entities.stream().dropWhile(e -> !Objects.equals(e.getName(), name)).findFirst();
     }
 
     @Override

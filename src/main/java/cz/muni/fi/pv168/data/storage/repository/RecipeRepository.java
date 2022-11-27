@@ -43,21 +43,9 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     }
 
     @Override
-    public void uncommitted(Recipe entity, Consumer<Recipe> action, Supplier<ConnectionHandler> connection) {
-        try {
-            recipeIngredientDao.customConnection(connection);
-            dao.customConnection(connection);
-            action.accept(entity);
-        } finally {
-            recipeIngredientDao.defaultConnection();
-            dao.defaultConnection();
-        }
-    }
-
-    @Override
     public void create(Recipe entity) {
         try (var transaction = transactions.get()) {
-            uncommitted(entity, this::createUncommitted, transaction::connection);
+            byConnection(entity, this::createUncommitted, transaction::connection);
             transaction.commit();
         }
     }
@@ -75,47 +63,48 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
     @Override
     public void update(Recipe entity) {
         try (var transaction = transactions.get()) {
-            uncommitted(entity, this::updateUncommitted, transaction::connection);
+            byConnection(entity, this::updateUncommitted, transaction::connection);
             transaction.commit();
         }
     }
 
     public void updateUncommitted(Recipe entity) {
-        List<RecipeIngredient> existing = recipeIngredientDao.findByRecipeId(entity.getId()).get().stream()
-            .map(recipeIngredientMapper::mapToModel)
-            .toList();
-        var toCreate = entity.getIngredients().stream()
-            .filter(e -> e.getId() == null || !containsIngredient(e.getId(), existing))
-            .toList();
-        var toUpdate = existing.stream()
-            .filter(e -> containsIngredient(e.getId(), entity.getIngredients()))
-            .toList();
-
         // delete removed ingredients
-        existing.stream()
-            .filter(e -> !containsIngredient(e.getId(), existing))
+        recipeIngredientDao.findByRecipeId(entity.getId()).get().stream()
+            .map(recipeIngredientMapper::mapToModel)
+            .filter(e -> !containsIngredient(e.getId(), entity.getIngredients()))
             .forEach(e -> recipeIngredientDao.deleteById(e.getId()));
+
+        var existing = recipeIngredientDao.findByRecipeId(entity.getId()).orElse(List.of()).stream()
+                .map(recipeIngredientMapper::mapToModel)
+                .toList();
+        var toCreate = entity.getIngredients().stream()
+            .filter(e -> !containsIngredient(e.getId(), existing))
+            .toList();
+        var toUpdate = entity.getIngredients().stream()
+            .filter(e -> containsIngredient(e.getId(), existing))
+            .toList();
 
         Stream.of(entity)
             .map(mapper::mapToEntity)
             .map(dao::update)
             .map(mapper::mapToModel)
             .map(e -> storeIngredients(toUpdate, e, recipeIngredientDao::update))
-            .map(e -> storeIngredients(toCreate, e, recipeIngredientDao::create));
-    }
-
-    @Override
-    protected void deleteEntityByIndex(int index) {
-        var id = entities.get(index).getId();
-        try (var transaction = transactions.get()) {
-            dao.deleteById(id);
-            transaction.commit();
-        }
+            .map(e -> storeIngredients(toCreate, e, recipeIngredientDao::create))
+            .forEach(e -> entities.set(getIndex(e), fetchIngredients(e)));
     }
 
     @Override
     public String toString() {
         return Supported.RECIPE;
+    }
+
+    @Override
+    protected void deleteEntityByIndex(int index) {
+        try (var transaction = transactions.get()) {
+            byConnection(entities.get(index), e -> dao.deleteById(e.getId()), transaction::connection);
+            transaction.commit();
+        }
     }
 
     @Override
@@ -134,9 +123,9 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
         return recipe;
     }
 
-    private boolean containsIngredient(long id, List<RecipeIngredient> toCheck) {
+    private boolean containsIngredient(Long id, List<RecipeIngredient> toCheck) {
         return toCheck.stream()
-            .dropWhile(e -> e.getId() == null || e.getId() != id)
+            .dropWhile(e -> id == null || id != e.getId())
             .findFirst()
             .isPresent();
     }
@@ -150,5 +139,16 @@ public class RecipeRepository extends AbstractRepository<RecipeDao, RecipeEntity
             .map(recipeIngredientMapper::mapToEntity)
             .forEach(function::apply);
         return recipe;
+    }
+
+    private void byConnection(Recipe recipe, Consumer<Recipe> consumer, Supplier<ConnectionHandler> connection) {
+        try {
+            dao.customConnection(connection);
+            recipeIngredientDao.customConnection(connection);
+            consumer.accept(recipe);
+        } finally {
+            dao.defaultConnection();
+            recipeIngredientDao.defaultConnection();
+        }
     }
 }

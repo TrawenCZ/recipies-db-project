@@ -13,20 +13,13 @@ import cz.muni.fi.pv168.wiring.Supported;
  */
 public class UnitsTableModel extends AbstractModel<Unit> {
 
-    private final Repository<Unit> units;
-
     public UnitsTableModel(Repository<Unit> units) {
         super(List.of(
             Column.readonly("Name", Unit.class, self -> self, 4),
             Column.readonly("Value", Double.class, Unit::getValueInBaseUnit, 2),
-            Column.readonly("Base unit", String.class, Unit::getBaseUnitValue, 4)
-        ));
-        this.units = units;
-    }
-
-    @Override
-    public Repository<Unit> getRepository() {
-        return units;
+            Column.readonly("Base unit", String.class, Unit::getBaseUnitValue, 4)),
+            units
+        );
     }
 
     @Override

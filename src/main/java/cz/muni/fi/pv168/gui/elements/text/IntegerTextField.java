@@ -10,7 +10,7 @@ import javax.swing.JFormattedTextField;
 public final class IntegerTextField extends JFormattedTextField {
 
     public IntegerTextField(int lowerLimit, int columns) {
-        this(lowerLimit, Integer.MAX_VALUE, columns);
+        this(lowerLimit, 999, columns);
     }
 
     public IntegerTextField(int lowerLimit, int upperLimit, int columns) {

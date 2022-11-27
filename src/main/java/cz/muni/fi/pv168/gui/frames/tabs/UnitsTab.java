@@ -31,19 +31,18 @@ public final class UnitsTab extends AbstractTab {
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getUnitService(),
-            Unit.class
+            MainWindow.getDependencies().getUnitImporter(),
+            Unit.class,
+            () -> {
+                MainWindow.getDependencies().getUnitRepository().refresh();
+                MainWindow.getUnitsModel().fireTableDataChanged();
+            }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getUnitService(),
-                "units"
-        );
+        return new ExportAction<>(table, MainWindow.getUnitsModel());
     }
 
     @Override

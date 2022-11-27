@@ -6,6 +6,8 @@ import cz.muni.fi.pv168.model.Nameable;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
+
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -25,10 +27,12 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
     protected static final int UNDEFINED = -1;
     private Integer colorIndex = UNDEFINED;
 
+    private final Repository<T> repository;
     protected final List<Column<T, ?>> columns;
 
-    protected AbstractModel(List<Column<T, ?>> columns) {
-        this.columns = columns;
+    protected AbstractModel(List<Column<T, ?>> columns, Repository<T> repository) {
+        this.columns = Objects.requireNonNull(columns);
+        this.repository = Objects.requireNonNull(repository);
     }
 
     public Integer getColumnWidth(int columnIndex) {
@@ -43,7 +47,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
 
     @Override
     public int getRowCount() {
-        return getRepository().getSize();
+        return repository.getSize();
     }
 
     @Override
@@ -83,7 +87,6 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param entity row we want to add
      */
     public void addRow(T entity) {
-        var repository = getRepository();
         int newRowIndex = repository.getSize();
         repository.create(entity);
         fireTableRowsInserted(newRowIndex, newRowIndex);
@@ -95,7 +98,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param entity row we want to update
      */
     public void updateRow(int rowIndex, T entity) {
-        getRepository().update(entity);
+        repository.update(entity);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
@@ -107,7 +110,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      */
     public void updateRow(T entity) {
         var rowIndex = 0;
-        for (var e : getRepository().findAll()) {
+        for (var e : repository.findAll()) {
             if (e.getName().equals(entity.getName())) break;
             rowIndex++;
         }
@@ -120,7 +123,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @param rowIndex index of row we want to delete
      */
     public void deleteRow(int rowIndex) {
-        getRepository().deleteByIndex(rowIndex);
+        repository.deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
@@ -131,7 +134,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @return          single row entity OR null (if out of bounds)
      */
     public T getEntity(int rowIndex) {
-        return getRepository().findByIndex(rowIndex).orElse(null);
+        return repository.findByIndex(rowIndex).orElse(null);
     }
 
     /**
@@ -141,7 +144,7 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      * @return          single row entity OR null (if out of bounds)
      */
     public T getEntity(String name) {
-        return getRepository().findAll().stream()
+        return repository.findAll().stream()
             .dropWhile(e -> !e.getName().equals(name))
             .findFirst()
             .orElse(null);
@@ -165,7 +168,9 @@ public abstract class AbstractModel<T extends Nameable> extends AbstractTableMod
      *
      * @return model's repository of type T
      */
-    public abstract Repository<T> getRepository();
+    public Repository<T> getRepository() {
+        return repository;
+    }
 
     /**
      * If it gets the position, it means there is a column that implements

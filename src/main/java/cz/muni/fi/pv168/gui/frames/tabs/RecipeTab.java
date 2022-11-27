@@ -68,19 +68,24 @@ public final class RecipeTab extends AbstractTab {
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getRecipeService(),
-            Recipe.class
+            MainWindow.getDependencies().getRecipeImporter(),
+            Recipe.class,
+            () -> {
+                MainWindow.getDependencies().getCategoryRepository().refresh();
+                MainWindow.getDependencies().getUnitRepository().refresh();
+                MainWindow.getDependencies().getIngredientRepository().refresh();
+                MainWindow.getDependencies().getRecipeRepository().refresh();
+                MainWindow.getCategoryModel().fireTableDataChanged();
+                MainWindow.getUnitsModel().fireTableDataChanged();
+                MainWindow.getIngredientModel().fireTableDataChanged();
+                MainWindow.getRecipeModel().fireTableDataChanged();
+            }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getRecipeService(),
-                "recipes"
-        );
+        return new ExportAction<>(table, MainWindow.getRecipeModel());
     }
 
     @Override

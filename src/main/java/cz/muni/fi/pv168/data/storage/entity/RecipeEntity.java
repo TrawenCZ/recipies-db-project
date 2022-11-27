@@ -21,9 +21,6 @@ public record RecipeEntity (
         long duration,
         String instruction
 ) {
-    /**
-     *
-     */
     public RecipeEntity(String name,
                         String description,
                         Long categoryId,
@@ -33,5 +30,4 @@ public record RecipeEntity (
     ) {
         this(null, name, description, categoryId, portions, duration, instruction);
     }
-
 }

@@ -7,10 +7,9 @@ import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporterImpl;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
 import cz.muni.fi.pv168.data.manipulation.JsonImporterImpl;
-import cz.muni.fi.pv168.data.manipulation.services.IngredientService;
-import cz.muni.fi.pv168.data.manipulation.services.RecipeService;
-import cz.muni.fi.pv168.data.manipulation.services.Service;
-import cz.muni.fi.pv168.data.manipulation.services.ServiceImpl;
+import cz.muni.fi.pv168.data.manipulation.importers.IngredientImporter;
+import cz.muni.fi.pv168.data.manipulation.importers.RecipeImporter;
+import cz.muni.fi.pv168.data.manipulation.importers.ObjectImporter;
 import cz.muni.fi.pv168.data.storage.dao.*;
 import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
@@ -33,11 +32,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     private final Repository<Ingredient> ingredients;
     private final Repository<Unit> units;
 
-    private final Service<Recipe> recipeService;
-    private final Service<Ingredient> ingredientService;
-    private final Service<Category> categoryService;
-    private final Service<Unit> unitService;
-
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
         this.databaseManager = Objects.requireNonNull(databaseManager);
 
@@ -46,11 +40,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         units = newUnitRepository(null);
         ingredients = newIngredientRepository(null, units);
         recipes = newRecipeRepository(null, null, categories, units, ingredients);
-
-        categoryService = new ServiceImpl<>(categories, databaseManager::getTransactionHandler);
-        unitService = new ServiceImpl<>(units, databaseManager::getTransactionHandler);
-        ingredientService = new IngredientService(ingredients, units, databaseManager::getTransactionHandler);
-        recipeService = new RecipeService(recipes, categories, ingredients, units, databaseManager::getTransactionHandler);
     }
 
     @Override
@@ -59,18 +48,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     }
 
     @Override
-    public Repository<Recipe> getRecipeRepository() {
-        return recipes;
-    }
-
-    @Override
     public Repository<Category> getCategoryRepository() {
         return categories;
-    }
-
-    @Override
-    public Repository<Ingredient> getIngredientRepository() {
-        return ingredients;
     }
 
     @Override
@@ -79,34 +58,49 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     }
 
     @Override
-    public Service<Recipe> getRecipeService() {
-        return recipeService;
+    public Repository<Ingredient> getIngredientRepository() {
+        return ingredients;
     }
 
     @Override
-    public Service<Category> getCategoryService() {
-        return categoryService;
+    public Repository<Recipe> getRecipeRepository() {
+        return recipes;
     }
 
     @Override
-    public Service<Ingredient> getIngredientService() {
-        return ingredientService;
+    public ObjectImporter<Category> getCategoryImporter() {
+        return new ObjectImporter<>(
+            this::newCategoryRepository,
+            databaseManager::getTransactionHandler
+        );
     }
 
     @Override
-    public Service<Unit> getUnitService() {
-        return unitService;
+    public ObjectImporter<Unit> getUnitImporter() {
+        return new ObjectImporter<>(
+            this::newUnitRepository,
+            databaseManager::getTransactionHandler
+        );
     }
 
     @Override
-    public Service<?> getService(String name) {
-        return switch (name) {
-            case Supported.CATEGORY -> categoryService;
-            case Supported.UNIT -> unitService;
-            case Supported.INGREDIENT -> ingredientService;
-            case Supported.RECIPE -> recipeService;
-            default -> recipeService;
-        };
+    public ObjectImporter<Ingredient> getIngredientImporter() {
+        return new IngredientImporter(
+            this::newUnitRepository,
+            this::newIngredientRepository,
+            databaseManager::getTransactionHandler
+        );
+    }
+
+    @Override
+    public ObjectImporter<Recipe> getRecipeImporter() {
+        return new RecipeImporter(
+            this::newCategoryRepository,
+            this::newUnitRepository,
+            this::newIngredientRepository,
+            this::newRecipeRepository,
+            databaseManager::getTransactionHandler
+        );
     }
 
     public static JsonExporter getJsonExporter() {
@@ -115,15 +109,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
     public static JsonImporter getJsonImporter() {
         return new JsonImporterImpl();
-    }
-
-
-    private Supplier<ConnectionHandler> getConnection(Supplier<ConnectionHandler> connection) {
-        return (connection == null) ? databaseManager::getConnectionHandler : connection;
-    }
-
-    private Supplier<TransactionHandler> getTransactions(Supplier<TransactionHandler> transactions) {
-        return (transactions == null) ? databaseManager::getTransactionHandler : transactions;
     }
 
     private Repository<Category> newCategoryRepository(Supplier<ConnectionHandler> connection) {
@@ -141,7 +126,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         );
     }
 
-
     private Repository<Ingredient> newIngredientRepository(
         Supplier<ConnectionHandler> connection,
         Repository<Unit> unitRepository
@@ -154,18 +138,40 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
     private Repository<Recipe> newRecipeRepository(
         Supplier<ConnectionHandler> connection,
+        Repository<Category> categoryRepository,
+        Repository<Unit> unitRepository,
+        Repository<Ingredient> ingredientRepository
+    ) {
+        return newRecipeRepository(
+            connection,
+            databaseManager::getTransactionHandler,
+            categoryRepository,
+            unitRepository,
+            ingredientRepository
+        );
+    }
+
+    private Repository<Recipe> newRecipeRepository(
+        Supplier<ConnectionHandler> connection,
         Supplier<TransactionHandler> transactions,
         Repository<Category> categoryRepository,
         Repository<Unit> unitRepository,
         Repository<Ingredient> ingredientRepository
     ) {
-        var dao = new RecipeDao(getConnection(connection));
         return new RecipeRepository(
-            dao,
+            new RecipeDao(getConnection(connection)),
             new RecipeMapper(new RecipeValidator(), categoryRepository::findById),
             new RecipeIngredientDao(getConnection(connection)),
-            new RecipeIngredientMapper(unitRepository::findById, ingredientRepository::findById, dao::findById),
+            new RecipeIngredientMapper(unitRepository::findById, ingredientRepository::findById),
             getTransactions(transactions)
         );
+    }
+
+    private Supplier<ConnectionHandler> getConnection(Supplier<ConnectionHandler> connection) {
+        return (connection == null) ? databaseManager::getConnectionHandler : connection;
+    }
+
+    private Supplier<TransactionHandler> getTransactions(Supplier<TransactionHandler> transactions) {
+        return (transactions == null) ? databaseManager::getTransactionHandler : transactions;
     }
 }

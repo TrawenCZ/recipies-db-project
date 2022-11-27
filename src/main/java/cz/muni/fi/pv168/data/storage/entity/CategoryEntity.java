@@ -13,14 +13,10 @@ public record CategoryEntity (
     String name,
     String color
 ) {
-    /**
-     *
-     */
     public CategoryEntity(
             String name,
             String color
     ) {
         this(null, name, color);
     }
-
 }

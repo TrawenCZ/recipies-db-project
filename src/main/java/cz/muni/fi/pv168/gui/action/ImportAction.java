@@ -8,28 +8,29 @@ import javax.swing.*;
 
 import cz.muni.fi.pv168.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.data.manipulation.JsonImporter;
-import cz.muni.fi.pv168.data.manipulation.services.Service;
+import cz.muni.fi.pv168.data.manipulation.importers.ObjectImporter;
 import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
 import cz.muni.fi.pv168.wiring.CommonDependencyProvider;
 
 /**
  * @author Jan Martinek, Radim Stejskal
  */
-public class ImportAction<T extends Nameable> extends AbstractAction {
+public class ImportAction<T extends Nameable & Identifiable> extends AbstractAction {
 
     private final JsonImporter JSONImporter = CommonDependencyProvider.getJsonImporter();
-    private final JTable table;
     private final Class<T> aClass;
-    private final Service<T> service;
+    private final ObjectImporter<T> importer;
+    private final Runnable callback;
 
-    public ImportAction(JTable table, Service<T> service, Class<T> aClass) {
+    public ImportAction(ObjectImporter<T> importer, Class<T> aClass, Runnable callback) {
         super("Import", Icons.IMPORT_S);
-        this.table = Objects.requireNonNull(table);
-        this.service = Objects.requireNonNull(service);
+        this.importer = Objects.requireNonNull(importer);
         this.aClass = Objects.requireNonNull(aClass);
+        this.callback = Objects.requireNonNull(callback);
         putValue(SHORT_DESCRIPTION, "Imports records to current tab from a file");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
@@ -38,21 +39,18 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
         var fileChooser = new JsonFileChooser(false, true);
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(MainWindow.getContentPane()) == JFileChooser.APPROVE_OPTION) {
             try {
                 var records = JSONImporter.loadEntities(
                     fileChooser.getSelectedFile().getAbsolutePath(),
                     aClass
                 );
-                int[] count = service.saveRecords(records);
+                int[] count = importer.saveRecords(records);
                 if (count[0] > 0 || count[1] < 0) {
-                    table.getRowSorter().allRowsChanged();
                     showSuccessfulImportMessage(count[1], count[0]);
                 } else {
                     showNoRowsImportedMessage(count[1]);
                 }
-                table.revalidate();
-                table.repaint();
             } catch (DataManipulationException e) {
                 showInvalidFormatMessage(e.getMessage());
                 e.printStackTrace();
@@ -62,10 +60,11 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            callback.run();
         }
     }
 
-    private void showInvalidFormatMessage(String msg) {
+    private static void showInvalidFormatMessage(String msg) {
         JOptionPane.showMessageDialog(
             MainWindow.getGlassPane(),
             """
@@ -78,11 +77,11 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         );
     }
 
-    private void showInvalidFormatMessage() {
+    private static void showInvalidFormatMessage() {
         showInvalidFormatMessage("");
     }
 
-    private void showNoRowsImportedMessage(int discardedCount) {
+    private static void showNoRowsImportedMessage(int discardedCount) {
         JOptionPane.showMessageDialog(
             MainWindow.getGlassPane(),
             "!! Nothing was imported !!" + getAction(discardedCount, "Discarded"),
@@ -91,7 +90,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         );
     }
 
-    private void showSuccessfulImportMessage(int actionCount, int createdCount) {
+    private static void showSuccessfulImportMessage(int actionCount, int createdCount) {
         String message = "Import successful.";
         message += getAction(createdCount, "Created");
         message += getAction(-actionCount, "Replaced");
@@ -104,7 +103,7 @@ public class ImportAction<T extends Nameable> extends AbstractAction {
         );
     }
 
-    private String getAction(int count, String action) {
+    private static String getAction(int count, String action) {
         return (count > 0) ? "\n" + action + ": " + count : "";
     }
 }

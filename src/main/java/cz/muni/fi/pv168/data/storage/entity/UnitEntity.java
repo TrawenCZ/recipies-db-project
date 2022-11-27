@@ -15,9 +15,6 @@ public record UnitEntity (
         double amount,
         long baseUnitId // foreign key
 ) {
-    /**
-     *
-     */
     public UnitEntity(
             String name,
             double amount,
@@ -25,5 +22,4 @@ public record UnitEntity (
     ) {
         this(null, name, amount, baseUnitId);
     }
-
 }
