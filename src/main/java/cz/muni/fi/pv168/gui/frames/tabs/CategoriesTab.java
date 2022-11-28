@@ -3,23 +3,21 @@ package cz.muni.fi.pv168.gui.frames.tabs;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
-import cz.muni.fi.pv168.data.generators.CategoryDataGenerator;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
+import cz.muni.fi.pv168.gui.models.CategoryTableModel;
 import cz.muni.fi.pv168.model.Category;
 
 public final class CategoriesTab extends AbstractTab {
 
     public CategoriesTab() {
-        super(MainWindow.getCategoryModel());
+        super(new CategoryTableModel(MainWindow.getDependencies().getCategoryRepository()));
     }
 
-    @Override
-    public void addSampleData(int sampleSize) {
-        var model = MainWindow.getCategoryModel();
-        CategoryDataGenerator.getAll().stream().forEach(model::addRow);
+    public CategoryTableModel getModel() {
+        return (CategoryTableModel) model;
     }
 
     @Override
@@ -28,15 +26,15 @@ public final class CategoriesTab extends AbstractTab {
             MainWindow.getDependencies().getCategoryImporter(),
             Category.class,
             () -> {
-                MainWindow.getDependencies().getCategoryRepository().refresh();
-                MainWindow.getCategoryModel().fireTableDataChanged();
+                getModel().getRepository().refresh();
+                getModel().fireTableDataChanged();
             }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(table, MainWindow.getCategoryModel());
+        return new ExportAction<>(table, getModel());
     }
 
     @Override
@@ -54,7 +52,7 @@ public final class CategoriesTab extends AbstractTab {
 
     @Override
     protected void editSelectedRow(ActionEvent actionEvent) {
-        Category category = MainWindow.getCategoryModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
+        Category category = getModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
         new CategoryForm(category);
     }
 }

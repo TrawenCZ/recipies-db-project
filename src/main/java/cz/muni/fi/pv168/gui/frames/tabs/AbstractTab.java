@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Function;
 
 import javax.swing.Box;
@@ -49,16 +50,17 @@ public abstract class AbstractTab extends JPanel {
     protected final JButton resetButton;
     protected final SearchBar searchBar;
     protected final JLabel entries;
+    protected final AbstractModel<?> model;
 
-    protected final ImportAction<?> importAction;
-    protected final ExportAction<?> exportAction;
+    public final ImportAction<?> importAction;
+    public final ExportAction<?> exportAction;
 
     protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
     }
 
     protected AbstractTab(AbstractModel<?> model, int searchBarSize) {
-        if (model == null) throw new NullPointerException("Model cannot be null");
+        this.model = Objects.requireNonNull(model, "Model cannot be null");
 
         initialize();
 
@@ -82,15 +84,11 @@ public abstract class AbstractTab extends JPanel {
         this.table.setRowSorter(sorter);
         this.table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
 
-        // addSampleData(100);
-
         entries = new JLabel();
         updateEntries();
         setButtonsStyle();
         setLayout();
     }
-
-    public abstract void addSampleData(int sampleSize);
 
     protected abstract ImportAction<?> createImportAction();
 
@@ -111,10 +109,6 @@ public abstract class AbstractTab extends JPanel {
                 .sorted(Comparator.reverseOrder())
                 .forEach(model::deleteRow);
         updateEntries();
-    }
-
-    public ColoredTable getTable() {
-        return table;
     }
 
     protected void initialize() {
@@ -262,5 +256,10 @@ public abstract class AbstractTab extends JPanel {
 
         searchButton.setBorderPainted(false);
         resetButton.setBorderPainted(false);
+    }
+
+    @Override
+    public String toString() {
+        return model.toString();
     }
 }

@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.gui.menu;
+package cz.muni.fi.pv168.gui.elements;
 
 import javax.swing.*;
 import java.util.Arrays;
