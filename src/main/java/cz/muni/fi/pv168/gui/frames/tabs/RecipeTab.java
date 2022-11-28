@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -19,6 +20,7 @@ import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
+import cz.muni.fi.pv168.gui.elements.Toolbar;
 import cz.muni.fi.pv168.gui.elements.text.RangeTextField;
 import cz.muni.fi.pv168.gui.filters.SorterRecipe;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
@@ -60,6 +62,17 @@ public final class RecipeTab extends AbstractTab {
 
     public RecipeTableModel getModel() {
         return (RecipeTableModel) model;
+    }
+
+    @Override
+    protected Toolbar createToolbar() {
+        var tools = new Toolbar(
+            new JButton[]{searchButton, resetButton},
+            this::addRow, this::editSelectedRow, this::deleteSelectedRows, this::importEntities, this::exportEntities
+        );
+        tools.setFloatable(false);
+        tools.setBorderPainted(false);
+        return tools;
     }
 
     @Override
@@ -147,12 +160,6 @@ public final class RecipeTab extends AbstractTab {
         c.gridwidth = 1;
         addComponent(panel, portionsField.lower(), 4, 1);
         addComponent(panel, portionsField.upper(), 5, 1);
-
-        c.weightx = 0.3;
-        c.gridwidth = 2;
-        c.gridheight = 2;
-        addComponent(panel, searchButton, 6, 0);
-        addComponent(panel, resetButton, 8, 0);
 
         return panel;
     }
