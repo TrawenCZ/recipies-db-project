@@ -10,8 +10,6 @@ import java.awt.*;
 
 public class UnitForm extends AbstractForm {
 
-    JPanel newPanel = new JPanel(new GridBagLayout());
-
     private JLabel nameLabel = new JLabel("Name (*)");
     private JLabel unitLabel = new JLabel("Value (*)");
     private JLabel equivalentLabel = new JLabel("per unit");

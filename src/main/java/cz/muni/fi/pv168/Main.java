@@ -1,37 +1,36 @@
 package cz.muni.fi.pv168;
 
-import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
-import cz.muni.fi.pv168.data.validation.ValidationException;
-import cz.muni.fi.pv168.gui.frames.MainWindow;
-import cz.muni.fi.pv168.gui.resources.Icons;
-
-import com.formdev.flatlaf.*;
-import cz.muni.fi.pv168.wiring.DependencyProvider;
-import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
-
-import java.awt.Font;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.tinylog.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+
+import cz.muni.fi.pv168.data.storage.db.DatabaseManager;
+import cz.muni.fi.pv168.data.validation.ValidationException;
+import cz.muni.fi.pv168.gui.frames.MainWindow;
+import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
+
 
 public class Main {
 
-    public static final String THEME = "intellij";
-    public static final Font defaultFont = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-
     public static void main(String[] args) {
-        initFlatlafLookAndFeel(THEME);
-        UIManager.getLookAndFeelDefaults().put("defaultFont", defaultFont);
+        Config.load();
+        initFlatlafLookAndFeel(Config.THEME);
+        UIManager.getLookAndFeelDefaults().put("defaultFont", Config.FONT);
         try {
             final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
             SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
         } catch (ValidationException|NoSuchElementException e) {
-            e.printStackTrace();
+            Logger.error("Database corrupted: %s".formatted(e.getMessage()));
             goNuclear();
         }
     }
@@ -70,7 +69,7 @@ public class Main {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Nimbus layout initialization failed", ex);
+            Logger.error("Nimbus layout initialization failed: " + ex.getMessage());
         }
     }
 

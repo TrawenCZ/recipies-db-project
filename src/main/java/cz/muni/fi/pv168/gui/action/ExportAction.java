@@ -43,7 +43,12 @@ public class ExportAction<T extends Nameable & Identifiable> extends AbstractAct
 
         if (fileChooser.showDialog(table, "Save") == JFileChooser.APPROVE_OPTION) {
             try {
-                List<T> exportedEntities = getSelectedObjects(getSelectedRows());
+                List<T> exportedEntities;
+                if (e == null) {
+                    exportedEntities = model.getRepository().findAll();
+                } else {
+                    exportedEntities = getSelectedObjects(getSelectedRows());
+                }
                 exporter.saveEntities(fileChooser.getJsonPath(), exportedEntities);
                 showSuccessMessage(exportedEntities.size());
             } catch (IOException ex) {

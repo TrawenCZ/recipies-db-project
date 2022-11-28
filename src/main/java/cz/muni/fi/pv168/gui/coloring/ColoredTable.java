@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.coloring;
 
+import cz.muni.fi.pv168.Config;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 
 import java.awt.Color;
@@ -19,8 +20,8 @@ import javax.swing.table.TableColumnModel;
  */
 public class ColoredTable extends JTable {
 
-    public static final Color DEFAULT_COLOR = Color.WHITE;
-    public static final Color SECONDARY_COLOR = new Color(0xF5F5F5);
+    public static final Color DEFAULT_COLOR = new Color(255, 255, 255, 0);
+    public static final Color SECONDARY_COLOR = new Color(0, 0, 0, 10);
 
     private final AbstractModel<?> model;
 
@@ -69,7 +70,7 @@ public class ColoredTable extends JTable {
         Color color = model.getColor(this.convertRowIndexToModel(row));
 
         if (color != null) {
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 60);
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), Config.OPACITY);
         } else if (row % 2 == 1) {
             color = SECONDARY_COLOR;
         } else {

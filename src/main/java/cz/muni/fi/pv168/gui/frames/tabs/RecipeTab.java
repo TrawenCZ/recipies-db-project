@@ -9,29 +9,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 
-import cz.muni.fi.pv168.data.generators.RecipeDataGenerator;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
 import cz.muni.fi.pv168.gui.elements.PopupMenu;
+import cz.muni.fi.pv168.gui.elements.Toolbar;
 import cz.muni.fi.pv168.gui.elements.text.RangeTextField;
 import cz.muni.fi.pv168.gui.filters.SorterRecipe;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
+import cz.muni.fi.pv168.gui.models.RecipeTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
 import cz.muni.fi.pv168.model.Recipe;
 
 public final class RecipeTab extends AbstractTab {
 
-    private final static int ICON_SIZE = 40;
+    protected final static int ICON_SIZE = 40;
 
     private MultiChoiceButton categoryFilter;
     private MultiChoiceButton ingredientsFilter;
@@ -43,7 +45,7 @@ public final class RecipeTab extends AbstractTab {
     private GridBagConstraints c;
 
     public RecipeTab() {
-        super(MainWindow.getRecipeModel(), ICON_SIZE);
+        super(new RecipeTableModel(MainWindow.getDependencies().getRecipeRepository()));
 
         // hide ingredients column from user
         table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
@@ -58,11 +60,19 @@ public final class RecipeTab extends AbstractTab {
         });
     }
 
+    public RecipeTableModel getModel() {
+        return (RecipeTableModel) model;
+    }
+
     @Override
-    public void addSampleData(int sampleSize) {
-        var recipeGenerator = new RecipeDataGenerator();
-        var model = MainWindow.getRecipeModel();
-        recipeGenerator.createTestData(sampleSize).stream().forEach(model::addRow);
+    protected Toolbar createToolbar() {
+        var tools = new Toolbar(
+            new JButton[]{searchButton, resetButton},
+            this::addRow, this::editSelectedRow, this::deleteSelectedRows, this::importEntities, this::exportEntities
+        );
+        tools.setFloatable(false);
+        tools.setBorderPainted(false);
+        return tools;
     }
 
     @Override
@@ -74,18 +84,18 @@ public final class RecipeTab extends AbstractTab {
                 MainWindow.getDependencies().getCategoryRepository().refresh();
                 MainWindow.getDependencies().getUnitRepository().refresh();
                 MainWindow.getDependencies().getIngredientRepository().refresh();
-                MainWindow.getDependencies().getRecipeRepository().refresh();
+                getModel().getRepository().refresh();
                 MainWindow.getCategoryModel().fireTableDataChanged();
                 MainWindow.getUnitsModel().fireTableDataChanged();
                 MainWindow.getIngredientModel().fireTableDataChanged();
-                MainWindow.getRecipeModel().fireTableDataChanged();
+                getModel().fireTableDataChanged();
             }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(table, MainWindow.getRecipeModel());
+        return new ExportAction<>(table, getModel());
     }
 
     @Override
@@ -151,12 +161,6 @@ public final class RecipeTab extends AbstractTab {
         addComponent(panel, portionsField.lower(), 4, 1);
         addComponent(panel, portionsField.upper(), 5, 1);
 
-        c.weightx = 0.3;
-        c.gridwidth = 2;
-        c.gridheight = 2;
-        addComponent(panel, searchButton, 6, 0);
-        addComponent(panel, resetButton, 8, 0);
-
         return panel;
     }
 
@@ -194,7 +198,7 @@ public final class RecipeTab extends AbstractTab {
 
     @Override
     protected void editSelectedRow(ActionEvent actionEvent) {
-        new RecipeForm(MainWindow.getRecipeModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow())));
+        new RecipeForm(getModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow())));
     }
 
     private void viewDetails(ActionEvent actionEvent) {
@@ -203,13 +207,13 @@ public final class RecipeTab extends AbstractTab {
 
     private void showDetailsForm(int row) {
         if (row < 0 || row >= table.getRowSorter().getModelRowCount()) return;
-        new RecipeDetails(MainWindow.getRecipeModel().getEntity(row));
+        new RecipeDetails(getModel().getEntity(row));
     }
 
     @Override
     protected SorterRecipe createSorter() {
         return new SorterRecipe(table,
-                                MainWindow.getRecipeModel(),
+                                getModel(),
                                 searchBar,
                                 categoryFilter,
                                 timeField,

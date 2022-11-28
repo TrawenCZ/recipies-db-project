@@ -2,16 +2,17 @@ package cz.muni.fi.pv168.gui.frames.tabs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Function;
 
 import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -19,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 
 import cz.muni.fi.pv168.gui.Validator;
@@ -38,7 +40,7 @@ import static cz.muni.fi.pv168.gui.resources.Messages.DELETING_ERR_TITLE;
 public abstract class AbstractTab extends JPanel {
 
     protected final static Color BACKGROUND_COLOR = new Color(0xBDD2E5);
-    protected final static int ICON_SIZE = 30;
+    protected final static int ICON_SIZE = 35;
     protected final static int SEARCH_BAR_SIZE = 30;
 
     protected final ColoredTable table;
@@ -49,16 +51,17 @@ public abstract class AbstractTab extends JPanel {
     protected final JButton resetButton;
     protected final SearchBar searchBar;
     protected final JLabel entries;
+    protected final AbstractModel<?> model;
 
-    protected final ImportAction<?> importAction;
-    protected final ExportAction<?> exportAction;
+    public final ImportAction<?> importAction;
+    public final ExportAction<?> exportAction;
 
     protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
     }
 
     protected AbstractTab(AbstractModel<?> model, int searchBarSize) {
-        if (model == null) throw new NullPointerException("Model cannot be null");
+        this.model = Objects.requireNonNull(model, "Model cannot be null");
 
         initialize();
 
@@ -82,15 +85,10 @@ public abstract class AbstractTab extends JPanel {
         this.table.setRowSorter(sorter);
         this.table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
 
-        // addSampleData(100);
-
         entries = new JLabel();
         updateEntries();
-        setButtonsStyle();
         setLayout();
     }
-
-    public abstract void addSampleData(int sampleSize);
 
     protected abstract ImportAction<?> createImportAction();
 
@@ -113,10 +111,6 @@ public abstract class AbstractTab extends JPanel {
         updateEntries();
     }
 
-    public ColoredTable getTable() {
-        return table;
-    }
-
     protected void initialize() {
         // DO NOTHING HERE (for children that needs to create some values)
     }
@@ -131,6 +125,20 @@ public abstract class AbstractTab extends JPanel {
 
         c.weightx = 1;
         panel.add(searchBar, c);
+
+        searchButton.setIcon(Icons.resizeIcon(searchButton.getIcon(), ICON_SIZE));
+        resetButton.setIcon(Icons.resizeIcon(resetButton.getIcon(), ICON_SIZE));
+
+        searchButton.setBorderPainted(true);
+        resetButton.setBorderPainted(true);
+
+        searchButton.setPreferredSize(new Dimension(ICON_SIZE + 10, ICON_SIZE));
+        searchButton.setMinimumSize(searchButton.getPreferredSize());
+        searchButton.setMaximumSize(searchButton.getPreferredSize());
+
+        resetButton.setPreferredSize(new Dimension(ICON_SIZE + 10, ICON_SIZE));
+        resetButton.setMinimumSize(resetButton.getPreferredSize());
+        resetButton.setMaximumSize(resetButton.getPreferredSize());
 
         c.weightx = 0;
         panel.add(searchButton, c);
@@ -162,7 +170,6 @@ public abstract class AbstractTab extends JPanel {
         var tools = new Toolbar(this::addRow, this::editSelectedRow, this::deleteSelectedRows, this::importEntities, this::exportEntities);
         tools.setFloatable(false);
         tools.setBorderPainted(false);
-
         return tools;
     }
 
@@ -235,32 +242,33 @@ public abstract class AbstractTab extends JPanel {
         topPanel.add(tools, BorderLayout.EAST);
         bottomPanel.add(entries, BorderLayout.EAST);
 
+        topPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
+
         this.add(topPanel, BorderLayout.NORTH);
         this.add(centerPanel, BorderLayout.CENTER);
         this.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JButton createSearchButton(int iconSize, Sorter sorter) {
-        var button = new JButton(Icons.getScaledIcon((ImageIcon)Icons.SEARCH_S, iconSize));
+        var button = new JButton(Icons.SEARCH_S);
         button.addActionListener(new FilterAction(sorter));
         button.addActionListener(e -> SwingUtilities.invokeLater(this::updateEntries));
         button.setToolTipText("Filters the viewed content");
+        button.setBorderPainted(false);
         return button;
     }
 
     private JButton createResetButton(int iconSize, Sorter sorter) {
-        var button = new JButton(Icons.getScaledIcon((ImageIcon)Icons.RESET_S, iconSize));
+        var button = new JButton(Icons.RESET_S);
         button.addActionListener(new FilterResetAction(sorter));
         button.addActionListener(e -> SwingUtilities.invokeLater(this::updateEntries));
         button.setToolTipText("Resets all filters");
+        button.setBorderPainted(false);
         return button;
     }
 
-    private void setButtonsStyle() {
-        searchButton.setBackground(new Color(0x55EEEEEE, true));
-        resetButton.setBackground(new Color(0x55EEEEEE, true));
-
-        searchButton.setBorderPainted(false);
-        resetButton.setBorderPainted(false);
+    @Override
+    public String toString() {
+        return model.toString();
     }
 }

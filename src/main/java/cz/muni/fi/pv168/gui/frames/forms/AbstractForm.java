@@ -118,7 +118,7 @@ public abstract class AbstractForm {
     protected void pack() {
         dialog.pack();
         dialog.setSize(dialog.getWidth() + 100, dialog.getHeight() + 50);
-        dialog.setLocationRelativeTo(MainWindow.getGlassPane());
+        dialog.setLocationRelativeTo(MainWindow.getContentPane());
     }
 
     protected void gridAdd(Component component, int x, int y) {
