@@ -227,4 +227,48 @@ final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
             } ]
         """);
     }
+
+    @Test
+    void uncategorizedRecipe() throws IOException {
+        var recipe = new Recipe("Dřevo s chlebem",
+                "Velmi chutné jídlo.",
+                "Do vody přidáme dřevo a pak chleba.",
+                Category.UNCATEGORIZED,
+                15,
+                3,
+                List.of(new RecipeIngredient(
+                    new Ingredient("Cukr", 200.0, new Unit("pc(s)", 1.0, null)),
+                    5.0,
+                    new Unit("pc(s)", 1.0, null))
+                )
+        );
+        testDirSave(List.of(recipe));
+        assertExportedContent("""
+                [ {
+                  "name" : "Dřevo s chlebem",
+                  "description" : "Velmi chutné jídlo.",
+                  "instructions" : "Do vody přidáme dřevo a pak chleba.",
+                  "category" : null,
+                  "preparationTime" : 15,
+                  "portions" : 3,
+                  "ingredients" : [ {
+                    "ingredient" : {
+                      "name" : "Cukr",
+                      "kcal" : 200.0,
+                      "unit" : {
+                        "name" : "pc(s)",
+                        "valueInBaseUnit" : 1.0,
+                        "baseUnit" : null
+                      }
+                    },
+                    "amount" : 5.0,
+                    "unit" : {
+                      "name" : "pc(s)",
+                      "valueInBaseUnit" : 1.0,
+                      "baseUnit" : null
+                    }
+                  } ]
+                } ]
+        """);
+    }
 }

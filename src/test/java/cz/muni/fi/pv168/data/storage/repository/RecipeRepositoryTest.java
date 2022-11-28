@@ -149,7 +149,6 @@ final class RecipeRepositoryTest {
                 50.0,
                 unitRepository.findByName("tucet").orElseThrow()
         ));
-
         recipeIngredients.add(new RecipeIngredient(
                 ingredientRepository.findByName("sůl").orElseThrow(),
                 4.0,
@@ -176,6 +175,27 @@ final class RecipeRepositoryTest {
             .hasMessageContaining("Failed to store:");
 
         compareRecipeAssert(recipeRepository.findByIndex(0).orElseThrow(), existing, true);
+    }
+
+    @Test
+    void createRecipeUncategorized() {
+        final String name = "new recipe name";
+        final String description = "Some random description text ...";
+        final Category category = Category.UNCATEGORIZED;
+        final int portions = 4;
+        final int duration = 30;
+        final String instructions = "1.) do this, 2.) Not this 3.), something, 4.) The end";
+        final List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+        recipeIngredients.add(new RecipeIngredient(
+                ingredientRepository.findByName("vejce").orElseThrow(),
+                50.0,
+                unitRepository.findByName("tucet").orElseThrow()
+        ));
+        Recipe recipe = new Recipe(name, description, instructions, category, duration, portions, recipeIngredients);
+
+        recipeRepository.create(recipe);
+        assertThat(categoryRepository.findByName(Category.UNCATEGORIZED.getName())).isEmpty();
+        compareRecipeAssert(recipeRepository.findByName(name).orElseThrow(), recipe, false);
     }
 
     @Test
@@ -289,6 +309,22 @@ final class RecipeRepositoryTest {
         assertThat(updatedRecipeOpt).isPresent();
         Recipe updatedRecipe = updatedRecipeOpt.orElseThrow();
         compareRecipeAssert(updatedRecipe, recipe, true);
+    }
+
+    @Test
+    void updateRecipeChangeToUncategorized() {
+        Recipe recipe = null;
+        int i = 0;
+        while (recipe == null || recipe.getCategory() == Category.UNCATEGORIZED && i < recipeRepository.getSize()) {
+            recipe = recipeRepository.findByIndex(i++).orElseThrow();
+        }
+        assertThat(recipe).isNotNull();
+        recipe.setCategory(Category.UNCATEGORIZED);
+        assertThat(recipe.getCategory()).isEqualTo(Category.UNCATEGORIZED);
+
+        var r = recipe;
+        assertThatNoException().isThrownBy(() -> recipeRepository.update(r));
+        compareRecipeAssert(recipeRepository.findByIndex(i - 1).orElseThrow(), recipe, true);
     }
 
     @Test
