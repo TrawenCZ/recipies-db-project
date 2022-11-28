@@ -1,8 +1,7 @@
 package cz.muni.fi.pv168;
 
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.tinylog.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -23,8 +22,6 @@ import cz.muni.fi.pv168.wiring.ProductionDependencyProvider;
 
 public class Main {
 
-    public static final Logger logger = Logger.getGlobal();
-
     public static void main(String[] args) {
         Config.load();
         initFlatlafLookAndFeel(Config.THEME);
@@ -33,7 +30,7 @@ public class Main {
             final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
             SwingUtilities.invokeLater(() -> new MainWindow(dependencyProvider));
         } catch (ValidationException|NoSuchElementException e) {
-            logger.severe("Database corrupted: %s".formatted(e.getMessage()));
+            Logger.error("Database corrupted: %s".formatted(e.getMessage()));
             goNuclear();
         }
     }
@@ -72,7 +69,7 @@ public class Main {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Nimbus layout initialization failed", ex);
+            Logger.error("Nimbus layout initialization failed: " + ex.getMessage());
         }
     }
 

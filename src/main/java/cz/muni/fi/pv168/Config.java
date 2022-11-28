@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Logger;
+import org.tinylog.Logger;
 
 /**
  * Configuration class, contains all changeable configuration
@@ -17,7 +17,6 @@ import java.util.logging.Logger;
  */
 public class Config {
 
-    private static final Logger LOGGER = Main.logger;
     private static final String LIGHT_DEFAULT = "light";
     private static final String LIGHT_INTELLI = "intellij";
     private static final String DARK_DEFAULT = "dark";
@@ -50,14 +49,14 @@ public class Config {
                 String[] items = line.split("=", 2);
                 if (items.length > 0) {
                     if (items.length != 2) {
-                        LOGGER.warning("Invalid line: %s".formatted(line));
+                        Logger.warn("Invalid line: %s".formatted(line));
                         continue;
                     }
                     setOption(items[0], items[1]);
                 }
             }
         } catch (IOException e) {
-            LOGGER.warning("Error occurred while reading config file: %s".formatted(e.getMessage()));
+            Logger.warn("Error occurred while reading config file: %s".formatted(e.getMessage()));
         }
     }
 
@@ -68,7 +67,7 @@ public class Config {
             writer.write("OPACITY=%s".formatted(Config.OPACITY));
             writer.newLine();
         } catch (IOException e) {
-            LOGGER.severe("Error occurred while writing to the config file: %s".formatted(e.getMessage()));
+            Logger.error("Error occurred while writing to the config file: %s".formatted(e.getMessage()));
             return false;
         }
         return true;
@@ -78,9 +77,9 @@ public class Config {
         switch (name) {
             case "THEME": THEME = resolveTheme(value); break;
             case "OPACITY": OPACITY = resolveOpacity(value); break;
-            default: LOGGER.warning("Unknown option: %s=%s".formatted(name, value)); return;
+            default: Logger.warn("Unknown option: %s=%s".formatted(name, value)); return;
         }
-        LOGGER.config("set %s=%s".formatted(name, value));
+        Logger.info("set %s=%s".formatted(name, value));
     }
 
     private static int resolveOpacity(String opacity) {
@@ -91,7 +90,7 @@ public class Config {
             }
             return value;
         } catch (NumberFormatException e) {
-            LOGGER.warning("Invalid value: %s".formatted(opacity));
+            Logger.warn("Invalid value: %s".formatted(opacity));
         }
         return OPACITY;
     }
@@ -102,14 +101,14 @@ public class Config {
                 return t;
             }
         }
-        LOGGER.warning("Unknown theme: %s".formatted(theme));
+        Logger.warn("Unknown theme: %s".formatted(theme));
         return THEME;
     }
 
     private static String getConfigPath() {
         URL url = Main.class.getResource("config");
         if (url == null) {
-            LOGGER.warning("Config file could not be located, DEFAULTS used instead");
+            Logger.warn("Config file could not be located, DEFAULTS used instead");
             return null;
         }
         return url.getPath();
