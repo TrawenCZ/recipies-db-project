@@ -77,5 +77,6 @@ public class UnitForm extends AbstractForm {
         nameInput.setText(unit.getName());
         unitInput.setText(String.valueOf(unit.getValueInBaseUnit()));
         equivalentInput.setSelectedItem(unit.getBaseUnitValue());
+        equivalentInput.setEnabled(false);
     }
 }

@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS Recipe
 (
     `id`           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     `name`         VARCHAR(100) NOT NULL UNIQUE,
-    `description`  VARCHAR(1024) NOT NULL,
+    `description`  VARCHAR(2048) NOT NULL,
     `categoryId`   BIGINT, -- can be null !
     `portions`     BIGINT NOT NULL,
     `duration`     BIGINT NOT NULL,
-    `instruction`  VARCHAR(2048) NOT NULL,
+    `instruction`  VARCHAR(4096) NOT NULL,
     FOREIGN KEY (`categoryId`) REFERENCES Category(`id`)
 );
 

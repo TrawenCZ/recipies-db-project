@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.data.validation.FieldMaxLengths;
 import cz.muni.fi.pv168.gui.TextValidator;
 import cz.muni.fi.pv168.gui.elements.ScrollPane;
 import cz.muni.fi.pv168.gui.elements.SingleIngredient;
@@ -129,12 +130,24 @@ public class RecipeForm extends AbstractForm {
             showErrorDialog("Instructions are required and cannot be empty!", "Missing instructions");
             return false;
         }
+        if (TextValidator.longerThanMaxLength(descriptionInput.getText(), FieldMaxLengths.RECIPE_DESCRIPTION)) {
+            showErrorDialog("Description should not be longer than " + FieldMaxLengths.RECIPE_DESCRIPTION +
+                    " characters! (Currently is '" +
+                    descriptionInput.getText().length() + "' characters long)", "Too long description");
+            return false;
+        }
+        if (TextValidator.longerThanMaxLength(instructionsInput.getText(), FieldMaxLengths.RECIPE_INSTRUCTIONS)) {
+            showErrorDialog("Description should not be longer than " + FieldMaxLengths.RECIPE_INSTRUCTIONS +
+                    " characters! (Currently is '" +
+                    instructionsInput.getText().length() + "' characters long)", "Too long instructions");
+            return false;
+        }
 
         List<RecipeIngredient> ingredientsList = ingredients.getAll().stream()
             .map(SingleIngredient::getIngredient)
             .toList();
 
-        if (ingredientsList == null || ingredientsList.size() == 0) {
+        if (ingredientsList.size() == 0) {
             showErrorDialog("Recipe must have at least ONE ingredient!", "Missing ingredients");
             return false;
         }
@@ -172,8 +185,9 @@ public class RecipeForm extends AbstractForm {
 
     private Category[] getAllCategories() {
         List<Category> categories = MainWindow.getCategoryModel().getRepository().findAll();
-        List<Category> categoriesWithUncategorized = new ArrayList<>(categories);
+        List<Category> categoriesWithUncategorized = new ArrayList<>();
         categoriesWithUncategorized.add(Category.UNCATEGORIZED);
+        categoriesWithUncategorized.addAll(categories);
         return categoriesWithUncategorized.toArray(new Category[0]);
     }
 

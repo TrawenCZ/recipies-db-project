@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.data.validation.FieldMaxLengths;
 import cz.muni.fi.pv168.gui.TextValidator;
 import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
@@ -95,6 +96,11 @@ public abstract class AbstractForm {
         }
         if (!Validator.isUnique(model, input) && !(isEdit() && item.getName().equals(input))) {
             showErrorDialog("Name must be unique!", "Duplicate name");
+            return false;
+        }
+        if (TextValidator.longerThanMaxLength(input, FieldMaxLengths.NAME)) {
+            showErrorDialog("Name should not be longer than "+ FieldMaxLengths.NAME +
+                    ". (Currently is '" + input.length() + "' characters long)", "Too long name");
             return false;
         }
         return true;
