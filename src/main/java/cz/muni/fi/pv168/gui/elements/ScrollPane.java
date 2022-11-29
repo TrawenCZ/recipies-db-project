@@ -72,9 +72,10 @@ public class ScrollPane<T extends Component> extends JScrollPane {
         if (item == null) throw new NullPointerException("cannot add 'null'");
 
         item.setPreferredSize(new Dimension(
-            Math.max(this.getSize().width - 26, 40),
+            Math.max(this.getPreferredSize().width, 100),
             item.getPreferredSize().height
         ));
+        item.setMinimumSize(item.getPreferredSize());
         item.setMaximumSize(item.getPreferredSize());
 
         view.add(item);

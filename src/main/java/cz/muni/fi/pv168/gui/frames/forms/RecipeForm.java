@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.gui.frames.forms;
 
 import cz.muni.fi.pv168.gui.TextValidator;
 import cz.muni.fi.pv168.gui.elements.ScrollPane;
-import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
+import cz.muni.fi.pv168.gui.elements.SingleIngredient;
 import cz.muni.fi.pv168.gui.elements.text.IntegerTextField;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.models.RecipeTableModel;
@@ -10,10 +10,9 @@ import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.*;
 
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Objects;
 
 import javax.swing.*;
 
@@ -31,114 +30,7 @@ public class RecipeForm extends AbstractForm {
     protected final ScrollPane<SingleIngredient> ingredients = new ScrollPane<>();
     protected final JButton ingredientButton = new JButton("Add ingredient", Icons.getScaledIcon((ImageIcon) Icons.ADD_S, 20));
 
-    private Recipe recipe;
-
-    private class SingleIngredient extends JPanel {
-
-        private Long id = null;
-        private JComboBox<Ingredient> ingredientComboBox = new JComboBox<>(getAllIngredients());
-        private JComboBox<Unit> unitComboBox;
-
-        private DoubleTextField ingredientAmount = new DoubleTextField(0.01d, 4);
-        private JButton removeIngredient         = new JButton(Icons.getScaledIcon((ImageIcon)Icons.DELETE_S, 16));
-
-        public SingleIngredient(RecipeIngredient ingredient) {
-            super(new GridBagLayout());
-
-            if (ingredient != null) {
-                id = ingredient.getId();
-                ingredientComboBox.setSelectedItem(ingredient.getIngredient());
-                ingredientAmount.setText(String.valueOf(ingredient.getAmount()));
-            }
-
-            unitComboBox = new JComboBox<>(getAllUnitsByBaseUnit(safeBaseComboboxSelect()));
-            ingredientComboBox.setToolTipText("Enter an ingredient");
-            ingredientAmount.setToolTipText("Enter an amount");
-            unitComboBox.setToolTipText("Enter an unit");
-            removeIngredient.setToolTipText("Delete an ingredient");
-            initializeLayout();
-
-            removeIngredient.addActionListener(e -> removeIngredient());
-            ingredientComboBox.addItemListener(this::ingredientListener);
-
-            ingredients.addTyped(this);
-            refreshContent();
-        }
-
-        public SingleIngredient() {
-            this(null);
-        }
-
-        public RecipeIngredient getIngredientAmount() {
-            return new RecipeIngredient(
-                id,
-                (recipe == null) ? null : recipe.getId(),
-                (Ingredient) ingredientComboBox.getSelectedItem(),
-                (double) ingredientAmount.parse(),
-                (Unit) unitComboBox.getSelectedItem()
-            );
-        }
-
-        private void initializeLayout() {
-            GridBagConstraints c = new GridBagConstraints();
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.ipady = 10;
-
-            c.weightx = 3;
-            c.gridx = 0;
-            this.add(ingredientComboBox, c);
-
-            c.weightx = 1;
-            c.gridx = 2;
-            this.add(unitComboBox, c);
-
-            c.weightx = 0.5;
-            c.gridx = 1;
-            this.add(ingredientAmount, c);
-            c.gridx = 4;
-            this.add(removeIngredient, c);
-        }
-
-        private void removeIngredient() {
-            ingredients.remove(this);
-            refreshContent();
-        }
-
-        private Ingredient[] getAllIngredients() {
-            return MainWindow.getIngredientModel().getRepository().findAll().stream()
-                .toArray(size -> new Ingredient[size]);
-        }
-
-        private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
-            return MainWindow.getUnitsModel().getRepository().findAll().stream()
-                .filter(e ->
-                    (e.getBaseUnit() == null && baseUnit.getValue().equals(e.getName())) ||
-                    (e.getBaseUnit() != null && baseUnit.equals(e.getBaseUnit()))
-                ).toArray(size -> new Unit[size]);
-        }
-
-        private void ingredientListener(ItemEvent e) {
-            Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(safeBaseComboboxSelect());
-            unitComboBox.removeAllItems();
-
-            for (Unit unit : allUnitsByBaseUnit) {
-                unitComboBox.addItem(unit);
-            }
-            unitComboBox.setSelectedItem(allUnitsByBaseUnit[0]);
-        }
-
-        private BaseUnitsEnum safeBaseComboboxSelect() {
-            Ingredient selectedIngredient = (Ingredient) ingredientComboBox.getSelectedItem();
-            var selected = BaseUnitsEnum.GRAM;
-
-            if (selectedIngredient != null) {
-                selected = selectedIngredient.getUnit().getBaseUnit();
-                if (selected == null) selected = BaseUnitsEnum.stringToEnum(selectedIngredient.getUnit().getName());
-            }
-
-            return selected;
-        }
-    }
+    protected Recipe recipe;
 
     private RecipeForm(String title, String header) {
         super(title, header);
@@ -150,10 +42,7 @@ public class RecipeForm extends AbstractForm {
      */
     public RecipeForm(Recipe recipe) {
         this(EDIT, "Edit recipe");
-        pack();
         setData(recipe);
-        this.recipe = recipe;
-        setIngredients(recipe, SingleIngredient::new);
         show();
     }
 
@@ -168,8 +57,11 @@ public class RecipeForm extends AbstractForm {
     /**
      * Recipe details
      */
-    public RecipeForm(String header) {
-        super("Details", header, null, "Close");
+    public RecipeForm(Recipe recipe, boolean isDetails) {
+        super("Details", recipe.getName(), null, "Close");
+        initializeBody();
+        setData(recipe);
+        show();
     }
 
     @Override
@@ -185,7 +77,8 @@ public class RecipeForm extends AbstractForm {
             if (MainWindow.getIngredientModel().getRowCount() == 0) {
                 showErrorDialog("No ingredients available", "Missing ingredients");
             } else {
-                new SingleIngredient();
+                ingredients.addTyped(new SingleIngredient(recipe, this::removeIngredient));
+                refreshContent();
             }
         });
 
@@ -218,6 +111,7 @@ public class RecipeForm extends AbstractForm {
         // ingredients
         gridInsets(-21, 10, 0, 10);
         gridAdd(ingredients, 4, 1, 2, 10);
+        pack();
     }
 
     @Override
@@ -237,7 +131,7 @@ public class RecipeForm extends AbstractForm {
         }
 
         List<RecipeIngredient> ingredientsList = ingredients.getAll().stream()
-            .map(SingleIngredient::getIngredientAmount)
+            .map(SingleIngredient::getIngredient)
             .toList();
 
         if (ingredientsList == null || ingredientsList.size() == 0) {
@@ -254,12 +148,26 @@ public class RecipeForm extends AbstractForm {
     }
 
     protected void setData(Recipe recipe) {
+        this.recipe = Objects.requireNonNull(recipe);
         nameInput.setText(recipe.getName());
         descriptionInput.setText(recipe.getDescription());
         instructionsInput.setText(recipe.getInstructions());
         categoriesInput.setSelectedItem(recipe.getCategory());
         durationInput.setText(String.valueOf(recipe.getRequiredTime()));
         portionInput.setText(String.valueOf(recipe.getPortions()));
+        setIngredients(recipe.getIngredients());
+        refreshContent();
+    }
+
+    protected void setIngredients(List<RecipeIngredient> recipeIngredients) {
+        for (var i : recipeIngredients) {
+            ingredients.addTyped(new SingleIngredient(recipe, i, this::removeIngredient));
+        }
+    }
+
+    protected void removeIngredient(SingleIngredient ingredient) {
+        ingredients.remove(ingredient);
+        refreshContent();
     }
 
     private Category[] getAllCategories() {
@@ -267,12 +175,6 @@ public class RecipeForm extends AbstractForm {
         List<Category> categoriesWithUncategorized = new ArrayList<>(categories);
         categoriesWithUncategorized.add(Category.UNCATEGORIZED);
         return categoriesWithUncategorized.toArray(new Category[0]);
-    }
-
-    protected void setIngredients(Recipe recipe, Function<RecipeIngredient, ?> constructor) {
-        for (var i : recipe.getIngredients()) {
-            constructor.apply(i);
-        }
     }
 
     private void editRecipe(RecipeTableModel model, List<RecipeIngredient> ingredients) {
