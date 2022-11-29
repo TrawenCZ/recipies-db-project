@@ -109,7 +109,7 @@ public class MainWindow {
                             Radim Stejskal
 
                     Many thanks to:
-                        Customer - Michael Koudela
+                        Project Manager - Michael Koudela
                         Technical Coach - Jakub Smadiš
                 """,
                 "Info",

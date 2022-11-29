@@ -8,7 +8,7 @@ public class UnitValidator implements Validator<Unit> {
     public ValidationResult validate(Unit unit) {
         var result = new ValidationResult();
 
-        validateStringLength("Unit name", unit.getName(), 1, 100)
+        validateStringLength("Unit name", unit.getName(), 1, FieldMaxLengths.NAME)
                 .ifPresent(result::add);
         validateDoubleValue(unit.getValueInBaseUnit(), 0.001d, Double.MAX_VALUE - 1)
                 .ifPresent(result::add);

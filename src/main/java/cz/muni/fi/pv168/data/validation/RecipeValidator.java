@@ -8,11 +8,11 @@ public class RecipeValidator implements Validator<Recipe> {
     public ValidationResult validate(Recipe recipe) {
         var result = new ValidationResult();
 
-        validateStringLength("Recipe name", recipe.getName(), 1, 100)
+        validateStringLength("Recipe name", recipe.getName(), 1, FieldMaxLengths.NAME)
                 .ifPresent(result::add);
-        validateStringLength("Recipe description", recipe.getDescription(), 1, 1024)
+        validateStringLength("Recipe description", recipe.getDescription(), 1, FieldMaxLengths.RECIPE_DESCRIPTION)
                 .ifPresent(result::add);
-        validateStringLength("Recipe instructions", recipe.getDescription(), 1, 2048)
+        validateStringLength("Recipe instructions", recipe.getInstructions(), 1, FieldMaxLengths.RECIPE_INSTRUCTIONS)
                 .ifPresent(result::add);
         validateIntValue(recipe.getPortions(), 1, 999)
                 .ifPresent(result::add);

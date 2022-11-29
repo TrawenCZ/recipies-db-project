@@ -1,11 +1,8 @@
 package cz.muni.fi.pv168;
 
 import java.awt.Font;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import org.tinylog.Logger;
 
@@ -55,7 +52,7 @@ public class Config {
                     setOption(items[0], items[1]);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             Logger.warn("Error occurred while reading config file: %s".formatted(e.getMessage()));
         }
     }
@@ -66,7 +63,7 @@ public class Config {
             writer.newLine();
             writer.write("OPACITY=%s".formatted(Config.OPACITY));
             writer.newLine();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             Logger.error("Error occurred while writing to the config file: %s".formatted(e.getMessage()));
             return false;
         }
@@ -105,13 +102,13 @@ public class Config {
         return THEME;
     }
 
-    private static String getConfigPath() {
+    private static String getConfigPath() throws URISyntaxException {
         URL url = Main.class.getResource("config");
         if (url == null) {
             Logger.warn("Config file could not be located, DEFAULTS used instead");
             return null;
         }
-        return url.getPath();
+        return new File(url.toURI()).getAbsolutePath();
     }
 
 }

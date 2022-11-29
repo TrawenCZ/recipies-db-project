@@ -8,9 +8,9 @@ public class CategoryValidator implements Validator<Category> {
     public ValidationResult validate(Category category) {
         var result = new ValidationResult();
 
-        validateStringLength("Category name", category.getName(), 1, 100)
+        validateStringLength("Category name", category.getName(), 1, FieldMaxLengths.NAME)
                 .ifPresent(result::add);
-        validateStringLength("Category color", category.getSerializedColor(), 1, 20)
+        validateStringLength("Category color", category.getSerializedColor(), 8, 8)
                 .ifPresent(result::add);
 
         return result;
