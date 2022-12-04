@@ -1,18 +1,13 @@
 package cz.muni.fi.pv168.gui.elements;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.border.EtchedBorder;
+import java.util.stream.Collectors;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
 
 /**
  * A scrollable window (i.e. no title bar) with a custom multi-choice checkbox.
@@ -23,8 +18,8 @@ import javax.swing.border.EtchedBorder;
  */
 public final class MultiChoiceWindow extends AutoHideWindow implements Filterable<List<String>> {
 
-    private final JScrollPane scrollpane;
-    private final List<ChoiceItem> choices;
+    private final JPanel content = new JPanel();
+    private final List<ChoiceItem> choices = new ArrayList<>();
 
     /**
      * Support class for the window, implemented to block all events on checkboxes
@@ -34,12 +29,10 @@ public final class MultiChoiceWindow extends AutoHideWindow implements Filterabl
         public ChoiceItem(String name) {
             if (name == null) throw new NullPointerException("choice name cannot be null");
             this.setText(name);
-            this.setMargin(new Insets(4, 0, 4, 0));
             for (var l : this.getMouseListeners()) {
                 this.removeMouseListener(l);
             }
             this.addMouseListener(this);
-            choices.add(this);
         }
 
         @Override
@@ -58,33 +51,68 @@ public final class MultiChoiceWindow extends AutoHideWindow implements Filterabl
 
         @Override
         public void mouseReleased(MouseEvent e) {}
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || this.getClass() != o.getClass()) return false;
+            ChoiceItem other = (ChoiceItem) o;
+            return this.getText().equals(other.getText());
+        }
+
+        @Override
+        public int hashCode() {
+            return this.getText().hashCode();
+        }
+    }
+
+    private class ChoiceItemComparator implements Comparator<ChoiceItem> {
+        public int compare(ChoiceItem a, ChoiceItem b) {
+            return a.getText().compareTo(b.getText());
+        }
     }
 
     /**
      * Takes >=1 strings and creates a scrollable auto-hide multi-choice checkbock
      *
-     * @choices string arguments, interpreted as choices (no duplicity check done)
+     * @param strItems choices to be shown
      */
-    public MultiChoiceWindow(String... choices) {
+    public MultiChoiceWindow(List<String> strItems) {
         super();
 
+        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+
         // stop resizing
-        var panel = new JPanel();
         var wrapper = new JPanel();
-        wrapper.add(panel);
+        wrapper.add(content);
 
-        this.choices = new ArrayList<>();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-        Arrays.stream(choices).forEach(c -> {
-            panel.add(new ChoiceItem(c));
-            panel.add(new JSeparator());
-        });
-
-        scrollpane = new JScrollPane(wrapper);
-        scrollpane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        var scrollpane = new JScrollPane(wrapper);
+        scrollpane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         scrollpane.setWheelScrollingEnabled(true);
 
         addTo(scrollpane);
+        refresh(strItems);
+    }
+
+    /**
+     * Reloads the contents of the window to match given string list.
+     *
+     * @param strItems names of choices
+     */
+    public void refresh(List<String> strItems) {
+        var items = strItems.stream().map(ChoiceItem::new).collect(Collectors.toList());
+
+        choices.stream().filter(e -> !items.contains(e)).toList().forEach(choices::remove);
+        items.stream().filter(e -> !choices.contains(e)).forEach(choices::add);
+
+        this.choices.sort(new ChoiceItemComparator());
+
+        this.content.removeAll();
+        this.choices.forEach(e -> {
+            content.add(e);
+            content.add(new JSeparator());
+        });
+        if (choices.size() > 0) content.remove(content.getComponentCount() - 1);
+
         setHeight(DEFAULT_HEIGHT);
     }
 
@@ -98,6 +126,6 @@ public final class MultiChoiceWindow extends AutoHideWindow implements Filterabl
 
     @Override
     public void resetFilters() {
-        choices.stream().forEach(item -> item.setState(false));
+        choices.forEach(item -> item.setState(false));
     }
 }

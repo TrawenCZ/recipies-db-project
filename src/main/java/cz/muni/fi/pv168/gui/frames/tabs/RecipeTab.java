@@ -15,7 +15,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.TableModel;
 
+import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
@@ -107,21 +109,18 @@ public final class RecipeTab extends AbstractTab {
         timeField     = new RangeTextField();
         portionsField = new RangeTextField();
 
-        ingredientsFilter = new MultiChoiceButton( // TODO: dynamic
+        ingredientsFilter = createFilter(
             "Choose ingredients",
             "Show recipes that contain all of the selected ingredients",
-            MultiChoiceButton.NO_MNEMONIC,
-            MainWindow.getIngredientModel().getRepository().findAll().stream()
-                                                                     .map(Nameable::getName)
-                                                                     .toArray(String[]::new)
+            MainWindow.getIngredientModel(),
+            MainWindow.getIngredientModel().getRepository()
         );
-        categoryFilter = new MultiChoiceButton( // TODO: dynamic
+
+        categoryFilter = createFilter(
             "Choose categories",
             "Show recipes of any selected category",
-            MultiChoiceButton.NO_MNEMONIC,
-            MainWindow.getCategoryModel().getRepository().findAll().stream()
-                                                                   .map(Nameable::getName)
-                                                                   .toArray(String[]::new)
+            MainWindow.getCategoryModel(),
+            MainWindow.getCategoryModel().getRepository()
         );
     }
 
@@ -164,17 +163,6 @@ public final class RecipeTab extends AbstractTab {
         return panel;
     }
 
-    private void addComponent(Container panel, Component component, int gridx, int gridy) {
-        addComponent(panel, component, gridx, gridy, GridBagConstraints.WEST);
-    }
-
-    private void addComponent(Container panel, Component component, int gridx, int gridy, int position) {
-        c.gridx = gridx;
-        c.gridy = gridy;
-        c.anchor = position;
-        panel.add(component, c);
-    }
-
     @Override
     protected PopupMenu createPopupMenu() {
         var popup = new PopupMenu();
@@ -201,15 +189,6 @@ public final class RecipeTab extends AbstractTab {
         new RecipeForm(getModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow())));
     }
 
-    private void viewDetails(ActionEvent actionEvent) {
-        showDetailsForm(table.convertRowIndexToModel(table.getSelectedRow()));
-    }
-
-    private void showDetailsForm(int row) {
-        if (row < 0 || row >= table.getRowSorter().getModelRowCount()) return;
-        new RecipeDetails(getModel().getEntity(row));
-    }
-
     @Override
     protected SorterRecipe createSorter() {
         return new SorterRecipe(table,
@@ -218,6 +197,47 @@ public final class RecipeTab extends AbstractTab {
                                 categoryFilter,
                                 timeField,
                                 portionsField,
-                                ingredientsFilter);
+                                ingredientsFilter
+        );
+    }
+
+    private MultiChoiceButton createFilter(
+        String name,
+        String tooltip,
+        TableModel model,
+        Repository<? extends Nameable> repository
+    ) {
+        var filter = new MultiChoiceButton(
+            name,
+            tooltip,
+            MultiChoiceButton.NO_MNEMONIC,
+            repository.findAll().stream().map(Nameable::getName).toList()
+        );
+
+        model.addTableModelListener(e -> filter.refreshFilters(
+            repository.findAll().stream().map(Nameable::getName).toList()
+        ));
+
+        return filter;
+    }
+
+    private void addComponent(Container panel, Component component, int gridx, int gridy) {
+        addComponent(panel, component, gridx, gridy, GridBagConstraints.WEST);
+    }
+
+    private void addComponent(Container panel, Component component, int gridx, int gridy, int position) {
+        c.gridx = gridx;
+        c.gridy = gridy;
+        c.anchor = position;
+        panel.add(component, c);
+    }
+
+    private void viewDetails(ActionEvent actionEvent) {
+        showDetailsForm(table.convertRowIndexToModel(table.getSelectedRow()));
+    }
+
+    private void showDetailsForm(int row) {
+        if (row < 0 || row >= table.getRowSorter().getModelRowCount()) return;
+        new RecipeDetails(getModel().getEntity(row));
     }
 }
