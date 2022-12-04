@@ -24,11 +24,11 @@ public class MultiChoiceButton extends JButton implements Filterable<List<String
      *
      * @param label Text that will be shown on the button
      * @param tooltip Text that will be shown when mouseovering the button
-     * @param menmonic Keybind to open the window (needs to be in focus, uses 'ALT + mnemonic')
+     * @param mnemonic Keybind to open the window (needs to be in focus, uses 'ALT + mnemonic')
      *                 To see possible values head to {@link KeyEvent}.
      * @param choices Arguments for {@link MultiChoiceWindow}
      */
-    public MultiChoiceButton(String label, String tooltip, int mnemonic, String... choices) {
+    public MultiChoiceButton(String label, String tooltip, int mnemonic, List<String> choices) {
         window = new MultiChoiceWindow(choices);
 
         this.setText(label);
@@ -46,10 +46,15 @@ public class MultiChoiceButton extends JButton implements Filterable<List<String
      * @param label     Text that will be shown on the button
      * @param choices   Arguments for {@link MultiChoiceWindow}
      */
-    public MultiChoiceButton(String label, String... choices) {
+    public MultiChoiceButton(String label, List<String> choices) {
         this(label, NO_TOOLTIP, NO_MNEMONIC, choices);
     }
 
+    public void refreshFilters(List<String> filters) {
+        window.refresh(filters);
+    }
+
+    @Override
     public List<String> getFilters() {
         return window.getFilters();
     }

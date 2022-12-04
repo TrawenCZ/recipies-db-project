@@ -30,7 +30,7 @@ public class AutoHideWindow extends MouseInputAdapter {
 
     protected final static int DEFAULT_WIDTH = 150;
     protected final static int DEFAULT_HEIGHT = 220;
-    protected final static int MINIMUM_SIZE = 50;
+    protected final static int MINIMUM_SIZE = 36;
 
     private final JWindow window;
 
@@ -39,7 +39,7 @@ public class AutoHideWindow extends MouseInputAdapter {
      */
     public AutoHideWindow() {
         window = new JWindow();
-        window.setAutoRequestFocus(true);
+        window.setAlwaysOnTop(true);
         window.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
@@ -73,9 +73,11 @@ public class AutoHideWindow extends MouseInputAdapter {
             } else {
                 throw new IllegalArgumentException("cannot get main window");
             }
-
             Point p = caller.getLocationOnScreen();
-            window.setLocation(p);
+            window.setLocation(new Point(
+                p.x + x + caller.getWidth() / 2 - window.getWidth() / 2,
+                p.y + y
+            ));
             window.setVisible(true);
         }
     }
@@ -110,20 +112,18 @@ public class AutoHideWindow extends MouseInputAdapter {
     }
 
     /**
-     * Sets the height of the window (throws error if minimum size is understepped)
-     * and rebalances the width to better match the contents. Height will be set
-     * UP TO given {@code height} (if there is less items it is AT LEAST
-     * {@code MINIMUM_SIZE}).
+     * Sets the width of the window and rebalances the height to better match the
+     * contents. Height will be set UP TO given {@code height} (if there is less
+     * items it is AT LEAST {@code MINIMUM_SIZE}).
      *
      * @param height int to be set
      */
     public void setHeight(int height) {
-        if (height < MINIMUM_SIZE) throw new IllegalArgumentException("arg2:" + height);
         window.pack();
-        if (window.getHeight() < height && window.getHeight() >= MINIMUM_SIZE) {
+        if (window.getHeight() < height) {
             height = window.getHeight();
         }
-        window.setSize(window.getWidth() + 30, height);
+        window.setSize(window.getWidth() + 20, Math.max(MINIMUM_SIZE, height));
     }
 
     @Override
