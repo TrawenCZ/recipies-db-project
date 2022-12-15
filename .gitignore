@@ -16,6 +16,9 @@ buildNumber.properties
 .idea
 .vscode
 
+# .IML files
+*.iml
+
 # Compiled class file
 *.class
 
