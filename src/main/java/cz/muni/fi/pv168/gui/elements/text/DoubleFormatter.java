@@ -49,4 +49,8 @@ public class DoubleFormatter extends NumberFormatter {
     public Object stringToValue(String text) throws ParseException {
         return ("".equals(text)) ? Math.min(Math.max(min, 1.0d), max) : super.stringToValue(text);
     }
+
+    public static String stringValueOfWithConversion(double value) {
+        return String.valueOf(value).replace(".", ",");
+    }
 }

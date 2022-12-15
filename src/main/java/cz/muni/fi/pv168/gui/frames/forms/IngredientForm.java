@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.gui.elements.text.DoubleFormatter;
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
@@ -174,7 +175,7 @@ public class IngredientForm extends AbstractForm {
 
     private void addSampleData(Ingredient ingredient) {
         nameInput.setText(ingredient.getName());
-        energyInput.setText(String.valueOf(ingredient.getKcal() * 100));
+        energyInput.setText(DoubleFormatter.stringValueOfWithConversion(ingredient.getKcal() * 100));
 
         Unit baseUnit = ingredient.getUnit();
         Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(BaseUnitsEnum.stringToEnum(baseUnit.toString()));
