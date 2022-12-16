@@ -5,8 +5,9 @@ import cz.muni.fi.pv168.gui.models.AbstractModel;
 
 import java.awt.Color;
 import java.awt.Component;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import java.text.DecimalFormat;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -86,10 +87,34 @@ public class ColoredTable extends JTable {
         return c;
     }
 
+    public void setColumnDecimalFormat(int columnIndex) {
+        var renderer = new DecimalFormatRenderer();
+        renderer.setHorizontalAlignment(JLabel.RIGHT);
+        this.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
+    }
+
     /**
      * You cannot override getModel if model is null.
      */
     public AbstractModel<?> getAbstractModel() {
         return model;
+    }
+
+    static class DecimalFormatRenderer extends DefaultTableCellRenderer {
+        private static final DecimalFormat formatter = new DecimalFormat( "0.0000" );
+
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+
+            // First format the cell value as required
+
+            value = formatter.format((Number) value);
+
+            // And pass it on to parent class
+
+            return super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+        }
     }
 }

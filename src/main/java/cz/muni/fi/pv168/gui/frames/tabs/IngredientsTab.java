@@ -19,6 +19,7 @@ public final class IngredientsTab extends AbstractTab {
 
     public IngredientsTab() {
         super(new IngredientTableModel(MainWindow.getDependencies().getIngredientRepository()));
+        table.setColumnDecimalFormat(1);
     }
 
     public IngredientTableModel getModel() {

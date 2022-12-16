@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.elements;
 
+import cz.muni.fi.pv168.gui.elements.text.DoubleFormatter;
 import cz.muni.fi.pv168.model.RecipeIngredient;
 
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
@@ -99,7 +100,7 @@ public class SingleIngredient extends JPanel {
     private void loadIngredient(RecipeIngredient ingredient) {
         id = ingredient.getId();
         ingredientComboBox.setSelectedItem(ingredient.getIngredient());
-        ingredientAmount.setText(String.valueOf(ingredient.getAmount()));
+        ingredientAmount.setText(DoubleFormatter.stringValueOfWithConversion(ingredient.getAmount()));
     }
 
     private void initializeLayout(boolean isEditable) {
