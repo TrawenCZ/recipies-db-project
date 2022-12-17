@@ -8,6 +8,7 @@ import cz.muni.fi.pv168.gui.frames.tabs.*;
 import cz.muni.fi.pv168.gui.models.*;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.Supported;
 
 import javax.swing.*;
 
@@ -15,6 +16,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainWindow {
 
@@ -22,15 +25,13 @@ public class MainWindow {
     private static final int HEIGHT = 600;
     private static final Dimension MINIMUM_SIZE = new Dimension(WIDTH, HEIGHT - HEIGHT / 3);
     private static final String TITLE = "Recipes app";
+    private static final Map<String, AbstractTab> tabs = new HashMap<String, AbstractTab>();
 
     // we expect only one such object during runtime
     private static JFrame frame;
 
     private static DependencyProvider dependencies;
-    private static CategoriesTab categoryTab;
-    private static UnitsTab unitTab;
-    private static IngredientsTab ingredientTab;
-    private static RecipeTab recipeTab;
+
 
     private final JMenuBar menuBar = new JMenuBar();
 
@@ -40,10 +41,10 @@ public class MainWindow {
         frame = new JFrame();
 
         dependencies = dependencyProvider;
-        categoryTab = new CategoriesTab();
-        unitTab = new UnitsTab();
-        ingredientTab = new IngredientsTab();
-        recipeTab = new RecipeTab();
+        tabs.put(Supported.CATEGORY, new CategoriesTab());
+        tabs.put(Supported.UNIT, new UnitsTab());
+        tabs.put(Supported.INGREDIENT, new IngredientsTab());
+        tabs.put(Supported.RECIPE, new RecipeTab());
 
         setLayout();
     }
@@ -124,36 +125,31 @@ public class MainWindow {
 
     public void addTabs() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Recipes", recipeTab);
-        tabbedPane.addTab("Categories", categoryTab);
-        tabbedPane.addTab("Ingredient", ingredientTab);
-        tabbedPane.addTab("Units", unitTab);
+        tabbedPane.addTab(Supported.RECIPE, tabs.get(Supported.RECIPE));
+        tabbedPane.addTab(Supported.INGREDIENT, tabs.get(Supported.INGREDIENT));
+        tabbedPane.addTab(Supported.UNIT, tabs.get(Supported.UNIT));
+        tabbedPane.addTab(Supported.CATEGORY, tabs.get(Supported.CATEGORY));
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
     public static UnitsTableModel getUnitsModel() {
-        return unitTab.getModel();
+        return ((UnitsTab) tabs.get(Supported.UNIT)).getModel();
     }
 
     public static IngredientTableModel getIngredientModel() {
-        return ingredientTab.getModel();
+        return ((IngredientsTab) tabs.get(Supported.INGREDIENT)).getModel();
     }
 
     public static CategoryTableModel getCategoryModel() {
-        return categoryTab.getModel();
+        return ((CategoriesTab) tabs.get(Supported.CATEGORY)).getModel();
     }
 
     public static RecipeTableModel getRecipeModel() {
-        return recipeTab.getModel();
+        return ((RecipeTab) tabs.get(Supported.RECIPE)).getModel();
     }
 
-    public static AbstractTab[] getTabs() {
-        return new AbstractTab[]{
-            recipeTab,
-            categoryTab,
-            unitTab,
-            ingredientTab
-        };
+    public static Map<String, AbstractTab> getTabs() {
+        return tabs;
     }
 
     public static DependencyProvider getDependencies() {

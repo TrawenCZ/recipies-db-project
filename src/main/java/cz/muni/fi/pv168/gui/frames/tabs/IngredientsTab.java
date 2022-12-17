@@ -13,6 +13,7 @@ import cz.muni.fi.pv168.gui.frames.forms.IngredientForm;
 import cz.muni.fi.pv168.gui.models.IngredientTableModel;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.RecipeIngredient;
+import cz.muni.fi.pv168.wiring.Supported;
 import cz.muni.fi.pv168.model.Recipe;
 
 public final class IngredientsTab extends AbstractTab {
@@ -30,12 +31,20 @@ public final class IngredientsTab extends AbstractTab {
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getIngredientImporter(),
-            Ingredient.class,
+            () -> {
+                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+                MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+                MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+            },
             () -> {
                 MainWindow.getDependencies().getUnitRepository().refresh();
                 getModel().getRepository().refresh();
                 MainWindow.getUnitsModel().fireTableDataChanged();
                 getModel().fireTableDataChanged();
+
+                MainWindow.getTabs().get(Supported.RECIPE).release();
+                MainWindow.getTabs().get(Supported.INGREDIENT).release();
+                MainWindow.getTabs().get(Supported.UNIT).release();
             }
         );
     }

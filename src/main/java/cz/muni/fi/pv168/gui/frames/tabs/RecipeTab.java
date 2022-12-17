@@ -31,7 +31,7 @@ import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
 import cz.muni.fi.pv168.gui.models.RecipeTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Nameable;
-import cz.muni.fi.pv168.model.Recipe;
+import cz.muni.fi.pv168.wiring.Supported;
 
 public final class RecipeTab extends AbstractTab {
 
@@ -81,7 +81,12 @@ public final class RecipeTab extends AbstractTab {
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getRecipeImporter(),
-            Recipe.class,
+            () -> {
+                MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+                MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+                MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
+                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+            },
             () -> {
                 MainWindow.getDependencies().getCategoryRepository().refresh();
                 MainWindow.getDependencies().getUnitRepository().refresh();
@@ -91,6 +96,11 @@ public final class RecipeTab extends AbstractTab {
                 MainWindow.getUnitsModel().fireTableDataChanged();
                 MainWindow.getIngredientModel().fireTableDataChanged();
                 getModel().fireTableDataChanged();
+
+                MainWindow.getTabs().get(Supported.INGREDIENT).release();
+                MainWindow.getTabs().get(Supported.UNIT).release();
+                MainWindow.getTabs().get(Supported.CATEGORY).release();
+                MainWindow.getTabs().get(Supported.RECIPE).release();
             }
         );
     }

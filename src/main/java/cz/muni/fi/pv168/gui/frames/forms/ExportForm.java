@@ -5,7 +5,6 @@ import cz.muni.fi.pv168.gui.frames.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.stream.Stream;
 
 /**
  * Form that lets the user select from any available export.
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
 public final class ExportForm extends AbstractForm {
 
     private JComboBox<String> input = new JComboBox<>(
-        Stream.of(MainWindow.getTabs()).map(e -> e.toString()).toArray(String[]::new)
+        MainWindow.getTabs().keySet().stream().toArray(String[]::new)
     );
 
     public ExportForm() {
@@ -39,7 +38,7 @@ public final class ExportForm extends AbstractForm {
     @Override
     protected boolean onAction() {
         if (getConfirmation() != JOptionPane.YES_OPTION) return false;
-        MainWindow.getTabs()[input.getSelectedIndex()].exportAction.actionPerformed(null);
+        MainWindow.getTabs().get(input.getSelectedItem()).exportAction.actionPerformed(null);
         return true;
     }
 

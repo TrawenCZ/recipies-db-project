@@ -15,6 +15,14 @@
     "baseUnit" : null
   }
 }, {
+  "name" : "Vepřové maso",
+  "kcal" : 1000.0,
+  "unit" : {
+    "name" : "uniqueUnit",
+    "valueInBaseUnit" : 150.0,
+    "baseUnit" : "GRAM"
+  }
+}, {
   "name" : "Mléko",
   "kcal" : 0.5555555555555556,
   "unit" : {
