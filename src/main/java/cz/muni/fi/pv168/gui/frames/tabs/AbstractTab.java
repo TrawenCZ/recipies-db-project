@@ -95,6 +95,12 @@ public abstract class AbstractTab extends JPanel {
         setLayout();
     }
 
+    protected abstract void lockInput();
+
+    protected abstract void unlockInput();
+
+    protected abstract void refreshTables();
+
     protected abstract ImportAction<?> createImportAction();
 
     protected abstract ExportAction<?> createExportAction();

@@ -29,9 +29,7 @@ public class MainWindow {
 
     // we expect only one such object during runtime
     private static JFrame frame;
-
     private static DependencyProvider dependencies;
-
 
     private final JMenuBar menuBar = new JMenuBar();
 

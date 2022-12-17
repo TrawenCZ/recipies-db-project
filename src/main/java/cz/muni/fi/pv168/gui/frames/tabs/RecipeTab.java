@@ -8,6 +8,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,9 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.TableModel;
 
-import cz.muni.fi.pv168.data.storage.repository.Repository;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.elements.MultiChoiceButton;
@@ -30,6 +30,7 @@ import cz.muni.fi.pv168.gui.frames.forms.RecipeDetails;
 import cz.muni.fi.pv168.gui.frames.forms.RecipeForm;
 import cz.muni.fi.pv168.gui.models.RecipeTableModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.model.Category;
 import cz.muni.fi.pv168.model.Nameable;
 import cz.muni.fi.pv168.wiring.Supported;
 
@@ -78,29 +79,44 @@ public final class RecipeTab extends AbstractTab {
     }
 
     @Override
+    protected void lockInput() {
+        MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+        MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+        MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
+        MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+    }
+
+    @Override
+    protected void unlockInput() {
+        MainWindow.getTabs().get(Supported.INGREDIENT).release();
+        MainWindow.getTabs().get(Supported.UNIT).release();
+        MainWindow.getTabs().get(Supported.CATEGORY).release();
+        MainWindow.getTabs().get(Supported.RECIPE).release();
+    }
+
+    @Override
+    protected void refreshTables() {
+        MainWindow.getDependencies().getCategoryRepository().refresh();
+        MainWindow.getCategoryModel().fireTableDataChanged();
+
+        MainWindow.getDependencies().getUnitRepository().refresh();
+        MainWindow.getUnitsModel().fireTableDataChanged();
+
+        MainWindow.getDependencies().getIngredientRepository().refresh();
+        MainWindow.getIngredientModel().fireTableDataChanged();
+
+        getModel().getRepository().refresh();
+        getModel().fireTableDataChanged();
+    }
+
+    @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getRecipeImporter(),
+            this::lockInput,
             () -> {
-                MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
-                MainWindow.getTabs().get(Supported.UNIT).setInput(true);
-                MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
-                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
-            },
-            () -> {
-                MainWindow.getDependencies().getCategoryRepository().refresh();
-                MainWindow.getDependencies().getUnitRepository().refresh();
-                MainWindow.getDependencies().getIngredientRepository().refresh();
-                getModel().getRepository().refresh();
-                MainWindow.getCategoryModel().fireTableDataChanged();
-                MainWindow.getUnitsModel().fireTableDataChanged();
-                MainWindow.getIngredientModel().fireTableDataChanged();
-                getModel().fireTableDataChanged();
-
-                MainWindow.getTabs().get(Supported.INGREDIENT).release();
-                MainWindow.getTabs().get(Supported.UNIT).release();
-                MainWindow.getTabs().get(Supported.CATEGORY).release();
-                MainWindow.getTabs().get(Supported.RECIPE).release();
+                refreshTables();
+                unlockInput();
             }
         );
     }
@@ -119,19 +135,8 @@ public final class RecipeTab extends AbstractTab {
         timeField     = new RangeTextField();
         portionsField = new RangeTextField();
 
-        ingredientsFilter = createFilter(
-            "Choose ingredients",
-            "Show recipes that contain all of the selected ingredients",
-            MainWindow.getIngredientModel(),
-            MainWindow.getIngredientModel().getRepository()
-        );
-
-        categoryFilter = createFilter(
-            "Choose categories",
-            "Show recipes of any selected category",
-            MainWindow.getCategoryModel(),
-            MainWindow.getCategoryModel().getRepository()
-        );
+        ingredientsFilter = createIngredientFilter();
+        categoryFilter = createCategoryFilter();
     }
 
     @Override
@@ -211,21 +216,35 @@ public final class RecipeTab extends AbstractTab {
         );
     }
 
-    private MultiChoiceButton createFilter(
-        String name,
-        String tooltip,
-        TableModel model,
-        Repository<? extends Nameable> repository
-    ) {
+    private List<String> getCategoryNames() {
+        var categories = new ArrayList<>(MainWindow.getCategoryModel().getRepository().findAll());
+        categories.add(Category.UNCATEGORIZED);
+        return categories.stream().map(Nameable::getName).toList();
+    }
+
+    private MultiChoiceButton createCategoryFilter() {
         var filter = new MultiChoiceButton(
-            name,
-            tooltip,
+            "Choose categories",
+            "Show recipes of any selected category",
             MultiChoiceButton.NO_MNEMONIC,
-            repository.findAll().stream().map(Nameable::getName).toList()
+            this.getCategoryNames()
         );
 
-        model.addTableModelListener(e -> filter.refreshFilters(
-            repository.findAll().stream().map(Nameable::getName).toList()
+        MainWindow.getCategoryModel().addTableModelListener(e -> filter.refreshFilters(this.getCategoryNames()));
+
+        return filter;
+    }
+
+    private MultiChoiceButton createIngredientFilter() {
+        var filter = new MultiChoiceButton(
+            "Choose ingredients",
+            "Show recipes that contain all of the selected ingredients",
+            MultiChoiceButton.NO_MNEMONIC,
+            MainWindow.getIngredientModel().getRepository().findAll().stream().map(Nameable::getName).toList()
+        );
+
+        MainWindow.getIngredientModel().addTableModelListener(e -> filter.refreshFilters(
+            MainWindow.getIngredientModel().getRepository().findAll().stream().map(Nameable::getName).toList()
         ));
 
         return filter;

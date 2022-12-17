@@ -28,23 +28,35 @@ public final class IngredientsTab extends AbstractTab {
     }
 
     @Override
+    protected void lockInput() {
+        MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+        MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+        MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+    }
+
+    @Override
+    protected void unlockInput() {
+        MainWindow.getTabs().get(Supported.RECIPE).release();
+        MainWindow.getTabs().get(Supported.INGREDIENT).release();
+        MainWindow.getTabs().get(Supported.UNIT).release();
+    }
+
+    @Override
+    protected void refreshTables() {
+        MainWindow.getDependencies().getUnitRepository().refresh();
+        MainWindow.getUnitsModel().fireTableDataChanged();
+        getModel().getRepository().refresh();
+        getModel().fireTableDataChanged();
+    }
+
+    @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getIngredientImporter(),
+            this::lockInput,
             () -> {
-                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
-                MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
-                MainWindow.getTabs().get(Supported.UNIT).setInput(true);
-            },
-            () -> {
-                MainWindow.getDependencies().getUnitRepository().refresh();
-                getModel().getRepository().refresh();
-                MainWindow.getUnitsModel().fireTableDataChanged();
-                getModel().fireTableDataChanged();
-
-                MainWindow.getTabs().get(Supported.RECIPE).release();
-                MainWindow.getTabs().get(Supported.INGREDIENT).release();
-                MainWindow.getTabs().get(Supported.UNIT).release();
+                refreshTables();
+                unlockInput();
             }
         );
     }

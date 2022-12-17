@@ -22,27 +22,38 @@ public final class CategoriesTab extends AbstractTab {
     }
 
     @Override
+    protected void lockInput() {
+        MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
+        MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+    }
+
+    @Override
+    protected void unlockInput() {
+        MainWindow.getTabs().get(Supported.CATEGORY).release();
+        MainWindow.getTabs().get(Supported.RECIPE).release();
+    }
+
+    @Override
+    protected void refreshTables() {
+        getModel().getRepository().refresh();
+        getModel().fireTableDataChanged();
+    }
+
+    @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getCategoryImporter(),
+            this::lockInput,
             () -> {
-                MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
-                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
-            },
-            () -> {
-                getModel().getRepository().refresh();
-                getModel().fireTableDataChanged();
-                MainWindow.getTabs().get(Supported.CATEGORY).release();
-                MainWindow.getTabs().get(Supported.RECIPE).release();
+                refreshTables();
+                unlockInput();
             }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            getModel());
+        return new ExportAction<>(table, getModel());
     }
 
     @Override
