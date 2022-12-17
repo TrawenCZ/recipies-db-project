@@ -1,23 +1,23 @@
 package cz.muni.fi.pv168.data.manipulation.importers;
 
-import cz.muni.fi.pv168.gui.frames.MainWindow;
-import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
+import cz.muni.fi.pv168.data.manipulation.DuplicateException;
+import cz.muni.fi.pv168.data.manipulation.Operation;
+import cz.muni.fi.pv168.data.manipulation.Progress;
+import cz.muni.fi.pv168.data.manipulation.acceptors.ObjectAcceptor;
 import cz.muni.fi.pv168.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.data.storage.db.TransactionHandler;
 import cz.muni.fi.pv168.data.storage.repository.Repository;
 
 import java.sql.Connection;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.swing.*;
+import org.tinylog.Logger;
 
 /**
  * Importer into database, handles the import of a given collection of objects.
@@ -27,30 +27,22 @@ import javax.swing.*;
  */
 public class ObjectImporter<M extends Nameable & Identifiable> {
 
-    protected class Counter {
-        public int imported = 0;
-        public int actioned = 0;
-        public boolean doReplace = false;
-    }
-
-    protected final Supplier<TransactionHandler> transactions;
     protected final Function<Supplier<ConnectionHandler>, Repository<M>> repositories;
-
-    protected Counter counter;
+    protected final Supplier<TransactionHandler> transactions;
 
     /**
      * Constructs the importer with a transaction supplier
      * and a repository supplier from supplied connections.
      *
-     * @param repositories repository generator from supplied connections
+     * @param repositories creater of repository for given connection
      * @param transactions transaction supplier
      */
     public ObjectImporter(
         Function<Supplier<ConnectionHandler>, Repository<M>> repositories,
         Supplier<TransactionHandler> transactions
     ) {
+        this.repositories = repositories; // may be null (for extensibility)
         this.transactions = Objects.requireNonNull(transactions);
-        this.repositories = repositories;
     }
 
     /**
@@ -58,50 +50,29 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
      * to be sanitized with a try-catch if you wish to prevent
      * application errors.
      *
-     * @param records list of records we want to save
-     * @return int[2] array: [0] => imported, [1] => (-)replaced/(+)discarded
+     * @param records  list of records we want to save
+     * @param progress progress tracker with replacement decision functionality
      */
-    public int[] saveRecords(Collection<M> records) {
-        counter = new Counter();
+    public void doImport(Collection<M> records, Progress progress) {
+        progress.resetCount();
+        progress.setWorkload(records.size());
         try (var transaction = setupTransaction()) {
-            var repository = repositories.apply(transaction::connection);
-            doImport(records, repository);
+            var acceptor = getAcceptor(transaction::connection, progress::submit);
+            if (progress.isReplace()) acceptor.setReplace();
+            for (var record : records) {
+                acceptor.accept(record);
+                if (!progress.ignoreDecided() && progress.getIgnore() > 0) {
+                    throw new DuplicateException();
+                }
+                progress.submit(Operation.PROCESS);
+            }
             transaction.commit();
         }
-        return (counter.doReplace)
-            ? new int[]{counter.imported, -counter.actioned}
-            : new int[]{counter.imported, counter.actioned};
+        progress.setIsDone();
     }
 
-    protected <N extends Nameable & Identifiable> void doImport(N record, Repository<N> repository) {
-        doImport(List.of(record), repository);
-    }
-
-    protected <N extends Nameable & Identifiable> void doImport(Collection<N> records, Repository<N> repository) {
-        doImport(records, repository::findByName, repository::create, repository::update);
-    }
-
-    protected <N extends Nameable & Identifiable> void doImport(
-        Collection<N> records,
-        Function<String, Optional<N>> find,
-        Consumer<N> create,
-        Consumer<N> update
-    ) {
-        for (var record : records) {
-            var found = find.apply(record.getName());
-            if (found.isEmpty()) {
-                create.accept(record);
-                counter.imported++;
-            } else {
-                if (found.get().equals(record)) continue;
-                if (counter.actioned == 0) counter.doReplace = getDecision();
-                if (counter.doReplace) {
-                    record.setId(found.get().getId());
-                    update.accept(record);
-                }
-                counter.actioned++;
-            }
-        }
+    protected ObjectAcceptor<M> getAcceptor(Supplier<ConnectionHandler> connection, Consumer<Operation> submit) {
+        return new ObjectAcceptor<>(repositories.apply(connection), submit);
     }
 
     protected TransactionHandler setupTransaction() {
@@ -110,26 +81,9 @@ public class ObjectImporter<M extends Nameable & Identifiable> {
             transaction = transactions.get();
             transaction.connection().use().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
         } catch (Exception e) {
-            e.printStackTrace();
-            // TODO: log could not setup transaction read
+            Logger.error("Could not setup transaction: " + e.getMessage());
+            return null;
         }
         return transaction;
-    }
-
-    private static boolean getDecision() {
-        String[] options = {"Replace all", "Skip all", "Cancel"};
-        int n = JOptionPane.showOptionDialog(
-            MainWindow.getGlassPane(),
-            "Duplicates were found during import! Please select an action:",
-            "Import error",
-            JOptionPane.YES_NO_CANCEL_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            Icons.IMPORT_S,
-            options,
-            options[1]
-        );
-        if (n == JOptionPane.CANCEL_OPTION)
-            throw new RuntimeException("Import cancelled by the user");
-        return n == JOptionPane.YES_OPTION;
     }
 }

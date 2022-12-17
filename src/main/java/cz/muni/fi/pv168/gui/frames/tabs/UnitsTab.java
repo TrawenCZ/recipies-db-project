@@ -12,6 +12,7 @@ import cz.muni.fi.pv168.gui.models.UnitsTableModel;
 import cz.muni.fi.pv168.model.RecipeIngredient;
 import cz.muni.fi.pv168.model.Recipe;
 import cz.muni.fi.pv168.model.Unit;
+import cz.muni.fi.pv168.wiring.Supported;
 
 import static cz.muni.fi.pv168.gui.resources.Messages.*;
 
@@ -29,10 +30,18 @@ public final class UnitsTab extends AbstractTab {
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getUnitImporter(),
-            Unit.class,
+            () -> {
+                MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+                MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+            },
             () -> {
                 getModel().getRepository().refresh();
                 getModel().fireTableDataChanged();
+
+                MainWindow.getTabs().get(Supported.INGREDIENT).release();
+                MainWindow.getTabs().get(Supported.UNIT).release();
+                MainWindow.getTabs().get(Supported.RECIPE).release();
             }
         );
     }

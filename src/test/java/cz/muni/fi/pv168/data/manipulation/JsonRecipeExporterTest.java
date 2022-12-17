@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
+
     @Test
     void oneRecipe() throws IOException {
         List<RecipeIngredient> ingredientList = new ArrayList<>();
@@ -28,6 +29,74 @@ final class JsonRecipeExporterTest extends AbstractJsonExporterTest<Recipe> {
                 ingredientList
         );
         testDirSave(List.of(recipe));
+        assertExportedContent("""
+                [ {
+                  "name" : "Dřevo s chlebem",
+                  "description" : "Velmi chutné jídlo.",
+                  "instructions" : "Do vody přidáme dřevo a pak chleba.",
+                  "category" : {
+                    "name" : "Dřevěné jídla",
+                    "color" : "FF996600"
+                  },
+                  "preparationTime" : 15,
+                  "portions" : 3,
+                  "ingredients" : [ {
+                    "ingredient" : {
+                      "name" : "Cukr",
+                      "kcal" : 200.0,
+                      "unit" : {
+                        "name" : "pc(s)",
+                        "valueInBaseUnit" : 1.0,
+                        "baseUnit" : null
+                      }
+                    },
+                    "amount" : 5.0,
+                    "unit" : {
+                      "name" : "pc(s)",
+                      "valueInBaseUnit" : 1.0,
+                      "baseUnit" : null
+                    }
+                  }, {
+                    "ingredient" : {
+                      "name" : "Soda",
+                      "kcal" : 1.0,
+                      "unit" : {
+                        "name" : "g",
+                        "valueInBaseUnit" : 1.0,
+                        "baseUnit" : null
+                      }
+                    },
+                    "amount" : 4.0,
+                    "unit" : {
+                      "name" : "g",
+                      "valueInBaseUnit" : 1.0,
+                      "baseUnit" : null
+                    }
+                  } ]
+                } ]
+        """);
+    }
+
+    @Test
+    void oneRecipeByIndex() throws IOException {
+        List<RecipeIngredient> ingredientList = new ArrayList<>();
+        ingredientList.add(new RecipeIngredient(new Ingredient("Cukr", 200.0, new Unit("pc(s)", 1.0, null)),
+                5.0,
+                new Unit("pc(s)", 1.0, null))
+        );
+        ingredientList.add(new RecipeIngredient(new Ingredient("Soda", 1.0, new Unit("g", 1.0, null)),
+                4.0,
+                new Unit("g", 1.0, null))
+        );
+        var recipe = new Recipe("Dřevo s chlebem",
+                "Velmi chutné jídlo.",
+                "Do vody přidáme dřevo a pak chleba.",
+                new Category("Dřevěné jídla","FF996600"),
+                15,
+                3,
+                ingredientList
+        );
+        testDirSave(List.of(recipe), 0);
         assertExportedContent("""
                 [ {
                   "name" : "Dřevo s chlebem",

@@ -9,6 +9,7 @@ import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
 import cz.muni.fi.pv168.gui.models.CategoryTableModel;
 import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.wiring.Supported;
 
 public final class CategoriesTab extends AbstractTab {
 
@@ -24,17 +25,24 @@ public final class CategoriesTab extends AbstractTab {
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
             MainWindow.getDependencies().getCategoryImporter(),
-            Category.class,
+            () -> {
+                MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
+                MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+            },
             () -> {
                 getModel().getRepository().refresh();
                 getModel().fireTableDataChanged();
+                MainWindow.getTabs().get(Supported.CATEGORY).release();
+                MainWindow.getTabs().get(Supported.RECIPE).release();
             }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(table, getModel());
+        return new ExportAction<>(
+            table,
+            getModel());
     }
 
     @Override

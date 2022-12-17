@@ -4,33 +4,40 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.swing.*;
 
+import cz.muni.fi.pv168.data.manipulation.Exporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporter;
 import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.gui.workers.AsyncExporter;
 import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
-import cz.muni.fi.pv168.wiring.CommonDependencyProvider;
 
 /**
  * @author Jan Martinek
  */
 public class ExportAction<T extends Nameable & Identifiable> extends AbstractAction {
 
-    private final JsonExporter exporter = CommonDependencyProvider.getJsonExporter();
+    private final Exporter exporter;
     private final JTable table;
     private final AbstractModel<T> model;
 
     public ExportAction(JTable table, AbstractModel<T> model) {
         super("Export", Icons.EXPORT_S);
+
         this.table = Objects.requireNonNull(table);
         this.model = Objects.requireNonNull(model);
+
+        this.exporter = new AsyncExporter(
+            new JsonExporter(),
+            () -> showErrorMessage(),
+            rowCount -> showSuccessMessage(rowCount)
+        );
+
         putValue(SHORT_DESCRIPTION, "Exports records from current tab to a file");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));
@@ -43,26 +50,12 @@ public class ExportAction<T extends Nameable & Identifiable> extends AbstractAct
 
         if (fileChooser.showDialog(table, "Save") == JFileChooser.APPROVE_OPTION) {
             try {
-                List<T> exportedEntities;
-                if (e == null) {
-                    exportedEntities = model.getRepository().findAll();
-                } else {
-                    exportedEntities = getSelectedObjects(getSelectedRows());
-                }
-                exporter.saveEntities(fileChooser.getJsonPath(), exportedEntities);
-                showSuccessMessage(exportedEntities.size());
+                exporter.createDataCopy(model.getRepository().findAll());
+                exporter.exportData(fileChooser.getJsonPath(), e == null ? new int[0] : getSelectedRows());
             } catch (IOException ex) {
-                showErrorMessage();
+                showErrorMessage(); // never happens with AsyncExporter (left here for compatibility)
             }
         }
-    }
-
-    private List<T> getSelectedObjects(int[] indexes) {
-        List<T> objects = new ArrayList<>();
-        for (var i : indexes) {
-            objects.add(model.getEntity(i));
-        }
-        return objects;
     }
 
     private int[] getSelectedRows() {

@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import javax.swing.Box;
@@ -22,6 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
+
+import org.tinylog.Logger;
 
 import cz.muni.fi.pv168.gui.Validator;
 import cz.muni.fi.pv168.gui.action.*;
@@ -55,6 +58,8 @@ public abstract class AbstractTab extends JPanel {
 
     public final ImportAction<?> importAction;
     public final ExportAction<?> exportAction;
+
+    protected AtomicInteger workingThreads = new AtomicInteger(0);
 
     protected AbstractTab(AbstractModel<?> model) {
         this(model, SEARCH_BAR_SIZE);
@@ -97,6 +102,43 @@ public abstract class AbstractTab extends JPanel {
     protected abstract void addRow(ActionEvent event);
 
     protected abstract void editSelectedRow(ActionEvent actionEvent);
+
+    /**
+     * Function that disables/enables user input.
+     * Input buttons are: [edit, delete, export, import]
+     *
+     * @param isWorker if true, disables the user input. If false,
+     *                 checks if there are any worker threads and
+     *                 if not then enables inputs.
+     */
+    public void setInput(boolean isWorker) {
+        boolean inputEnabled = (isWorker ? workingThreads.incrementAndGet() : workingThreads.get()) <= 0;
+        int activeRows = table.getSelectedRowCount();
+
+        tools.getEditButton().setEnabled(inputEnabled && activeRows == 1);
+        tools.getDeleteButton().setEnabled(inputEnabled && activeRows >= 1);
+        tools.getExportButton().setEnabled(inputEnabled && activeRows >= 1);
+
+        tools.getAddButton().setEnabled(inputEnabled);
+        tools.getImportButton().setEnabled(inputEnabled);
+
+        popupMenu.setEnabledItem("export", inputEnabled && activeRows >= 1);
+        popupMenu.setEnabledItem("remove", inputEnabled && activeRows >= 1);
+        popupMenu.setEnabledItem("edit", inputEnabled && activeRows >= 1);
+
+        popupMenu.setEnabledItem("add", inputEnabled);
+        popupMenu.setEnabledItem("import", inputEnabled);
+    }
+
+    /**
+     * This function should never be called outside of callbacks
+     * for importers/exporters. Decrements the worker count and unlocks
+     * the inputs if its 0.
+     */
+    public void release() {
+        if (workingThreads.decrementAndGet() < 0) Logger.error("Workers in tab < 0, this should never happen");
+        setInput(false);
+    }
 
     public void deleteRows() {
         var model = (AbstractModel<?>) table.getModel();
@@ -188,16 +230,7 @@ public abstract class AbstractTab extends JPanel {
     }
 
     protected void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
-        int activeRows = table.getSelectedRowCount();
-
-        tools.getEditButton().setEnabled(activeRows == 1);
-        tools.getDeleteButton().setEnabled(activeRows >= 1);
-        tools.getExportButton().setEnabled(activeRows >= 1);
-        tools.getExportButton().setEnabled(activeRows >= 1);
-
-        popupMenu.setEnabledItem("export", activeRows >= 1);
-        popupMenu.setEnabledItem("remove", activeRows >= 1);
-        popupMenu.setEnabledItem("edit", activeRows >= 1);
+        setInput(false);
     }
 
     protected int showConfirmDialog() {
