@@ -45,6 +45,7 @@ public class Validator {
         if (repository == null || item == null) throw new NullPointerException();
         return repository.findByName(item.getName()).isEmpty();
     }
+
     /**
      * Looks for a given {@code K item} in a given {@code model}. Comparison
      * done with usage of {@code equals()} on results from {@code valueGetter}
@@ -89,6 +90,7 @@ public class Validator {
         var savedItem = repository.findByName(item.getName());
         return savedItem.isPresent() && !item.equals(savedItem.get());
     }
+
     /**
      * Looks through list to find non-equal items with same name as given
      * {@code T item} and its counterpart in the {@code List<T> list}.

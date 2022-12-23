@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.gui.elements.text.DoubleFormatter;
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
@@ -77,6 +78,7 @@ public class IngredientForm extends AbstractForm {
 
         ingredientValueLabel.setEnabled(false);
         ingredientValueInput.setEnabled(false);
+        ingredientValueInput.setText("100");
         unitsLabel.setEnabled(false);
         unitsComboBox.setEnabled(false);
 
@@ -163,12 +165,27 @@ public class IngredientForm extends AbstractForm {
         }
     }
 
+    private Unit[] getAllUnitsByBaseUnit(BaseUnitsEnum baseUnit) {
+        return MainWindow.getUnitsModel().getRepository().findAll().stream()
+                .filter(e ->
+                        (e.getBaseUnit() == null && baseUnit.getValue().equals(e.getName())) ||
+                                (e.getBaseUnit() != null && baseUnit.equals(e.getBaseUnit()))
+                ).toArray(Unit[]::new);
+    }
+
     private void addSampleData(Ingredient ingredient) {
         nameInput.setText(ingredient.getName());
-        energyInput.setText(String.valueOf(ingredient.getKcal() * 100));
+        energyInput.setText(DoubleFormatter.stringValueOfWithConversion(ingredient.getKcal() * 100));
 
-        String baseUnit = ingredient.getUnit().toString();
-        if (!baseUnit.equals("g")) {
+        Unit baseUnit = ingredient.getUnit();
+        Unit[] allUnitsByBaseUnit = getAllUnitsByBaseUnit(BaseUnitsEnum.stringToEnum(baseUnit.toString()));
+        unitsComboBox.removeAllItems();
+
+        for (Unit unit : allUnitsByBaseUnit) {
+            unitsComboBox.addItem(unit);
+        }
+
+        if (!baseUnit.toString().equals("g")) {
             toggleButton.doClick();
             ingredientValueInput.setText("100");
             unitsComboBox.setSelectedItem(baseUnit);

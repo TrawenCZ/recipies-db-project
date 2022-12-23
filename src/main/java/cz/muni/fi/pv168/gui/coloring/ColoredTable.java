@@ -1,11 +1,13 @@
 package cz.muni.fi.pv168.gui.coloring;
 
+import cz.muni.fi.pv168.Config;
 import cz.muni.fi.pv168.gui.models.AbstractModel;
 
 import java.awt.Color;
 import java.awt.Component;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import java.text.DecimalFormat;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -19,8 +21,8 @@ import javax.swing.table.TableColumnModel;
  */
 public class ColoredTable extends JTable {
 
-    public static final Color DEFAULT_COLOR = Color.WHITE;
-    public static final Color SECONDARY_COLOR = new Color(0xF5F5F5);
+    public static final Color DEFAULT_COLOR = new Color(255, 255, 255, 0);
+    public static final Color SECONDARY_COLOR = new Color(0, 0, 0, 10);
 
     private final AbstractModel<?> model;
 
@@ -69,7 +71,7 @@ public class ColoredTable extends JTable {
         Color color = model.getColor(this.convertRowIndexToModel(row));
 
         if (color != null) {
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 60);
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), Config.OPACITY);
         } else if (row % 2 == 1) {
             color = SECONDARY_COLOR;
         } else {
@@ -85,10 +87,34 @@ public class ColoredTable extends JTable {
         return c;
     }
 
+    public void setColumnDecimalFormat(int columnIndex) {
+        var renderer = new DecimalFormatRenderer();
+        renderer.setHorizontalAlignment(JLabel.RIGHT);
+        this.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
+    }
+
     /**
      * You cannot override getModel if model is null.
      */
     public AbstractModel<?> getAbstractModel() {
         return model;
+    }
+
+    static class DecimalFormatRenderer extends DefaultTableCellRenderer {
+        private static final DecimalFormat formatter = new DecimalFormat( "0.0000" );
+
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+
+            // First format the cell value as required
+
+            value = formatter.format((Number) value);
+
+            // And pass it on to parent class
+
+            return super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+        }
     }
 }

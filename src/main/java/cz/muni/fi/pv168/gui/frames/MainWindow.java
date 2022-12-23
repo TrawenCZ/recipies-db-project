@@ -1,21 +1,23 @@
 package cz.muni.fi.pv168.gui.frames;
 
+import cz.muni.fi.pv168.gui.action.ConfigAction;
+import cz.muni.fi.pv168.gui.action.ExportAllAction;
+import cz.muni.fi.pv168.gui.action.ImportAllAction;
+import cz.muni.fi.pv168.gui.elements.CustomMenu;
 import cz.muni.fi.pv168.gui.frames.tabs.*;
-import cz.muni.fi.pv168.gui.menu.CustomMenu;
 import cz.muni.fi.pv168.gui.models.*;
 import cz.muni.fi.pv168.gui.resources.Icons;
 import cz.muni.fi.pv168.wiring.DependencyProvider;
+import cz.muni.fi.pv168.wiring.Supported;
 
 import javax.swing.*;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
-
-import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.EXPORT;
-import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.IMPORT;
-import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.INFO;
-import static cz.muni.fi.pv168.gui.menu.MenuItemsEnum.SETTINGS;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainWindow {
 
@@ -23,15 +25,11 @@ public class MainWindow {
     private static final int HEIGHT = 600;
     private static final Dimension MINIMUM_SIZE = new Dimension(WIDTH, HEIGHT - HEIGHT / 3);
     private static final String TITLE = "Recipes app";
+    private static final Map<String, AbstractTab> tabs = new HashMap<String, AbstractTab>();
 
     // we expect only one such object during runtime
     private static JFrame frame;
-
     private static DependencyProvider dependencies;
-    private static UnitsTableModel unitModel;
-    private static CategoryTableModel categoryModel;
-    private static IngredientTableModel ingredientModel;
-    private static RecipeTableModel recipeModel;
 
     private final JMenuBar menuBar = new JMenuBar();
 
@@ -41,15 +39,15 @@ public class MainWindow {
         frame = new JFrame();
 
         dependencies = dependencyProvider;
-        unitModel = new UnitsTableModel(dependencyProvider.getUnitRepository());
-        categoryModel = new CategoryTableModel(dependencyProvider.getCategoryRepository());
-        ingredientModel = new IngredientTableModel(dependencyProvider.getIngredientRepository());
-        recipeModel = new RecipeTableModel(dependencyProvider.getRecipeRepository());
+        tabs.put(Supported.CATEGORY, new CategoriesTab());
+        tabs.put(Supported.UNIT, new UnitsTab());
+        tabs.put(Supported.INGREDIENT, new IngredientsTab());
+        tabs.put(Supported.RECIPE, new RecipeTab());
 
-        setLayout(dependencyProvider);
+        setLayout();
     }
 
-    private void setLayout(DependencyProvider dependencyProvider) {
+    private void setLayout() {
         frame.setTitle(TITLE);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(true);
@@ -57,7 +55,8 @@ public class MainWindow {
         frame.setLocationRelativeTo(null);
         frame.setMinimumSize(MINIMUM_SIZE);
 
-        addTabs(dependencyProvider);
+        getContentPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        addTabs();
         addMenus();
 
         frame.setVisible(true);
@@ -67,8 +66,8 @@ public class MainWindow {
         return frame.getGlassPane();
     }
 
-    public static Component getContentPane() {
-        return frame.getContentPane();
+    public static JPanel getContentPane() {
+        return (JPanel) frame.getContentPane();
     }
 
     private void addMenus() {
@@ -78,14 +77,14 @@ public class MainWindow {
     }
 
     private void addFileMenu() {
-        JMenuItem settings = new JMenuItem(SETTINGS.getLabel(), KeyEvent.VK_S);
-        JMenuItem imports = new JMenuItem(IMPORT.getLabel(), KeyEvent.VK_I);
-        JMenuItem export = new JMenuItem(EXPORT.getLabel(), KeyEvent.VK_E);
+        JMenuItem settings = new JMenuItem(new ConfigAction());
+        JMenuItem imports = new JMenuItem(new ImportAllAction());
+        JMenuItem export = new JMenuItem(new ExportAllAction());
 
         int iSize = 20;
-        settings.setIcon(Icons.resizeIcon(Icons.SETTINGS_S, iSize));
-        imports.setIcon(Icons.resizeIcon(Icons.IMPORT_S, iSize));
-        export.setIcon(Icons.resizeIcon(Icons.EXPORT_S, iSize));
+        settings.setIcon(Icons.resizeIcon(settings.getIcon(), iSize));
+        imports.setIcon(Icons.resizeIcon(imports.getIcon(), iSize));
+        export.setIcon(Icons.resizeIcon(export.getIcon(), iSize));
 
         JMenu fileMenu = new CustomMenu("File", settings, imports, export);
         fileMenu.setMnemonic(KeyEvent.VK_F);
@@ -94,10 +93,24 @@ public class MainWindow {
     }
 
     private void addHelpMenu() {
-        JMenuItem info = new JMenuItem(INFO.getLabel(), KeyEvent.VK_I);
+        JMenuItem info = new JMenuItem("Info", KeyEvent.VK_I);
         info.addActionListener(e -> JOptionPane.showConfirmDialog(
-                null,
-                "Recipes app for storing your favorite recipes made by Jan Martinek (mainly), Radim Stejskal, Marek Skácelík and Adam Slíva.",
+                MainWindow.getContentPane(),
+                """
+                    Application for a personal storage of all the recipes that you can think of.
+
+                    It was created as a semestral project on FI MUNI for PV168 by:
+                        Team lead:
+                            Marek Skácelík
+                        Developers:
+                            Adam Slíva
+                            Jan Martinek
+                            Radim Stejskal
+
+                    Many thanks to:
+                        Project Manager - Michael Koudela
+                        Technical Coach - Jakub Smadiš
+                """,
                 "Info",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.PLAIN_MESSAGE
@@ -108,29 +121,33 @@ public class MainWindow {
         menuBar.add(helpMenu);
     }
 
-    public void addTabs(DependencyProvider dependencyProvider) {
+    public void addTabs() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Recipes", new RecipeTab());
-        tabbedPane.addTab("Categories", new CategoriesTab());
-        tabbedPane.addTab("Ingredient", new IngredientsTab());
-        tabbedPane.addTab("Units", new UnitsTab());
-        frame.add(tabbedPane, BorderLayout.CENTER);
+        tabbedPane.addTab(Supported.RECIPE, tabs.get(Supported.RECIPE));
+        tabbedPane.addTab(Supported.INGREDIENT, tabs.get(Supported.INGREDIENT));
+        tabbedPane.addTab(Supported.UNIT, tabs.get(Supported.UNIT));
+        tabbedPane.addTab(Supported.CATEGORY, tabs.get(Supported.CATEGORY));
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
     public static UnitsTableModel getUnitsModel() {
-        return unitModel;
+        return ((UnitsTab) tabs.get(Supported.UNIT)).getModel();
     }
 
     public static IngredientTableModel getIngredientModel() {
-        return ingredientModel;
+        return ((IngredientsTab) tabs.get(Supported.INGREDIENT)).getModel();
     }
 
     public static CategoryTableModel getCategoryModel() {
-        return categoryModel;
+        return ((CategoriesTab) tabs.get(Supported.CATEGORY)).getModel();
     }
 
     public static RecipeTableModel getRecipeModel() {
-        return recipeModel;
+        return ((RecipeTab) tabs.get(Supported.RECIPE)).getModel();
+    }
+
+    public static Map<String, AbstractTab> getTabs() {
+        return tabs;
     }
 
     public static DependencyProvider getDependencies() {

@@ -17,6 +17,11 @@ public class CategoryDao extends AbstractDao<CategoryEntity> {
     }
 
     @Override
+    public String toString() {
+        return "Category";
+    }
+
+    @Override
     public CategoryEntity create(CategoryEntity entity) {
         String sql = "INSERT INTO Category (name, color) VALUES (?, ?);";
         try (
@@ -45,89 +50,6 @@ public class CategoryDao extends AbstractDao<CategoryEntity> {
             throw new DataStorageException("Failed to store: " + entity, ex);
         }
 
-    }
-
-    @Override
-    public Optional<CategoryEntity> findByName(String name) {
-        var sql = """
-                SELECT id,
-                       name,
-                       color
-                    FROM Category
-                    WHERE name = ?
-                """;
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setString(1, name);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(categoryFromResultSet(resultSet));
-            } else {
-                // category not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load category by name: " + name, ex);
-        }
-    }
-
-    @Override
-    public Collection<CategoryEntity> findAll() {
-        var sql = """
-                SELECT id,
-                       name,
-                       color
-                    FROM Category
-                """;
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            List<CategoryEntity> departments = new ArrayList<>();
-            try (var resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    var department = categoryFromResultSet(resultSet);
-                    departments.add(department);
-                }
-            }
-
-            return departments;
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all categories", ex);
-        }
-    }
-
-    @Override
-    public Optional<CategoryEntity> findById(long id) {
-        var sql = """
-                SELECT id,
-                       name,
-                       color
-                    FROM Category
-                    WHERE id = ?
-                """;
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, id);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(categoryFromResultSet(resultSet));
-            } else {
-                // category not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load category by id: " + id, ex);
-        }
     }
 
     @Override
@@ -183,8 +105,11 @@ public class CategoryDao extends AbstractDao<CategoryEntity> {
         }
     }
 
-    private static CategoryEntity categoryFromResultSet(ResultSet resultSet) throws SQLException {
-        return new CategoryEntity(resultSet.getLong("id"), resultSet.getString("name"),
-                resultSet.getString("color"));
+    protected CategoryEntity fromResultSet(ResultSet resultSet) throws SQLException {
+        return new CategoryEntity(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color")
+        );
     }
 }

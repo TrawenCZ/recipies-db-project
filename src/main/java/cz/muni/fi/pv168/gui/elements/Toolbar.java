@@ -5,7 +5,7 @@ import cz.muni.fi.pv168.gui.resources.Icons;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-public class Toolbar extends JToolBar{
+public class Toolbar extends JToolBar {
 
     private final JButton addButton = new JButton(Icons.ADD_S);
     private final JButton editButton = new JButton(Icons.EDIT_S);
@@ -13,7 +13,12 @@ public class Toolbar extends JToolBar{
     private final JButton importButton = new JButton(Icons.IMPORT_S);
     private final JButton exportButton = new JButton(Icons.EXPORT_S);
 
-    public Toolbar(ActionListener addRow, ActionListener editRow, ActionListener deleteRows, ActionListener importEntities, ActionListener exportEntities) {
+    public Toolbar(JButton[] otherButtons, ActionListener addRow, ActionListener editRow, ActionListener deleteRows, ActionListener importEntities, ActionListener exportEntities) {
+        for (var button : otherButtons) {
+            add(button);
+            addSeparator();
+        }
+
         addButton.addActionListener(addRow);
         addButton.setToolTipText("Adds a row");
         add(addButton);
@@ -42,6 +47,10 @@ public class Toolbar extends JToolBar{
         exportButton.setToolTipText("Exports selected records");
         add(exportButton);
         exportButton.setEnabled(false);
+    }
+
+    public Toolbar(ActionListener addRow, ActionListener editRow, ActionListener deleteRows, ActionListener importEntities, ActionListener exportEntities) {
+        this(new JButton[0], addRow, editRow, deleteRows, importEntities, exportEntities);
     }
 
     public JButton getAddButton() {

@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public class Category implements Colorable, Nameable, Identifiable {
 
+    public static Category UNCATEGORIZED = new Category("Uncategorized", new Color(255,255,255));
+
     private Long id;
     private String name;
     private Color color;
@@ -106,5 +108,10 @@ public class Category implements Colorable, Nameable, Identifiable {
     @Override
     public String toString() {
         return name;
+    }
+
+    @JsonIgnore
+    public boolean isUncategorized() {
+        return Category.UNCATEGORIZED.getName().equals(name);
     }
 }

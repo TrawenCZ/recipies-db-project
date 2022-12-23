@@ -3,41 +3,57 @@ package cz.muni.fi.pv168.gui.frames.tabs;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
-import cz.muni.fi.pv168.data.generators.CategoryDataGenerator;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.CategoryForm;
+import cz.muni.fi.pv168.gui.models.CategoryTableModel;
 import cz.muni.fi.pv168.model.Category;
+import cz.muni.fi.pv168.wiring.Supported;
 
 public final class CategoriesTab extends AbstractTab {
 
     public CategoriesTab() {
-        super(MainWindow.getCategoryModel());
+        super(new CategoryTableModel(MainWindow.getDependencies().getCategoryRepository()));
+    }
+
+    public CategoryTableModel getModel() {
+        return (CategoryTableModel) model;
     }
 
     @Override
-    public void addSampleData(int sampleSize) {
-        var model = MainWindow.getCategoryModel();
-        CategoryDataGenerator.getAll().stream().forEach(model::addRow);
+    protected void lockInput() {
+        MainWindow.getTabs().get(Supported.CATEGORY).setInput(true);
+        MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+    }
+
+    @Override
+    protected void unlockInput() {
+        MainWindow.getTabs().get(Supported.CATEGORY).release();
+        MainWindow.getTabs().get(Supported.RECIPE).release();
+    }
+
+    @Override
+    protected void refreshTables() {
+        getModel().getRepository().refresh();
+        getModel().fireTableDataChanged();
     }
 
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getCategoryService(),
-            Category.class
+            MainWindow.getDependencies().getCategoryImporter(),
+            this::lockInput,
+            () -> {
+                refreshTables();
+                unlockInput();
+            }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getCategoryService(),
-                "categories"
-        );
+        return new ExportAction<>(table, getModel());
     }
 
     @Override
@@ -55,7 +71,7 @@ public final class CategoriesTab extends AbstractTab {
 
     @Override
     protected void editSelectedRow(ActionEvent actionEvent) {
-        Category category = MainWindow.getCategoryModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
+        Category category = getModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
         new CategoryForm(category);
     }
 }

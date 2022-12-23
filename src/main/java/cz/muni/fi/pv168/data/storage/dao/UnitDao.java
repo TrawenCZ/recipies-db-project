@@ -17,6 +17,11 @@ public class UnitDao extends AbstractDao<UnitEntity> {
     }
 
     @Override
+    public String toString() {
+        return "Unit";
+    }
+
+    @Override
     public UnitEntity create(UnitEntity entity) {
         String sql = "INSERT INTO Unit (name, amount, baseUnitId) VALUES (?, ?, ?);";
         try (
@@ -49,69 +54,6 @@ public class UnitDao extends AbstractDao<UnitEntity> {
         }
     }
 
-    @Override
-    public Collection<UnitEntity> findAll() {
-        var sql = "SELECT * FROM Unit";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            List<UnitEntity> units = new ArrayList<>();
-            try (var resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    var unit = unitFromResultSet(resultSet);
-                    units.add(unit);
-                }
-            }
-
-            return units;
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all units", ex);
-        }
-    }
-
-    @Override
-    public Optional<UnitEntity> findByName(String name) {
-        var sql = "SELECT * FROM Unit WHERE name = ?";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setString(1, name);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(unitFromResultSet(resultSet));
-            } else {
-                // unit not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load unit by id: " + name, ex);
-        }
-    }
-
-    @Override
-    public Optional<UnitEntity> findById(long id) {
-        var sql = "SELECT * FROM Unit WHERE id = ?";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, id);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(unitFromResultSet(resultSet));
-            } else {
-                // unit not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load unit by id: " + id, ex);
-        }
-    }
-
     public Optional<UnitEntity> findByBaseUnitId(long id) {
         var sql = "SELECT * FROM Unit WHERE baseUnitId = ?";
         try (
@@ -121,13 +63,11 @@ public class UnitDao extends AbstractDao<UnitEntity> {
             statement.setLong(1, id);
             var resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(unitFromResultSet(resultSet));
+                return Optional.of(fromResultSet(resultSet));
             } else {
-                // unit not found
                 return Optional.empty();
             }
-        } catch (
-                SQLException ex) {
+        } catch (SQLException ex) {
             throw new DataStorageException("Failed to load unit by id: " + id, ex);
         }
     }
@@ -191,7 +131,7 @@ public class UnitDao extends AbstractDao<UnitEntity> {
         }
     }
 
-    private static UnitEntity unitFromResultSet(ResultSet resultSet) throws SQLException {
+    protected UnitEntity fromResultSet(ResultSet resultSet) throws SQLException {
         return new UnitEntity (
             resultSet.getLong("id"),
             resultSet.getString("name"),

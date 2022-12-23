@@ -8,7 +8,7 @@ public class IngredientValidator implements Validator<Ingredient> {
     public ValidationResult validate(Ingredient ingredient) {
         var result = new ValidationResult();
 
-        validateStringLength("Ingredient name", ingredient.getName(), 1, 100)
+        validateStringLength("Ingredient name", ingredient.getName(), 1, FieldMaxLengths.NAME)
                 .ifPresent(result::add);
 
         return result;

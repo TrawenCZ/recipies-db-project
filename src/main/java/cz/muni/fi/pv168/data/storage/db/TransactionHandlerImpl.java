@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 /**
- * Transaction handler
+ * Transaction handler, the connection returned is ALWAYS THE SAME
  */
 class TransactionHandlerImpl implements TransactionHandler {
     private final ConnectionHandler connectionHandler;

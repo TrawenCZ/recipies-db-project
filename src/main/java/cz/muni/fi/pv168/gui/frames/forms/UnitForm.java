@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.gui.frames.forms;
 
+import cz.muni.fi.pv168.gui.elements.text.DoubleFormatter;
 import cz.muni.fi.pv168.gui.elements.text.DoubleTextField;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.model.BaseUnitsEnum;
@@ -9,8 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UnitForm extends AbstractForm {
-
-    JPanel newPanel = new JPanel(new GridBagLayout());
 
     private JLabel nameLabel = new JLabel("Name (*)");
     private JLabel unitLabel = new JLabel("Value (*)");
@@ -77,7 +76,8 @@ public class UnitForm extends AbstractForm {
 
     private void addData(Unit unit) {
         nameInput.setText(unit.getName());
-        unitInput.setText(String.valueOf(unit.getValueInBaseUnit()));
+        unitInput.setText(DoubleFormatter.stringValueOfWithConversion(unit.getValueInBaseUnit()));
         equivalentInput.setSelectedItem(unit.getBaseUnitValue());
+        equivalentInput.setEnabled(false);
     }
 }

@@ -8,4 +8,8 @@ public class TextValidator {
     public static boolean empty(String text) {
         return text.strip().isBlank();
     }
+
+    public static boolean longerThanMaxLength(String text, int maxLength) {
+        return text.length() > maxLength;
+    }
 }

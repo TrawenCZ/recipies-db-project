@@ -12,8 +12,12 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 #IDEs
+.fleet
 .idea
 .vscode
+
+# .IML files
+*.iml
 
 # Compiled class file
 *.class

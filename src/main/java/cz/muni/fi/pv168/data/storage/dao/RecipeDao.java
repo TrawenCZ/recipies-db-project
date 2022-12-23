@@ -7,13 +7,30 @@ import cz.muni.fi.pv168.data.storage.entity.RecipeEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.*;
 import java.util.function.Supplier;
 
 public class RecipeDao extends AbstractDao<RecipeEntity>{
 
+    private final Supplier<ConnectionHandler> defaultConnections;
+
     public RecipeDao(Supplier<ConnectionHandler> connections) {
         super(connections);
+        this.defaultConnections = Objects.requireNonNull(connections);
+    }
+
+    @Override
+    public String toString() {
+        return "Recipe";
+    }
+
+    public void defaultConnection() {
+        this.connections = defaultConnections;
+    }
+
+    public void customConnection(Supplier<ConnectionHandler> connection) {
+        this.connections = connection;
     }
 
     @Override
@@ -33,7 +50,11 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         ) {
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
-            statement.setLong(3, entity.categoryId());
+            if (entity.categoryId() == null) {
+                statement.setNull(3, Types.BIGINT);
+            } else {
+                statement.setLong(3, entity.categoryId());
+            }
             statement.setLong(4, entity.portions());
             statement.setLong(5, entity.duration());
             statement.setString(6, entity.instruction());
@@ -59,68 +80,6 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
     }
 
     @Override
-    public Collection<RecipeEntity> findAll() {
-        var sql = "SELECT * FROM Recipe";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            List<RecipeEntity> recipes = new ArrayList<>();
-            try (var resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    var unit = recipeFromResultSet(resultSet);
-                    recipes.add(unit);
-                }
-            }
-            return recipes;
-           } catch (SQLException ex) {
-                throw new DataStorageException("Failed to load all units", ex);
-        }
-    }
-
-    @Override
-    public Optional<RecipeEntity> findByName(String name) {
-        var sql = "SELECT * FROM Recipe WHERE name = ?";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setString(1, name);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(recipeFromResultSet(resultSet));
-            } else {
-                // recipe not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load recipe by id: " + name, ex);
-        }
-    }
-
-    @Override
-    public Optional<RecipeEntity> findById(long id) {
-        var sql = "SELECT * FROM Recipe WHERE id = ?";
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, id);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(recipeFromResultSet(resultSet));
-            } else {
-                // recipe not found
-                return Optional.empty();
-            }
-        } catch (
-                SQLException ex) {
-            throw new DataStorageException("Failed to load recipe by id: " + id, ex);
-        }
-    }
-
-    @Override
     public RecipeEntity update(RecipeEntity entity) {
         Objects.requireNonNull(entity.id(), "Entity id cannot be null");
 
@@ -142,7 +101,11 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         ) {
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
-            statement.setLong(3, entity.categoryId());
+            if (entity.categoryId() == null) {
+                statement.setNull(3, java.sql.Types.NULL);
+            } else {
+                statement.setLong(3, entity.categoryId());
+            }
             statement.setLong(4, entity.portions());
             statement.setLong(5, entity.duration());
             statement.setString(6, entity.instruction());
@@ -177,10 +140,9 @@ public class RecipeDao extends AbstractDao<RecipeEntity>{
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to delete recipe %d".formatted(entityId), ex);
         }
-
     }
 
-    private static RecipeEntity recipeFromResultSet(ResultSet resultSet) throws SQLException {
+    protected RecipeEntity fromResultSet(ResultSet resultSet) throws SQLException {
         return new RecipeEntity (
             resultSet.getLong("id"),
             resultSet.getString("name"),

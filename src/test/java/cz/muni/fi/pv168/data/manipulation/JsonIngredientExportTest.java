@@ -24,6 +24,7 @@ final class JsonIngredientExportTest extends AbstractJsonExporterTest<Ingredient
                 } ]
                 """);
     }
+
     @Test
     void multipleIngredients() throws  IOException {
         var ingredients = List.of(
@@ -54,6 +55,35 @@ final class JsonIngredientExportTest extends AbstractJsonExporterTest<Ingredient
                   "kcal" : 0.5555555555555556,
                   "unit" : {
                     "name" : "ml",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                  }
+                } ]
+                """);
+    }
+
+    @Test
+    void multipleIngredientsByIndex() throws  IOException {
+        var ingredients = List.of(
+                new Ingredient("Soda", 1.0, new Unit("g", 1.0, null)),
+                new Ingredient("Cukr", 200.0, new Unit("pc(s)", 1.0, null)),
+                new Ingredient("Mléko", 0.5555555555555556, new Unit("ml", 1.0, null))
+        );
+        testDirSave(ingredients, 0, 1);
+        assertExportedContent("""
+                [ {
+                  "name" : "Soda",
+                  "kcal" : 1.0,
+                  "unit" : {
+                    "name" : "g",
+                    "valueInBaseUnit" : 1.0,
+                    "baseUnit" : null
+                  }
+                }, {
+                  "name" : "Cukr",
+                  "kcal" : 200.0,
+                  "unit" : {
+                    "name" : "pc(s)",
                     "valueInBaseUnit" : 1.0,
                     "baseUnit" : null
                   }

@@ -12,8 +12,24 @@ import java.util.function.Supplier;
 
 public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
+    private final Supplier<ConnectionHandler> defaultConnections;
+
     public RecipeIngredientDao(Supplier<ConnectionHandler> connections) {
         super(connections);
+        this.defaultConnections = Objects.requireNonNull(connections);
+    }
+
+    public void defaultConnection() {
+        this.connections = defaultConnections;
+    }
+
+    public void customConnection(Supplier<ConnectionHandler> connection) {
+        this.connections = connection;
+    }
+
+    @Override
+    public String toString() {
+        return "IngredientList";
     }
 
     @Override
@@ -45,76 +61,6 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
             }
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to store: " + entity, ex);
-        }
-    }
-
-    @Override
-    public Collection<RecipeIngredientEntity> findAll() {
-        var sql = """
-                SELECT id,
-                       recipeId,
-                       ingredientId,
-                       amount,
-                       unitId
-                    FROM IngredientList
-                """;
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            List<RecipeIngredientEntity> ingredientLists = new ArrayList<>();
-            try (var resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    var ingredientList = ingredientListFromResultSet(resultSet);
-                    ingredientLists.add(ingredientList);
-                }
-            }
-
-            return ingredientLists;
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all ingredient list", ex);
-        }
-    }
-
-    @Override
-    public Optional<RecipeIngredientEntity> findByName(String name) {
-        var sql = "SELECT * FROM IngredientList WHERE name = ?";
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setString(1, name);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(ingredientListFromResultSet(resultSet));
-            } else {
-                // ingredient list not found
-                return Optional.empty();
-            }
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load ingredient list by id: " + name, ex);
-        }
-    }
-
-    @Override
-    public Optional<RecipeIngredientEntity> findById(long id) {
-        var sql = "SELECT * FROM IngredientList WHERE id = ?";
-
-        try (
-                var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql)
-        ) {
-            statement.setLong(1, id);
-            var resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Optional.of(ingredientListFromResultSet(resultSet));
-            } else {
-                // ingredient list not found
-                return Optional.empty();
-            }
-        } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load ingredient list by id: " + id, ex);
         }
     }
 
@@ -184,7 +130,7 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
         }
     }
 
-    private static RecipeIngredientEntity ingredientListFromResultSet(ResultSet resultSet) throws SQLException {
+    protected RecipeIngredientEntity fromResultSet(ResultSet resultSet) throws SQLException {
         return new RecipeIngredientEntity(
                 resultSet.getLong("id"),
                 resultSet.getLong("recipeId"),
@@ -206,13 +152,7 @@ public class RecipeIngredientDao extends AbstractDao<RecipeIngredientEntity> {
 
             List<RecipeIngredientEntity> entities = new ArrayList<>();
             while (resultSet.next()) {
-                entities.add(new RecipeIngredientEntity(
-                    resultSet.getLong("id"),
-                    resultSet.getLong("recipeId"),
-                    resultSet.getLong("ingredientId"),
-                    resultSet.getDouble("amount"),
-                    resultSet.getLong("unitId")
-                ));
+                entities.add(fromResultSet(resultSet));
             }
             return (entities.size() == 0) ? Optional.empty() : Optional.of(entities);
         } catch (SQLException ex) {

@@ -6,43 +6,64 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-import cz.muni.fi.pv168.data.generators.IngredientDataGenerator;
 import cz.muni.fi.pv168.gui.action.ExportAction;
 import cz.muni.fi.pv168.gui.action.ImportAction;
 import cz.muni.fi.pv168.gui.frames.MainWindow;
 import cz.muni.fi.pv168.gui.frames.forms.IngredientForm;
+import cz.muni.fi.pv168.gui.models.IngredientTableModel;
 import cz.muni.fi.pv168.model.Ingredient;
 import cz.muni.fi.pv168.model.RecipeIngredient;
+import cz.muni.fi.pv168.wiring.Supported;
 import cz.muni.fi.pv168.model.Recipe;
 
 public final class IngredientsTab extends AbstractTab {
 
     public IngredientsTab() {
-        super(MainWindow.getIngredientModel());
+        super(new IngredientTableModel(MainWindow.getDependencies().getIngredientRepository()));
+        table.setColumnDecimalFormat(1);
+    }
+
+    public IngredientTableModel getModel() {
+        return (IngredientTableModel) model;
     }
 
     @Override
-    public void addSampleData(int sampleSize) {
-        var model = MainWindow.getIngredientModel();
-        IngredientDataGenerator.getAll().stream().forEach(model::addRow);
+    protected void lockInput() {
+        MainWindow.getTabs().get(Supported.RECIPE).setInput(true);
+        MainWindow.getTabs().get(Supported.INGREDIENT).setInput(true);
+        MainWindow.getTabs().get(Supported.UNIT).setInput(true);
+    }
+
+    @Override
+    protected void unlockInput() {
+        MainWindow.getTabs().get(Supported.RECIPE).release();
+        MainWindow.getTabs().get(Supported.INGREDIENT).release();
+        MainWindow.getTabs().get(Supported.UNIT).release();
+    }
+
+    @Override
+    protected void refreshTables() {
+        MainWindow.getDependencies().getUnitRepository().refresh();
+        MainWindow.getUnitsModel().fireTableDataChanged();
+        getModel().getRepository().refresh();
+        getModel().fireTableDataChanged();
     }
 
     @Override
     protected ImportAction<?> createImportAction() {
         return new ImportAction<>(
-            table,
-            MainWindow.getDependencies().getIngredientService(),
-            Ingredient.class
+            MainWindow.getDependencies().getIngredientImporter(),
+            this::lockInput,
+            () -> {
+                refreshTables();
+                unlockInput();
+            }
         );
     }
 
     @Override
     protected ExportAction<?> createExportAction() {
-        return new ExportAction<>(
-            table,
-            MainWindow.getDependencies().getIngredientService(),
-                "ingredients"
-        );
+        return new ExportAction<>(table, getModel());
     }
 
     @Override
@@ -60,13 +81,13 @@ public final class IngredientsTab extends AbstractTab {
 
     @Override
     protected void editSelectedRow(ActionEvent actionEvent) {
-        Ingredient ingredient = MainWindow.getIngredientModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
+        Ingredient ingredient = getModel().getEntity(table.convertRowIndexToModel(table.getSelectedRow()));
         new IngredientForm(ingredient);
     }
 
     private boolean deleteSafeSearchInRecipes() {
         for (int selectedRow : table.getSelectedRows()) {
-            Ingredient ingredient = MainWindow.getIngredientModel().getEntity(selectedRow);
+            Ingredient ingredient = getModel().getEntity(selectedRow);
             var recipeModel = MainWindow.getRecipeModel();
             for (int i = 0; i < recipeModel.getRowCount(); i++) {
                 Recipe selectedRecipe = recipeModel.getEntity(i);

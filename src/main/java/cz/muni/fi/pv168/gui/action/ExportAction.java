@@ -4,34 +4,40 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import javax.swing.*;
 
+import cz.muni.fi.pv168.data.manipulation.Exporter;
 import cz.muni.fi.pv168.data.manipulation.JsonExporter;
-import cz.muni.fi.pv168.data.manipulation.services.Service;
 import cz.muni.fi.pv168.gui.elements.JsonFileChooser;
+import cz.muni.fi.pv168.gui.models.AbstractModel;
 import cz.muni.fi.pv168.gui.resources.Icons;
+import cz.muni.fi.pv168.gui.workers.AsyncExporter;
 import cz.muni.fi.pv168.model.Identifiable;
 import cz.muni.fi.pv168.model.Nameable;
-import cz.muni.fi.pv168.wiring.CommonDependencyProvider;
 
 /**
  * @author Jan Martinek
  */
 public class ExportAction<T extends Nameable & Identifiable> extends AbstractAction {
 
-    private final JsonExporter exporter = CommonDependencyProvider.getJsonExporter();
-    private final Service<T> service;
+    private final Exporter exporter;
     private final JTable table;
-    private final String tabName;
+    private final AbstractModel<T> model;
 
-    public ExportAction(JTable table, Service<T> service, String tabName) {
+    public ExportAction(JTable table, AbstractModel<T> model) {
         super("Export", Icons.EXPORT_S);
-        this.service = Objects.requireNonNull(service);
+
         this.table = Objects.requireNonNull(table);
-        this.tabName = tabName;
+        this.model = Objects.requireNonNull(model);
+
+        this.exporter = new AsyncExporter(
+            new JsonExporter(),
+            () -> showErrorMessage(),
+            rowCount -> showSuccessMessage(rowCount)
+        );
+
         putValue(SHORT_DESCRIPTION, "Exports records from current tab to a file");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));
@@ -40,16 +46,14 @@ public class ExportAction<T extends Nameable & Identifiable> extends AbstractAct
     @Override
     public void actionPerformed(ActionEvent e) {
         var fileChooser = new JsonFileChooser(false, true);
-        fileChooser.setSelectedFile(new File(tabName));
+        fileChooser.setSelectedFile(new File(model.toString().toLowerCase()));
 
         if (fileChooser.showDialog(table, "Save") == JFileChooser.APPROVE_OPTION) {
             try {
-                List<T> exportedEntities = service.getRecords(getSelectedRows());
-                exporter.saveEntities(fileChooser.getJsonPath(), exportedEntities);
-                showSuccessMessage(exportedEntities.size());
+                exporter.createDataCopy(model.getRepository().findAll());
+                exporter.exportData(fileChooser.getJsonPath(), e == null ? new int[0] : getSelectedRows());
             } catch (IOException ex) {
-                // ex.printStackTrace(); TODO: log
-                showErrorMessage();
+                showErrorMessage(); // never happens with AsyncExporter (left here for compatibility)
             }
         }
     }

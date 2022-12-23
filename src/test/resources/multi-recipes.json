@@ -66,38 +66,6 @@
       "valueInBaseUnit" : 1.0,
       "baseUnit" : null
     }
-  }, {
-    "ingredient" : {
-      "name" : "Soda",
-      "kcal" : 1.0,
-      "unit" : {
-        "name" : "g",
-        "valueInBaseUnit" : 1.0,
-        "baseUnit" : null
-      }
-    },
-    "amount" : 8.0,
-    "unit" : {
-      "name" : "g",
-      "valueInBaseUnit" : 1.0,
-      "baseUnit" : null
-    }
-  }, {
-    "ingredient" : {
-      "name" : "Cukr",
-      "kcal" : 200.0,
-      "unit" : {
-        "name" : "pc(s)",
-        "valueInBaseUnit" : 1.0,
-        "baseUnit" : null
-      }
-    },
-    "amount" : 65.0,
-    "unit" : {
-      "name" : "pc(s)",
-      "valueInBaseUnit" : 1.0,
-      "baseUnit" : null
-    }
   } ],
   "instructions" : "Ohřejeme troubu na 250 stupňů a dáme železo na horní patro a pečeme než se spálí."
 } ]

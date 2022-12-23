@@ -2,9 +2,10 @@ package cz.muni.fi.pv168.data.storage.db;
 
 import cz.muni.fi.pv168.data.storage.DataStorageException;
 import org.h2.jdbcx.JdbcConnectionPool;
-
+import org.tinylog.Logger;
 import javax.sql.DataSource;
 import javax.swing.JOptionPane;
+
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,23 +32,25 @@ public final class DatabaseManager {
     public static DatabaseManager createServerInstance() {
         String connectionString = "jdbc:h2:%s;%s".formatted("tcp://localhost/" + createDbFileSystemPath(), DB_PROPERTIES_STRING);
         // We need this for debugging purposes
-        System.out.println("JDBC connection URI: " + connectionString);
+
+        Logger.info("JDBC connection URI: " + connectionString);
         return new DatabaseManager(connectionString);
     }
 
     public static DatabaseManager createProductionInstance() {
         String connectionString = "jdbc:h2:%s;%s".formatted(createDbFileSystemPath(), DB_PROPERTIES_STRING);
         // We need this for debugging purposes
-        System.out.println("JDBC connection URI: " + connectionString);
+        Logger.info("JDBC connection URI: " + connectionString);
         return new DatabaseManager(connectionString);
     }
 
-    public static DatabaseManager createTestInstance(boolean testing) {
+    public static DatabaseManager createTestInstance(boolean baseUnitGenerate) {
         String connectionString = "jdbc:h2:mem:%s;%s".formatted(PROJECT_NAME, DB_PROPERTIES_STRING);
         var databaseManager = new DatabaseManager(connectionString);
         databaseManager.load();
-        if (testing) // TODO: make DML (sql) file
-            databaseManager.initData("test");
+        if (baseUnitGenerate)
+            databaseManager.initData("base_units");
+        databaseManager.initData("test");
         return databaseManager;
     }
 

@@ -28,11 +28,12 @@ public class Recipe implements Nameable, Identifiable {
     @JsonCreator
     public Recipe(@JsonProperty("name") String name,
                   @JsonProperty("description") String description,
-                  @JsonProperty("instruction") String instructions,
+                  @JsonProperty("instructions") String instructions,
                   @JsonProperty("category") Category category,
                   @JsonProperty("preparationTime") int requiredTime,
                   @JsonProperty("portions") int portions,
-                  @JsonProperty("ingredients") List<RecipeIngredient> ingredients) {
+                  @JsonProperty("ingredients") List<RecipeIngredient> ingredients
+    ) {
         this(null, name, description, instructions, category, requiredTime, portions, ingredients);
     }
 
@@ -44,7 +45,8 @@ public class Recipe implements Nameable, Identifiable {
                   Category category,
                   int requiredTime,
                   int portions,
-                  List<RecipeIngredient> ingredients) {
+                  List<RecipeIngredient> ingredients
+    ) {
         setId(id);
         setName(name);
         setDescription(description);
@@ -70,9 +72,13 @@ public class Recipe implements Nameable, Identifiable {
         return description;
     }
 
-    @JsonProperty("category")
     public Category getCategory() {
         return category;
+    }
+
+    @JsonProperty("category")
+    private Category getCategoryExport() {
+        return category.isUncategorized() ? null : category;
     }
 
     @JsonProperty("preparationTime")
@@ -104,11 +110,12 @@ public class Recipe implements Nameable, Identifiable {
     }
 
     public void setDescription(String description) {
-        this.description = Objects.requireNonNull(description);
+        Objects.requireNonNull(description, "description cannot be null");
+        this.description = description.replace("\r\n", "\n");
     }
 
     public void setCategory(Category category) {
-        this.category = Objects.requireNonNull(category);
+        this.category = (category == null || category.isUncategorized()) ? Category.UNCATEGORIZED : category;
     }
 
     public void setRequiredTime(int requiredTime) {
@@ -126,7 +133,8 @@ public class Recipe implements Nameable, Identifiable {
     }
 
     public void setInstructions(String instructions) {
-        this.instructions = instructions;
+        Objects.requireNonNull(instructions, "instructions cannot be null");
+        this.instructions = instructions.replace("\r\n", "\n");
     }
 
     @Override
