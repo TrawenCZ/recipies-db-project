@@ -71,7 +71,7 @@ public class AsyncImporter extends Progressed implements Importer {
             }
 
             private void setProgress(Progress progress, Operation operation) {
-                if (operation == Operation.PROCESS) this.setProgress(progress.getProcessed());
+                if (operation == Operation.PROCESS) this.setProgress(progress.getPercentageDone());
             }
         };
 

@@ -70,7 +70,7 @@ public class AsyncExporter extends Progressed implements Exporter {
             }
 
             private void setProgress(Progress progress, Operation operation) {
-                if (operation == Operation.PROCESS) this.setProgress(progress.getProcessed());
+                if (operation == Operation.PROCESS) this.setProgress(progress.getPercentageDone());
             }
         };
 
