@@ -1,3 +1,18 @@
+## Author's note
+- this project was made as part of FI MUNI Seminar for Java programming
+- I did not make entire project, there were 3 more people working on this
+
+### My contributions
+- repositories
+- validations
+- GUI parts (e.g. Toolbar, forms, tabs, ...)
+- help with entity design, entity mappers
+- help with database connection
+- help with tests
+- team deadline reminder
+
+
+
 # PV168 Project: Aplikace pro správu a užití databáze receptů
 
 Jednoduchá funkční desktopová single-user aplikace pro práci s databází receptů a jejich kategorií. Aplikace je naprogramována v jazyce Java (JDK 17). Grafické uživatelské rozhraní běží na frameworku SWING. Automatizace buildů je řízena přes Apache Maven.
